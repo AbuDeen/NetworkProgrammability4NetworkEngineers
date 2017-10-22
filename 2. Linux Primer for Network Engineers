@@ -44,9 +44,36 @@ Package management:
             apt & apt-get = downloads and installs a package from repositories. Also updates and removes
             
 Working with files and directories:
-    
-    
-    
+    touch command: 
+        updates time stamp and create empty file
+        updates time stamp of existing file w/o overwriting it 
+        e.g: 
+            touch newfile.txt OR touch ./newfile.txt (./ indicates file is created in current working directory)
+    Make directory command:
+        mkdir = creates a new directory e.g: mkdir newDirectory
+        mkdir -p = creates a new directory and its sub directories e.g: mkdir -p /newDirectory/newChildDirectory
+    Remove command:
+        rm = removes a file
+        rm -r = removes a directory that contains non-empty directories
+        rmdir = removes empty directory
+        rm -rf = removes a directory and contents including write-protected files 
+    Copy and move commands:
+        cp = copies a file e.g: cp file1 file2
+        cp -r = copies an entire directory 
+        mv = moves or renames a file:
+            mv nexus.txt Testing     (Testing is new directory to move to)
+            mv nexus.txt home/cisco/nexus home/cisco/Testing/
+            mv nexus.cfg nexus123.cfg  (renames a file. notice destination directory is same as current)
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
     
     
     
