@@ -1,4 +1,104 @@
 NP is doing what we do as network engineers but in a more automated and scripted fashion
 
 What is SDN? 
-  an approach and architecture in network where control and data plane are decoupled
+an approach and architecture in network where control and data plane are decoupled and control plane is centralized 
+Enablement where underlying network infrastructure HW is abstracted from the application (network virtualization)
+A concept that leverages APIs to enable external systems to influence network provisioning, control and operation 
+An SDN solution doesn’t have to meet all these three conditions
+
+# SDN offers a new approach to building and operating networks
+
+traditional vs SDN networks:
+Traditional networks: control plane (cp) and data plane (dp) exist on each device 
+Pure SDN: cp on controller. Dp on each network device 
+Hybrid SDN: cp is on controller but also on network devices 
+
+Benefits of SDN:
+Providing a single pane of glass and administration through a single api to manage n devices, instead of ssh’ing to n devices to gather data or change config 
+
+Note: it was always thought that pure SDN is the solution since it facilitates development of control plane protocols independent from HW, however it didn’t scale well 
+
+why SDN (bottom line):
+In order to remain competitive, you need to learn how to do more with less. It means simply checking inventory, serial numbers, or getting ready for ipv6 migration, you need to start designing and thinking about network management much differently
+
+SDN industry tends:
+OSS = open source software 
+Programmable infrastructure = decreases human to machine interaction to fulfill the goals of SDN and DevOps
+SDN = open api for management / no closed box method. NFV. Policy centric networking. Open protocols (open flow, open stack, etc)
+DevOps = cultural trend to drive speed and agility in the deployment, maintenance and continuing improvement of systems and infrastructure 
+Application centric infrastructure = a trend to focus on applications deployment and automation through a policy based networking model such as Cisco ACI
+
+Open source software:
+Open flow
+Open virtual switch (OvS)
+Contiv 
+.IO
+Open day light 
+Open stack = open source cloud computing project, a collection of APIs. Neutron is networking api
+
+programmable infrastructure:
+On box and platform specific:
+    TCL = tool command language 
+    EEM = embedded event manager 
+    POAP = power on auto provision 
+    SMART INSTALL
+    SMART PORT MACROS
+    Python
+    
+Off box / modern api:
+    REST API
+    NETCONF
+    RESTCONF 
+    SDKs
+    DevOps tools
+    Linux 
+
+NETCONF = a mechanism to install and configure network devices using xml encoded data
+RESTCONF = NETCONF over REST API. utilizes http protocol to access yang-defined data on a device using the data stores that are defined in NETCONF
+
+# software-only NFV provides no support for physical HW, thus limited 
+# Cisco offers a free open SDN controller aka osc, which supports REST and RESTCONF
+
+DevOps: core values identified in a term called CALMS = CULTURE, AUTOMATION, LEAN, MEASUREMENT, SHARING
+
+Cico ACI: a shift in datacenter architecture to integrate physical and virtual elements in an open source ecosystem model utilizing APIs, open standards and open source elements 
+
+Network programmability and automation:
+    Future network operation:
+        Version control all network confine
+        Version control is the source of truth 
+        Automated testing before and after config changes are performed. Testing includes system, style and syntax
+        
+Use of network automation:
+    Device provisioning 
+    Data collection and telemetry 
+    Compliance checks 
+    Reporting 
+    Troubleshooting 
+    
+Network programmability technology:
+    Linux
+    Device and controller APIs 
+    Version control 
+    Software development 
+    Automated testing
+    Continuous integration 
+    
+# modern network configuration workflow utilizes version control (e.g. github) to version, test and approve configs prior to implementation 
+
+Cisco platform specific APIs:
+    IOSXE: NETCONF, RESTCONF
+    IOSXR: NETCONF, RESTCONF, gRPC
+    NXOS: NX-API CLI, NX-API REST, NETCONF
+    ASA: REST
+    ACI: REST
+    APIC-EM: REST
+    OSC: REST, RESTCONF
+    
+    
+     
+
+
+
+
+
