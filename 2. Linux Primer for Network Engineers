@@ -64,10 +64,38 @@ Working with files and directories:
             mv nexus.txt Testing     (Testing is new directory to move to)
             mv nexus.txt home/cisco/nexus home/cisco/Testing/
             mv nexus.cfg nexus123.cfg  (renames a file. notice destination directory is same as current)
-        
-        
-        
-        
+    Viewing files commands:
+        more = allows you to view the contents of a file one page at a time and requires you to press the spacebar to advance to the next page of contents. But you can't use up arrow to scroll up
+        less = allows you to view the contents of the file but it allows the user the ability to scroll up and down and perform a keyword search
+        cat = (short for concatenate) is used to stream the entire contents of the file without pausing. It is useful for files with just a few lines. Also, cat is used to add contents to a file
+            e.g: 
+                cat router1.txt
+                cat cisco/platforms/routers/router1.txt
+                cat router2.txt >> router1.txt  (merges two files in router1.txt and leaves router2.txt as is)
+        head = displays the first 10 lines in a file
+        tail = displays the last 10 lines in a file
+        diff = compares content of two files 
+
+File permissions:
+    permissions are based on two factors:
+        specific user or group
+        specific action (read (r), write (w), execute (x))
+        e.g: 
+           ls -l config.txt (shows permission of config.txt)
+               -rw-rw-r-- 1 deeplearning deeplearning 3547 Oct 22 12:04 config.txt
+                   that output is derived from drwxrwxrwx
+                       d = file type
+                       first rwx = owner's permission
+                       second rwx = owner's group permission
+                       3rd rwx = permission of others (others means not the owner nor members of group the owner is a member of)
+    commands to change permissions:
+        chmod u(+/-)(rwx),g(+/-)(rwx),o(+/-)(rwx) filename    = this command sets the permission ona given file for current user, group and others
+            e.g: 
+               chmod u+rwx,go+rx  = owner may read, write, and execute the file. All others may read and execute the file
+               chmod rwx+ugo = no restricitons at all 
+               chmod u+rw,u-x,go-rwx = The owner may read and write a file. All others have no rights
+
+                 
         
         
         
