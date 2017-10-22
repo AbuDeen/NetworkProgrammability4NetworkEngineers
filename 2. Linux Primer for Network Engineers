@@ -1,0 +1,12 @@
+Navigating the Linux file system:
+    Root file system refer to by / aka root directory 
+    Sudo = super do, executes a command with root privileges 
+
+Sudo:
+    Debian/Ubuntu doesn’t allow logging in as root
+    Redhat/fedora allow a user to log in as root by default 
+    You can configure who can run sudo in the sudoers file
+    If you are at user@machinesname:/$ running ‘sudo su’ puts you in root shell root@machinename:/#
+    
+# remember in Linux terminal $ is an indication that current user has no root privileges, while # indicates you’re root
+
