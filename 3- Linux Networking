@@ -14,8 +14,75 @@ Networking commands:
     ifup/ifdown = up/down an interface
         e.g: sudo ifup lo
     netstat:
+        netstat = displays local computer’s connection information, routing table information
+        netstat -r = displays routing table
+        netstat -i = displays interface statistics
+            e.g: netstat -i lo
+    dig = displays DNS info such as A, MX and CNAMES records. e.g: dig gmail.com
+    host = resolves host to ip and lists MX, CNAMES associated with name queried. e.g: host gmail.com
+    ssh = i think we all know what it does :)
+        e.g:
+            ssh 192.168.1.1 (uses username associated with current terminal)
+            ssh admin@192.168.1.1 -p 2222
+            ssh –l john 192.168.1.1
+
+Viewing routing and ARP tables:
+    ip route list = shows local route table. cleaner output than netstat -r and becoming the linux standard. can be used to add/del routes
+    route = same as ip route list
+    arp = shows local arp table and assign static arp 
+    
+Persistent network configuration:
+    changing ip information:
+        persistent network configs are added to the interfaces file under /etc/network. nano /etc/network/interfaces
+             e.g: 
+                 auto eth0
+                 iface eth0 inet static
+                 address 192.168.1.50
+                 netmask 255.255.255.0
+                 up ip route add 172.16.10.0/24 via 192.168.1.25 dev eth2
+                 up ip route add 10.10.10.0/24 via 192.168.1.35 dev eth3
+
+                 auto eth1
+                 iface eth1 inet dhcp
+    
+    changing DNS information:
+        persistent DNS configs are stored in the resolv.conf file under /etc/. nano /etc/resolv.conf
+        dynamically constructed from files located in: /etc/resolvconf/resolv.conf.d/
+        to manually add a DNS entry:
+            add 'nameserver 127.0.1.1' to etc/resolvconf/resolv.conf.d
+            run sudo resolvconf -u to instruct Linux to update resolv.conf from resolv.conf.d
+            
+    restarting network service:
+        must be done after changing an ip, mask, GW or adding additional interfaces
+        run sudo service networking restart
         
         
+        
+        
+        
+        
+        
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
         
         
         
