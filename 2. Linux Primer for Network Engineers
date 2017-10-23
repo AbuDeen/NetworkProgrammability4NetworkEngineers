@@ -95,9 +95,29 @@ File permissions:
                chmod rwx+ugo = no restricitons at all 
                chmod u+rw,u-x,go-rwx = The owner may read and write a file. All others have no rights
 
-                 
+Linux processes:
+    viewing running processes:
+        top = provides a real-time look at the local processor activity
+        htop = provides a real-time look at the local processor activity in easily readable format / graph. Also provides options to search and kill process
+        ps = lists running processes associated with current user and terminal session, but offers many more arugments such as seeing processes running as certain user
+        ps aux = provides an exhaustive list of running processes         
+Note: arguments are additive which mean that they can be strung together to customize an output. For example, in order to display an exhaustive list of running processes that are sorted by processor and memory utilizations, the syntax would be:
+    ps aux --sort=-pcpu,+pmem
+    Terminating processes:
+        kill = ends a running process, used along with process id. e.g: kill 2442. kill sends a signal to application to terminate
+        kill -KILL pid = sends a signal to Linux kernel to terminate a process. last resort. e.g: kill -KILL 2442
+        killall = kills all processes associated with an application. e.g: killall firefox
+        pkill = end a process by name
         
-        
+Bonus command:
+    tree: draws a tree of current directory structure. 
+       e.g: tree /home/deeplearning/Desktop
+            /home/deeplearning/Desktop
+            ├── baseSwitchConfig.txt
+            ├── CoAC_PY.py
+            ├── swcfg
+            ├── switchconfig.py
+            └── Untitled Document 1.py
         
         
         
