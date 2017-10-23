@@ -1,0 +1,29 @@
+Networking commands:
+    ping
+    traceroute = must be installed via sudo apt-get install traceroute
+    ifconfig = display information for only one interface at a time. Also, ifconfig can be used to assign an IP address, shut and activate an interface, hardcode a MAC address, or even set the MTU of the interface
+        e.g:
+            ifconfig
+            ifconfig interfacename up|down = shuts / unshuts an interface
+    iplink = similar to ifconfig, more powerful. ifconfig will be decommed soon, repalced by ip link. shows each interface w/o inet address assigned to it
+    ip addr list = shows list of interfaces with inet ip addresses assigned to it
+    ip addr = assigns an ip to an interface. this assigment is not persistent, meaning it will be gone after a reboot
+        e.g: sudo ip addr { add | del } a.b.c.d/yz dev <interface> 
+    ip route = creates a non-persistent static route
+        e.g: sudo ip route { add | del } 172.16.10.0/24 via 192.168.200.50 dev eth1    (eth1 is egress interface)
+    ifup/ifdown = up/down an interface
+        e.g: sudo ifup lo
+    netstat:
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    
