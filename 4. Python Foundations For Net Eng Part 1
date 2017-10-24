@@ -1,9 +1,9 @@
 Why learn Python:
     because it's awesome!!! :)
     python exists on most Linux systems, including NX-OS
-    python has many many modules/ applications that's built for network engineering 
+    python has many many modules/ applications that's built for network engineering
     easy to use, quick to learn, yet very powerful and offers so much to network engineers who's leveraging network programmability and automation
-    
+
 Note: Python is an interpreted language, meaning that code is executed as you type it in the python console, no need to compile
 
 Python 2.x:
@@ -11,26 +11,25 @@ Python 2.x:
     Better library support
     Default version running on Linux and MAC
     Supported on NX-OS
-    
+
 Python 3.x:
     Under active development
     Designed to be easier to learn (even easier)
     Fixed major issues in 2.x
     Not backward compatible
-    
+
 Note: since python 2.x still has a larger library, it is the version used
 
 Executing python code
     Using python dynamic interpreter aka python console
     Writing python scripts
-    
+
 Using python interpreter (shell)
-    Enter shell by typing python at Linux terminal
+    Enter shell by typing python at Linux terminal or on a NX cli
     Exit shell by pressing ctrl + D
-           
-        
-     
-    
-    
-    
-    
+
+Writing python scripts
+    it can be written in any text editor and saved in a .py file extension. you can then run this script by executing python filename.py
+
+
+######################
