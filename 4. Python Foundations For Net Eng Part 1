@@ -192,7 +192,7 @@ Conditionals:
         >>> a is '10.10.10.2'
         False
 
-Note: Every object or expression in Python always evaluates to True or False, even variables, meaning it is possible to create a variable such as hostname = ‘Router1’ and then say if hostname: in a conditional. Assuming there is a value assigned that is not null, the conditional will evaluate to True, else it will be False
+Note: Every object or expression in Python always evaluates to True or False, even variables, meaning it is possible to create a variable such as hostname = ‘Router1’ and then say if hostname: in a conditional. Assuming there is a value assigned that is not null (i.e. None), the conditional will evaluate to True, else it will be False
 
         conditional statements end with a colon and must maintain consistent indentation to work properly. The three conditional statements are: if, elif, and else
                 >>> switch = 'catalyst 3850'
