@@ -1,0 +1,60 @@
+Introduction
+    version control is the management of changes to files over time
+    github is a web service implementation of git version control system
+    why version control?
+        collaboration
+        storing versions of same file / configs
+        restoring previous versions of a file
+        understanding what happened (changes took place and by whom)
+Note: VCS = Version Control System
+    Git was originally developed to version control the development of Linux kernel
+    Mercurial = was originally made to compete with Git for Linux kernel development. Unlike most Version Control Systems, it’s written in Python and not in C
+    The Concurrent Versions System (CVS):
+        was first designed in the 1980s. Originally, it handled conflicting situations. For example, when two engineers who worked on the same file, CVS allowed only the latest version of the code to be worked on and updated. As such, it was a first come, first serve system
+    Apache Subversion (SVN):
+        was created as an alternative to CVS. SVN uses atomic operations, meaning that either all changes that are made to the source are applied or none are applied. No partial changes are allowed, avoiding many potential issues. A drawback of SVN is its slower speed
+
+Git:
+    a distributed version control software that keeps track of every modification to the code. If a mistake is made, developers can look back and compare earlier versions of code to help fix the mistake minimizing disruption to all team members. Version control protects source code from any kind of errors that may have serious consequences if not handled properly
+    It is distributed, so every team member has their own copy of the project files. This file is a complete copy of the full project, not just the files being worked on. These changes may be incompatible with those changes made by another engineer, and Git helps track every individual change by each contributor to prevent work from conflicting
+    Moreover, you have full control of your local repository, so you may decide to commit and push only some parts of your work and leaving some others on your local system. This practice may be the case of a file containing confidential data, credentials and so on
+
+Git Architecture:
+    git is architectured in repositories aka repos. primarily you have a local repo and a remote repo
+        local repo = where snapshots, or commits are stored on individual user's local machine. think of repo as a folder - it really is :)
+        staging area = where all the changes you want to perform are placed. to have git track a file, you first add it to the staging area. this helps you select which files you will add and commit to via git
+        working directory = it is a directory controlled by git. git will track differences between working directory and local repo. and then between local repo and remote repo
+        remote repo = where the files of the project reside, and it is also where all other local copies are pulled from. It can be stored on an internal private server or hosted on a public repository such as GitHub or BitBucket
+
+Git repo:
+    repo is a directory that is initialized with git. it can contain code, images or any other file types
+
+Git commands:
+    git init
+        used to initialize a working directory
+        when this command is run, it creates a subdirectory called .git, which contains all of the local snapshots (i.e.commits) as well as project metadata
+    git config
+        once a repo is initialized you should configure it with username and email to be used for tracking changes
+        git configuration can be done on a repo or globally
+        you can also change these settings by editing the .gitconfig file
+    git status
+        It allows you to see the status of your working directory and local repository. It shows you the files that need to be staged, the files that are staged, which branch you are on, and if a commit is required. Also, it will show the files that are not being tracked by git
+    git add <filename>
+        adds a file to staging area and starts tracking this file
+        e.g. git add swcfg
+        use git rm <filename> to unstage/untrack
+    git commit <filename>
+        once you added a file to the staging area, use this command to commit the staged configs. What the git commit command is really doing is creating a point-in-time local snapshot of the project. All incremental changes are stored in the .git directory that was automatically created when the git init command was executed
+        When you use the git commit command, you are required to include a commit message. This practice is shown in the graphic using the –m flag. When you commit your changes, it creates a commit object representing the complete state of the project, including all files in the project
+
+Note: at this point, after running git commit, you now have a local repo that includes snapshots of tracked files. next you can add a remote repo to sync your local repo to
+    git remote
+        git remote add <remote repo alias> <remote repo location>
+        remote repo alias comes handy when you have multiple repos you sync (push) to
+        remote repo location could be a local directory or cloud location (https://github.com/userid/remotereponame). dont forget to initialize your remote repo using git init -bare
+    git push
+        pushes your local repo content (committed only files) to remote repo
+        git push <remote repo alias> master    (master is your local repo master branch)
+Note: There is only a master branch in each repo, but additional branches can be addded and pushed to remote repo as needed
+    git clone
+        clones a remote repo an stores a local copy of it. you dont need to init a clone, as the original repo was already cloned
