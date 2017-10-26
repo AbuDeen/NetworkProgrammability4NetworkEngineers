@@ -63,7 +63,7 @@ Note: There is only a master branch in each repo, but additional branches can be
         pulls updates from remote repo. this command fetches remote repo and merges updates in local repo
         alternatively you can replace git pull with git fetch and then git merge
     git diff
-        view the differences of files in your working directory that is compared to the same file in your local repository (last snapshot commit)    
+        view the differences of files in your working directory that is compared to the same file in your local repository (last snapshot commit)
 
 Git workflow:
     git init > git config --global user.name "USERNAME" > git config --global user.email EMAILADDRESS > git add <filename> > git commit -m "MESSAGE"
@@ -86,3 +86,20 @@ Git branch workflow:
     git branch
     git checkout master
     git merge branch1
+
+Collaborating with Github:
+    what is github?
+        distributed version control system based on Git
+        web-based hosted service
+        offers code review
+        offers Github Enterprise
+
+    git code review:
+        Code review occurs when contributions to the repository are being made. There is a forum-like interface that allows the project owners and contributors to communicate during the review process (until the contribution is merged)
+
+    github pull request:
+        offers the ability to propose changes to a repo you dont own through fork and pull model
+
+    Fork and pull model:
+        The ability to fork a repository allows anyone to obtain a full replica of a project they don’t own. Once you fork a repository, GitHub copies it for you, and you now have full access to clone/push changes to this repository. Once you push changes to your copy of the repository, GitHub recognizes that your copy is ahead of the upstream original repository. You can now issue a Pull request (via github web UI) to the original repo with the goal to contribute your work back to the original project
+                
