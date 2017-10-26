@@ -58,3 +58,31 @@ Note: at this point, after running git commit, you now have a local repo that in
 Note: There is only a master branch in each repo, but additional branches can be addded and pushed to remote repo as needed
     git clone
         clones a remote repo an stores a local copy of it. you dont need to init a clone, as the original repo was already cloned
+        git clone <source repo name> <cloned repo name> to have cloned repo named differently than source repo
+    git pull
+        pulls updates from remote repo. this command fetches remote repo and merges updates in local repo
+        alternatively you can replace git pull with git fetch and then git merge
+    git diff
+        view the differences of files in your working directory that is compared to the same file in your local repository (last snapshot commit)    
+
+Git workflow:
+    git init > git config --global user.name "USERNAME" > git config --global user.email EMAILADDRESS > git add <filename> > git commit -m "MESSAGE"
+
+Git repository branches:
+    In a larger team-based project, you will want to leverage branches. For example, think about the development of Cisco IOS. As new features are added and bugs are fixed, the relevant code that is required for each could go into their own branch. Once the branching is considered complete, it can be merged into the mainline, or master branch
+    There are three main commands to be aware of when working with branches including git branch, git checkout, and git merge
+
+Git branch commands:
+    git branch = prints the branch you're currently on
+    git checkout -b <newbranchname>  = creates new branch and navigates to it
+    git branch <branchname>  = creates a new branch but won't auto navigate to it
+    git push local <branchname>  = pushes changes from branch to local master branch
+    git merge <branchname>   = merges branch into local master
+    git checkout master = moves you back to master branch
+
+Git branch workflow:
+    git branch
+    git checkout -b branch1
+    git branch
+    git checkout master
+    git merge branch1
