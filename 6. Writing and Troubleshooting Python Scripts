@@ -1,0 +1,37 @@
+Writing scripts:
+    include the shebang on the first line of your script, which used by Linux shell to determine which language to use to execute code in script. also including shebang allows you not to have to do python <scriptname> from Linux terminal to execute a py script
+        shebang:
+           #!/usr/bin/env python
+
+    it is a good practice to define code entry point. if you did not define one, your code would get executed top/down when the Python file is run as a standalone and when it’s being used as Python module
+            #!/usr/bin/env python
+
+            def vlan_exists(vlan_id):
+                vlans_list = [1, 5, 10, 20]
+                return vlan_id in vlans_list
+
+            if __name__ == "__main__": #this is your entry point
+
+                vlans = [5, 8, 10, 15, 20]
+
+                for vlan in vlans:
+                    print vlan, vlan_exists(vlan)
+
+    python scripts ends in .py
+    in your script use # to add a comment. text following # on the same line is ignored by python and understood to be a comment for readers
+
+    to run a py script from a Linux terminal, issue 'python <scriptname>'
+    it is recommended to use the shebang #! /usr/bin/env python as it will use the version of Python that is configured in your Linux environment. It also allows you to easily change the version of Python being used without having to modify each individual script
+
+Executing python scripts:
+    to run a py script from a Linux terminal, issue 'python <scriptname>'
+
+Note: One thing to note is that when scripts are executed, you may often see a .pyc file in the same directory as your original script. Even though Python is an interpreted language, it still compiles byte level code into a .pyc upon execution for speed
+
+Analyzing code:
+    Pay attention to the following when getting started:
+        Accessing data in lists (index) and dictionaries (key)
+        Know your data types. string, number, list, etc
+        Variable scoping. variables are usable so be careful with end value of an object
+        Code blocks and indentation within conditionals and loops
+Note: at any point in your code you code run 'print (type(variablename))' to verify variable type. this could be handy to resolve syntax errors
