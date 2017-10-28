@@ -55,3 +55,4 @@ Persistent network configuration:
     restarting network service:
         must be done after changing an ip, mask, GW or adding additional interfaces
         run sudo service networking restart
+        
