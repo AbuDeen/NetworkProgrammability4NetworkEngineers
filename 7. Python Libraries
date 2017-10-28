@@ -1,0 +1,59 @@
+Python libraries allow for the sharing and re-using of code among various Python programs. It is common to build a Python library for common networking tasks. It is is analogous to functions in Python. Just like functions are used to eliminate duplicate and common code within a single program, Python libraries are used to eliminate duplicate and common code between programs
+
+Libraries, in the form of modules and packages, are used to re-use code between programs
+
+Two types of Python libraries will be covered:
+    Module = a standalone file that contains Python definitions and statements (i.e. code)
+    Package = a collection of modules that provide package hierarchy (e.g. a folder with various modules in it)
+
+Python module:
+    A Python module can contain any Python object including, but not limited to variables, functions, and classes. It is important to understand that even variables can be used and exposed in a Python module. It is often done for constants—constant timer values, default network device values, and so on
+
+    It is worth noting that even if the Python program has an entry point using the if __name__ == “__main__” conditional, objects found in that file can still be imported by other programs (or even other modules). The point is you do not have to choose module vs. program. You may have a basic test program as the entry point of your module, for example
+
+    In fact, a Python module is no different than a script. The difference is how they are used. The script is meant to be executed as a script using python script.py and a module is meant to provide re-usable objects for other Python programs and modules, but again, there can still be an entry point in a module
+
+Importing python modules in programs or other modules:
+    When doing imports, you have the option to use import filename or from filename import specific_object. There are various reasons why you may need to use one over the other, but there is no right or wrong way. If you use the import statement, it is very easy to see that a Python module is being used when examining code because any object being used will be module.object
+
+    If you choose to import specific objects as with from/import, you technically cannot know where the object is coming from—it could be a module or an object in your script. Be aware of namespace overlaps when using from/import
+
+    If you wanted to distribute a given module and allow users the ability to perform imports from any given directory, you need to add the location of the Python module to your PYTHONPATH. The PYTHONPATH is an environment variable that is a list of directories to search for Python files as you do imports. For example, if you wanted to append a new directory to your PYTHONPATH, you can use the following command on the Linux terminal:
+        cisco@cisco:~$ export PYTHONPATH=$PYTHONPATH:/path/to/new/directory
+
+Note: Updating the path using previous example is not persistent, i.e. will not exist after reboot. to make it persistent, change a startup or terminal script such as the .bashrc file
+
+Python package:
+    A Python package is more robust than a single Python module because it is a collection of modules. Using Python packages offers a concrete way to distribute collections of modules that may be needed to accomplish a larger goal. Packages offer hierarchy to modules, so for example, a package may contain a hierarchy of modules to manage different Cisco platforms
+
+    Python Package is a collection of modules of which can be in different directories
+
+    When building out a Package, you are building a directory of Python modules
+
+    Each directory must contain an __init__.py file. For the course, all __init__.py files are empty files. However, as you continue with your Python journey, you will see that it is possible have Python objects in them, too. also each subdirectory must include __init__.py file
+
+    Enter Python shell from where the base directory is (or update the PYTHONPATH). Meaning python must have this package directory in its pythonpath
+
+    E.g:
+        you created a parent directory that is called npdesi, sub-directory that is called features, and placed vlan_check.py in the features directory as it is one of many features you would want to use in a given network. When using Python packages, the directory structure maps back to how imports are done
+
+        It means given the current directory structure, you can import a specific object in a module as shown in the picture: from npdesi.features.vlan_check import vlan_exists, or you can import the full module vlan_check as such: import npdesi.features.vlan_check. However, if you choose to import the full module, to use an object, you need to specify the path of the module: npdesi.features.vlan_check.vlan_exists(5) vs. just calling the function vlan_exists(5) as in the picture when doing a more explicit import
+
+        cisco@cisco:~$ tree npdesi/
+        npdesi/
+        ├── features
+        │   ├── __init__.py
+        │   └── vlan_check.py
+        └── __init__.py
+
+        1 directory, 3 files
+        cisco@cisco:~$
+        >>> from npdesi.features.vlan_check import vlan_exists
+        >>>
+        >>> vlan_exists(10)
+        True
+        >>>
+
+Note: if you are importing functions from modules, and both functions happened to have same name, then use the following example to rename one of them:
+    from 1stmodulename import 1stfunctionname
+    from 2ndmoduleename import 2ndfunctionname as newname
