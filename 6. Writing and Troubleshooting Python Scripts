@@ -35,3 +35,27 @@ Analyzing code:
         Variable scoping. variables are usable so be careful with end value of an object
         Code blocks and indentation within conditionals and loops
 Note: at any point in your code you code run 'print (type(variablename))' to verify variable type. this could be handy to resolve syntax errors
+
+    Variable types
+        Global variables, ones that are available anywhere in the Python script, are often defined at the top of the script
+        There is no scope for variables that are defined under the entry point conditional. Any variable that is defined under the entry point if block is a global variable
+        As variables are passed into functions, they are accessed within the function using a variable that you defined in the function definition. These variables have local scope and are only available in the function
+        When analyzing code, especially code that is fairly nested from an indentation perspective, you need to pay extra attention to indents. Python is a programming language that heavily uses indentation for blocks of code within functions, loops, conditionals, and so on. Do not forget it, as moving the indent of a single if block could change the complete logic of a section of code and in longer scripts it is hard to catch sometimes
+
+Error handling:
+    Even if a Python statement is syntactically correct, it can cause an error when an attempt is made to execute it
+    Errors detected during execution are called exceptions
+    Errors (exceptions) are not handled by programs, but by the developer implementing the program
+    Python uses try/except statements to handle exceptions
+    Errors that are detected during code execution are called exceptions and what you want to do is handle these exceptions, gracefully if possible. It allows you, as a network programmability engineer, to perform a given task or execute some other piece of code when an exception is seen
+    It is up to you what to do when the exception is found—do you want to exit the program immediately, set default values for an object, send an alert, reboot a device, and so on
+        e.g
+                devices = ['r1', 'r2', 'r3']
+                try:
+                    print devices[4]
+                except (IndexError) as err_msg:
+                    print ("Error from python:"), (err_msg)
+                except Exception as err_msg:
+                    print ("Unknown error happened")
+
+    There is no limit to the number of exceptions you can use              
