@@ -1,0 +1,174 @@
+Configuration management tools:
+    Automate the provisioning and deployment of applications and infrastructure
+
+    No knowledge of programming required
+
+    Leverages software development practices for deployments:
+        Version Control
+        Design Patterns
+        Testing
+
+    Common tools: Puppet, Ansible, Chef, and SaltStack
+
+    When there is a defined manual workflow to perform a set of tasks, proper tools should be used to automate it. It does not make sense to spend an hour performing a change. This change could take just a few minutes by using a properly engineered tool. This process is where open source tools such as Puppet, Chef, Ansible, and SaltStack can dramatically reduce the number of manual interactions with the network
+
+    These tools are often referred to as DevOps tools. They are more specifically configuration management and automation tools that happen to be used by those organizations that have implemented some form of DevOps practices
+
+    Puppet:
+        was created in 2005 and has been around the longest compared to Chef and Ansible. Puppet manages systems in a declarative manner meaning you define the state the target system should be in without worrying about how it happens. In reality, that is true for all these tools. Puppet is written in Ruby and refers to its automation instruction set as Puppet manifests. The major point to realize is that Puppet is agent-based. Agent-based means a software agent needs to be installed on all devices you want to manage with Puppet. As an example, servers, routers, switches, firewalls, and the like. It is often not possible to load an agent on many network devices. This procedure limits the number of devices that can be used with Puppet out of the box. By out of the box, you can infer that it is possible to have proxy devices when using Puppet. However, this process means that using Puppet has a greater barrier entry to getting started
+
+    Chef:
+        another popular configuration management tool, follows much of the same model as Puppet. Chef is based in Ruby, uses a declarative model, is agent-based, and refers to it’s automation instruction as recipes (grouped, they are cookbooks)
+
+Note: It’s often difficult to load agents onto machines in order to automate them. When it is technically possible, it often increases the time that it takes to get the solution or tool deployed. hence, i love ansible :)
+
+    Ansible:
+     was created in 2012 as an alternative to Puppet and Chef. Ansible was later acquired by Red Hat in 2015. The two notable differences between Puppet, Chef, and Ansible are that Ansible is written in Python and that it is agentless. Being natively agentless significantly lowers the barrier to entry from an automation perspective. Since Ansible is agentless, it can integrate and automate any device using any API. For example, integrations can use REST APIs, NETCONF, SSH, or even SNMP, if desired. Playbooks are Ansible sets of tasks (instructions) used to automate devices. Each playbook is made up of one or more plays, each of which consists of individual tasks
+
+Ansible overview:
+    Ansible can be considered a complete IT automation framework and not only a configuration management system. In this lesson you will see how it can help to automate, deploy and maintain an entire network infrastructure
+
+    Ansible is an agent-less solution. This feature means you do not need to install any third-party software on infrastructure devices to start automating with Ansible. It also uses YAML (human readable data serialization language rfc 2822 ) as a language to write Playbooks, resulting in human readable scripts
+
+    Ansible itself is open source, and you can get started with Ansible in a matter of minutes. However, Ansible also offers a commercial product that is called Tower that acts as a wrapper for Ansible open source. Tower includes a Web UI, REST API, role based access control, integration to cloud platforms and GitHub, and much more
+
+    Ansible now has native support for several Cisco operating systems including IOS, IOS-XR, and NX-OS. These integrations support both SSH and device-specific APIs, including NX-API and NETCONF
+
+Installing Ansible:
+    The Ansible installation process is relatively straightforward, due to its agent-less nature, since it only needs to be installed on a control host (server) or laptop. This feature means that no installation is required on individual nodes you want to automate
+
+    There are three main requirements for the machine you’re installing Ansible:
+        It must be installed on a Linux operating system
+        Python 2.6 or 2.7 must be installed.
+        Install Ansible dependencies using pip. These dependencies include Paramiko, PyYAML, Jinja2, Httplib2 and six:
+            $ sudo pip install paramiko PyYAML Jinja2 httplib2 six
+    then:
+        $ sudo apt-get install software-properties-common
+        $ sudo apt-add-repository ppa:ansible/ansible
+        $ sudo apt-get update
+        $ sudo apt-get install ansible
+
+    or:
+        $ sudo easy_install pip
+        $ sudo pip install ansible
+
+How ansible works:
+    it connects to network device (IOSXE, IOSXR, NXOS) over ssh, NETCONF, RESTCONF, NX-API or SNMP. runs python modules on the control host (i.e. your laptop or server). returns json object for each task(play) executed
+
+    Ansible is an agent-less solution, which means that from a networking perspective, all Ansible jobs (Python code) run locally on the control host. This design is in contrast to how Ansible works for Linux servers. By default, Ansible uses SSH to log in to the server. It then copies Python code to the server, and the Python code (Ansible tasks) run on each server
+
+Ansible components:
+    There are several important components and new terms to understand when working with Ansible. Using a top down approach, you will go through them starting with an inventory file and finish with variables
+
+    inventory:
+        When working with Configuration Management system like Ansible, the goal may be to automate many devices. These devices are listed inside an Ansible Inventory file. In this file, you can define groups such as nxos, iosxr and iosxe. From here you can list a set of devices belonging to that group using either an IP address or FQDN. In this way, you can decide to run an Ansible playbook for a given host or group of hosts, or a combination of both. Ansible Inventory files support variable definitions that will then become accessible to Ansible tasks. As an example, you can define variables per host and per group directly in the inventory file
+
+                [nxos:vars]
+                username=cisco
+                password=nexus
+                [nxos]
+                nxosv
+
+        By adding these lines, you have created two group-based variables for the group called nxos. This practice can be done for any group including a predefined group that is called all. If all credentials were the same for all devices, you can use the following notation:
+
+                [all:vars]
+                username=cisco
+                password=cisco
+
+        Within the inventory file, you can also specify variables that are only scoped, or usable, for a given device. This syntax would have the format as follows:
+
+                [nxos]
+                nxosv  username=cisco password=nxosv
+
+       sample inventory file:
+                [all:vars]
+                username=cisco
+                password=cisco
+
+                [nxos]
+                nxosv
+
+                [iosxr]
+                xrv
+
+                [iosxe]
+                csr1kv
+
+    playbook:
+        Ansible playbooks contain a set of instructions and tasks that will be automated when the playbook is executed. The playbook, as you can see in the figure, utilizes the YAML structured data format
+
+        It is common to call the “main” playbook of a project site.yml. However, there is no requirement for this procedure as you will see throughout the course. For this course, playbooks are given names that map back to the function being performed:
+                ---
+
+                - name: manage IOSXE devices
+                hosts: iosxe
+
+                tasks:
+                - name: show version
+                ios_command:
+                  commands:
+                    - show version
+                  username: "{{ username }}"
+                  password: "{{ password }}"
+                  host: "{{ inventory_hostname }}"
+
+Note: Remember that all YAML files start with “---”. This includes Ansible Playbooks
+
+    plays:
+    Within a playbook, there are one or more plays. The number of plays depends on the different groups of devices being automated.
+
+    A play begins by using the Ansible name parameter. While name is technically an optional parameter, it’s recommended as it helps provide more context to the Play. The associated value of name should be an arbitrary string that describes the actions that are taken by the Play. This text is displayed in real time as the playbook is executed.
+
+    The play definition also defines what group of nodes the tasks will be executed against. in previous example, all iosxe devices will be automated as part of this playbook. The host or group of devices that are automated must match the names are defined in the inventory file
+
+    Tasks:
+       Within each play, there are groups of tasks. Each task, like the play itself, could be given an arbitrary name that is displayed during task execution. If you do not use name, you can simply put a hyphen “-” next to the module name as the following shows:
+                - ios_command:
+                commands:
+                  - show version
+                username: "{{ username }}"
+                password: "{{ password }}"
+                host: "{{ inventory_hostname }}"
+                      Note: This code is still valid syntax, but you lose context of the task without a one-line description, especially as the playbook runs
+
+    Modules and variables:
+        Each module is a parameterized Python file. You pass in parameters, or key-value pairs, into the module so it knows the action to be performed on the device. In this example, the module that is called ios_command which simply executes commands on IOS devices is used. To perform this task, you pass in the required parameters, which include the following:
+
+        commands: This list provides the commands that will be executed on the IOS device.
+
+            username: Username that is used to log in to the switch
+            password: Password that is used to log in to the switch
+            host:inventory_hostname is an Ansible built-in variable that is equal to the device’s name (or IP) as defined in the inventory file. As an example, if there were 5 devices in the iosxe group with the names r1, r2, r3, r4, and r5, this task would iterate all five. Also,inventory_hostname would first be equal to r1, then r2, then r3, and the like. You can think of it as a for loop.
+            While inventory_hostname is a built-in Ansible variable, username and password are user-defined variables. Recall these variables were in the inventory from a previous figure as follows:
+                  [all:vars]
+                  username=cisco
+                  password=cisco
+
+                  [nxos]
+                  nxosv
+
+                  [iosxr]
+                  xrv
+
+                  [iosxe]
+                  csr1kv
+
+    Module documentation:
+        On the Ansible website and you will find a table like for every module Ansible supports. This table is how you know what parameters are supported for a given module. You can see the supported parameters. Also, if the parameter is required, and if there is a default option, there are specific choices (true or false), and a short description or comment on each parameter
+
+Note:  there are two files that are required to getting started with Ansible: an inventory file and a playbook
+
+Executing ansible playbook:
+    $ ansible-playbook –i hosts site.yml
+
+    You can see that the –i flag is what tells Ansible which inventory file should be used when the playbook is executed. And within the playbook, you specify the host or group of hosts being automated in the play definition. This example automates the iosxe group, which in turn, is just automating one device. As an example, csr1kv.
+
+    As you saw earlier, you can define host variables and group variables in an inventory file such as the following:
+            [all:vars]
+            username=cisco
+            password=cisco
+
+            [iosxe]
+            csr1kv  password=cisco
+
+    While this code works adequately for a few variables, it is not scalable to store variables in the inventory for a production rollout of Ansible. The more efficient and recommended approach is to use directories for each type of variable. These directories must be called host_vars and group_vars. Within each you create YAML files: group_vars is a directory that is dedicated to vars related to groups specified inside the inventory file. Each file must be a yaml file and its name must match the group name inside inventory. host_vars is a directory that is dedicated to vars related to hosts specified inside the inventory
