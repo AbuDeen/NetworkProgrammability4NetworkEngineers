@@ -405,4 +405,172 @@ REST:
                       response = requests.get(url, verify=False, headers=headers, auth=auth)
                       print response.status_code
                       print response.text
-                                                 
+
+Netconf:
+    NETCONF is an IETF network management protocol designed specifically for configuration management. it is a next-generation network management protocol that is designed specifically for transactional-based network management and to improve upon the weaknesses of SNMP. NETCONF makes a distinction between configuration and state data in that you either make an API call to conf MAC entries
+
+    Utilizes multiple configuration data stores (candidate, running, startup):
+        It is one of the most unique attributes of NETCONF, though a device does not have to implement this feature to “support” the protocol. NETCONF utilizes a candidate configuration which is simply a configuration with all proposed changes applied in an uncommitted state. It is the equivalent of entering CLI commands and having them NOT take effect right away. You would then “commit” all the changes as a single transaction. Once committed, you would see them in the running configuration
+
+    NETCONF supports device transaction which means that when you make an API call configuring multiple objects and one fails, the entire transaction fails, and you do not end up with a partial configuration. They are also configurable and platform-dependent. You can still force a change to take so that it fails on error or rolls back on error, and so on
+
+    provides client-side config validation using YANG
+
+    NETCONF offers the ability to use filters that are based on XML documents or expressions, and to selectively request specific components of configuration or operational state data
+
+    NETCONF is session-oriented and stateful (client/server model) — it is worth pointing out as other APIs such as native REST and RESTCONF are stateless.it leverages SSH as transport protocol
+
+    Protocol stack:
+        protocol: SSHv2, SOAP, TLS. SSH is primarily used, but other protocols supported
+
+        messages: <rpc>, <rpc-reply>. NETCONF encodes everything in XML starting with the XML header and message. The first element in the XML document is always the rpc element that is denoted as <rpc>. It is simply telling the server that an RPC is going to be used on the device. These RPCs map directly back to specific operations on the device
+
+        operations (varies per HW and OS):
+            <get> = retrieve run_cfg and device state info
+            <get-config> = retrieve all or part of a confg datastore
+            <edit-config> = load part or all of a config datastore
+            <delete-config> = delete a config datastore
+            <copy-config> = replace entire datastore with another
+            <lock>/<unlock> = lock/unlock config datastore
+            <close-session> = graceful termination of NETCONF session
+            <kill-session> = forced termination of NETCONF session
+
+        content:
+            embedded as XML objects within the operations tag is XML documents specific the data you want to retrieve or configure. It is the content that is an XML representation of YANG models or XML Schema definitions
+
+    Datastores:
+        NETCONF supports multiple data stores including a running, startup, and candidate configuration
+        datastore is a target of operation
+        not all datastores supported on all devices
+        only requirement is running datastore
+        not all device's datastores are writable. may have to copy from a writable one
+        Not all devices support a candidate configuration (this is like a staging area)
+
+Sample NETCONF construct:
+        <copy-config>
+                <source>
+                    <url>file://candidate.cfg</url>
+                </source>
+                <target>
+                    <candidate/>
+                </target>
+        </copy-config>
+
+Netconf workflow:
+      Client connects to NETCONF SSH sub-system
+            ssh -p 830 cisco@csr1kv -s netconf
+      Server responds with Hello that includes NETCONF supported capabilities
+      Client responds with supported capabilities
+      Client issues NETCONF request (rpc/operation/content)
+      Server issues response / performs operation
+
+Note: All messages to/from NETCONF server/client must end with ]]>]]> - this is how the client and server know the other side is done sending the message
+      When the server sends its hello, the client needs to send a hello with its supported capabilities. You can respond back with everything the server supports (assuming the client does too), or just with the bare minimum to do edits and gets. The bare minimum is exactly what is shown in the graphic just supporting NETCONF base
+          NETCONF base response:
+                  <?xml version="1.0"?>
+                  <hello xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+                  <capabilities>
+                  <capability>urn:ietf:params:xml:ns:netconf:base:1.0</capability>
+                  </capabilities>
+                  </hello>]]>]]>
+
+     Once the client sends its capabilities, it can then send NETCONF requests. In this example, the request being sent is performing the NETCONF get operation (denoted by <get>). It is then asking for a given section of configuration using a filter. Based on the devices/servers being used, you often have to be aware of which model is being used (denoted by the xml namespace). This filter is selectively asking for configuration information of GigabitEthernet1
+
+             <?xml version="1.0"?>
+             <rpc message-id="101" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+                 <get>
+                     <filter type="subtree">
+                         <native xmlns="http://cisco.com/ns/yang/ned/ios">
+                          <interface>
+                           <GigabitEthernet>
+                            <name>1</name>
+                           </GigabitEthernet>
+                          </interface>
+                         </native>
+                     </filter>
+                 </get>
+             </rpc>
+             ]]>]]>
+
+    server then responds with following:
+        <?xml version="1.0" encoding="UTF-8"?>
+        <rpc-reply xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="101"><data><native xmlns="http://cisco.com/ns/yang/ned/ios"><interface><GigabitEthernet><name>1</name><negotiation><auto>true</auto></negotiation><ip><address><primary><address>192.168.1.11</address><mask>255.255.255.0</mask></primary></address></ip></GigabitEthernet></interface></native></data></rpc-reply>]]>]]>
+
+NETCONF clients:
+    SSH directly into the netconf subsystem running on the network device. this is primarily used for testing xml constructs
+
+    ncclient—Python NETCONF client
+        Python ncclient is the de facto way of interacting with NETCONF network devices
+                from ncclient import manager
+                with manager.connect(host='csr1kv', port=830, username='cisco', password='cisco',
+                                 hostkey_verify=False, device_params={'name': 'csr'},
+                                 allow_agent=False, look_for_keys=False) as device:
+
+                get_filter = """
+                    <native xmlns="http://cisco.com/ns/yang/ned/ios">
+                     <interface>
+                     </interface>
+                    </native>
+                """
+                nc_get_reply = device.get(('subtree', get_filter))
+                print etree.tostring(nc_get_reply.data_ele, pretty_print=True)
+
+        Note: The device methods map directly back to the NETCONF operations. Throughout the course, you will see device.get, device.edit_config, device.get_config, and so on. Also, note that the filters that are used in Python are the same filters that are used while testing with the NETCONF server directly
+
+        Note: as mentioned earlier, first step in netconf workflow is exchanging capabilities in hello messages. server responds first. once it does, you can copy its response and resend it as yours, but you must delete the line "<session-id>21992</session-id>"
+
+RESTCONF
+    Functional sub-set of NETCONF
+    Exposes YANG models via a REST API (URL)
+    Uses HTTP(S) as transport
+    Uses XML or JSON for encoding
+    Developed to use HTTP tools and programming libraries
+    Uses common HTTP verbs in REST APIs
+
+    netconf/yang + rest = restconf
+
+    Note: RESTCONF is a sub-set of NETCONF so not all operations are supported
+
+    Protocol operations:
+        Remember that since REST principles are being used, it is a stateless connection. As such, everything today using RESTCONF writes directly to the running-configuration—it means that there is no support for a candidate configuration
+
+        GET = <get-config>, <get>. retrieves data from a resource (config/opertional)
+        POST = <edit-config> (operation="create" a configuration datastore)
+        PUT = <edit-config> (operation="create/replace" a config datastore)
+        PATCH = <edit-config> (operation="merge" config data with another datastore)
+        DELETE = <edit-config> (operation="delete" a datastore)
+
+        Note: the use of the PUT operation. The PUT operation has the ability to replace entire sections of configuration that is based on what you send. It is analogous to declarative network configuration. For example, if you PATCH one static route, it will add the route. If you PUT the route, you will end up with just one route configured
+
+        There are more granular operations that can you can perform when doing a change within NETCONF such as specifying if you want to replace an object, update it, or delete it. This picture shows how RESTCONF operations map directly back to their counterparts in NETCONF
+
+        e.g:
+        GET http://csr1kv/restconf/api/config/native
+            Retrieve full running configuration as an object
+        GET http://csr1kv/restconf/api/config/native/interface
+            Retrieve interface specific attributes
+        GET http://csr1kv/restconf/api/config/native/interface/GigabitEthenet/1
+           Retrieve interface specific attributes for GigabitEthernet1
+
+RESTCONF tools and utilities:
+    Same tools that are used for native REST interfaces are used for RESTCONF
+    python requests module, but any http library should also work
+    postman
+    firfox rest client
+Note: There are no API docs so YANG tools will be used to generate URL and request body
+
+gRPC:
+    gRPC is a new and modern API originally developed and open-sourced by Google. Cisco has already implemented gRPC on IOS-XR devices and can be tested using XR 6.1+
+
+    Like RESTCONF, it is a functional sub-set of NETCONF and uses HTTP/2. Major differences here include improved security and support for bi-directional streaming
+
+    high performance. simple client development. runs over https
+
+    protocol operations:
+            GetConfig	= Retrieve configuration data
+            MergeConfig = Merge configuration data
+            DeleteConfig = Delete configuration data
+            ReplaceConfig = Replace configuration data
+            GetOper = Retrieve operational data
+            CliConfig	= Merge configuration data in CLI format
+            ShowCmdTextOutput	= Retrieves CLI show-command output data
