@@ -357,4 +357,71 @@ Ansible nexus features modules:
         Existing — Key value pairs of existing feature configuration that maps back to the parameters that the module supports
         End_state — Key value pairs of feature configuration after module execution
         State: State as sent in from the playbook
-        Updates: Command list sent to the device    
+        Updates: Command list sent to the device
+
+Example ansible nexus playbook:
+  let's play with two ansible modules: nxos_interface and nxos_ip_interface
+      nxos_interface:
+      - name: configure ethernet2/1 interface
+         nxos_interface:
+           interface: ethernet2/1
+           admin_state: up
+           mode: layer3
+           description: "Configured with Ansible"
+           state: present
+           username: "{{ username }}"
+           password: "{{ password }}"
+           host: "{{ inventory_hostname }}"
+
+        nxos_ip_interface:
+        - name: configure ethernet2/1 ip address
+           nxos_ip_interface:
+             interface: ethernet2/1
+             addr: "10.0.0.1"
+             mask: 30
+             state: present
+             username: "{{ username }}"
+             password: "{{ password }}"
+             host: "{{ inventory_hostname }}"
+
+        - name: ENSURE VLAN EXISTS
+          nxos_vlan:
+            vlan_id=113
+            name=native
+            vlan_state=active
+            host={{ inventory_hostname }}
+            username={{ username }}
+            password={{ password }}
+
+        - name: ENSURE INTERFACE IS L2
+          nxos_interface:
+            interface=eth2/1
+            mode=layer2
+            host={{ inventory_hostname }}
+            username={{ username }}
+            password={{ password }}
+
+        - name: ENSURE INTERFACE IS CONFIGURED FOR V113
+                  nxos_switchport:
+                    interface=eth2/1
+                    mode=access
+                    access_vlan=113
+                    host={{ inventory_hostname }}
+                    username={{ username }}
+                    password={{ password }}
+
+        then play this playbook:
+                $ ansible-playbook -i hosts test_nxos.yml
+
+                PLAY [configure nxos device] ***************************************************
+
+                TASK [CREATE VLAN] *************************************************************
+                changed: [nxosv]
+
+                TASK [ENSURE INTERFACE IS L2] **************************************************
+                changed: [nxosv]
+
+                TASK [CONFIGURE TRUNK] *********************************************************
+                changed: [nxosv]
+
+Note: If you execute the tasks that were in the previous figure, you would see the output that is shown on the left. All tasks will show as changed. If you execute the same playbook again, you would see ok instead of changed showing that the change happens only once. This feature is the concept of idempotency that was previously covered. No matter how many more times the playbook is run, it will always show as «ok» as the change will only occur once
