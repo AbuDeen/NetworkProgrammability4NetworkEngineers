@@ -332,3 +332,29 @@ sample playbook:
                 commands:
                   - snmp-server community PUBLIC_SECURITY ro
                 provider: "{{ provider }}"
+
+Ansible nexus features modules:
+    There is a distinction between base modules and feature modules. Base modules provide for a way to manage devices using CLI commands, but in an automated fashion. On the other hand, feature modules eliminate the need to know how to configure a particular feature. Feature models eliminate the need to know the precise commands that are required to configure a feature. Instead, you simply declare the state that the resource should be in, and then the module ensure that the resource is in that state. These modules are also idempotent (unless otherwise stated). This feature means that the change would only occur just once no matter how many times a given task or module is executed
+        e.g:
+                nxos_bgp
+                nxos_bgp_af
+                nxos_bgp_neighbor
+                nxos_bgp_neighbor_af
+                nxos_evpn_global
+                nxos_evpn_vni
+                nxos_facts
+                nxos_feature
+
+    Supports Nexus Application Programming Interface (NX-API) and CLI
+
+    Ansible Core now supports an increasing number of feature modules for Cisco NX-OS. This list continues to grow and Ansible has more feature for Nexus than for any other vendor or platform due to open source contributions
+
+    it’s worth noting that many of these modules support a parameter that is called state, which usually has options of being present or absent. This characteristic means the resource (or configuration) should be present on the device or it should be absent on the device (remove the configuration)
+
+    Nearly all Cisco NXOS feature modules return six key-value pairs in the JSON object being returned:
+        Changed: If true, the module pushed changes to the device, else it is false.
+        Proposed — Key value pairs of parameters that are passed into module.
+        Existing — Key value pairs of existing feature configuration that maps back to the parameters that the module supports
+        End_state — Key value pairs of feature configuration after module execution
+        State: State as sent in from the playbook
+        Updates: Command list sent to the device    
