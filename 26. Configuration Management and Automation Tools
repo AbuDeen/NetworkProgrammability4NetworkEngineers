@@ -172,3 +172,163 @@ Executing ansible playbook:
             csr1kv  password=cisco
 
     While this code works adequately for a few variables, it is not scalable to store variables in the inventory for a production rollout of Ansible. The more efficient and recommended approach is to use directories for each type of variable. These directories must be called host_vars and group_vars. Within each you create YAML files: group_vars is a directory that is dedicated to vars related to groups specified inside the inventory file. Each file must be a yaml file and its name must match the group name inside inventory. host_vars is a directory that is dedicated to vars related to hosts specified inside the inventory
+
+Ansible base modules:
+    Ansible supports a series of modules for NXOS, IOS, and IOS-XR platforms. Note: the term «base» modules is insignificant and used because Ansible provides these modules across a wide number of device platforms and vendors. The three core «base» modules are *_command, *_config, and *_template
+
+    Here is the formal definition for each as described by Ansible:
+        *_command - Sends arbitrary commands to an ios node and returns the results read from the device. The ios_command module includes an argument that will cause the module to wait for a specific condition before timing out. Note: While this module can push configuration or show commands, it is primarily used for show commands.
+
+        *_config - Cisco IOS configurations use a simple block indent file syntax for segmenting configuration into sections. This module provides an implementation for working with IOS configuration sections in a deterministic way
+
+Note: The *_config module compares the commands being pushed against the running configuration pushing only the commands needed to get the device to its desired state
+
+    ios_command module:
+        The ios_command is used to send arbitrary commands to devices running Cisco IOS. This figure introduces the concept of executing a playbook in verbose mode. If you run the playbook with the “-v” flag, you can see the JSON object that is returned back. Every module returns a JSON object and includes specific data from the operation that is executed. This action will occur if the task passed, failed, and if a change was made on the device
+
+        sample playbook:
+            - ios_command:
+                   commands:
+                        - show version
+                   username: "{{ username }}"
+                   password: "{{ password }}"
+                   host: "{{ inventory_hostname }}"
+
+
+            Playbook:
+            test-ios_command.yml
+
+            $ ansible-playbook -i hosts test-ios_command.yml -v
+            PLAY [testing ios_command] *****************************************************
+
+            TASK [show version] ************************************************************
+            ok: [csr1kv] => {"changed": false, "stdout": ["Cisco IOS XE Software, Version BLD_V163_THROTTLE_LATEST_20160624_090103_V16_3_0_241\nCisco IOS Software [Denali], CSR1000V Software (X86_64_LINUX_IOSD-UNIVERSALK9-M), Experimental Version 16.3(20160624:092502) [v163_throttle-BLD-BLD_V163_THROTTLE_LATEST_20160624_090103
+            ........
+            ........
+            PLAY RECAP *********************************************************************
+            csr1kv                     : ok=1    changed=0    unreachable=0    failed=0
+
+            executing same playbook without verbose:
+            $ ansible-playbook -i hosts test-ios_command.yml
+            PLAY [testing ios_command] ****************************************************************
+            TASK [show version] ****************************************************************
+            ok: [csr1kv]
+
+            PLAY RECAP *********************************************************************
+            csr1kv                     : ok=1    changed=0    unreachable=0    failed=0
+
+            Note: running playbook in verbose mode, outputs the return object in json. also Verbose mode proves to be extremely valuable for troubleshooting and collecting data such as from show commands
+
+    ios_config:
+    This module is used to manage Cisco IOS configuration section. The same operation can be achieved on IOS-XR and NXOS devices using iosxr_config or nxos_config.
+
+    This module supports many optional parameters. A few of them as shown in the figure include parents, before, and match.
+
+        parents: The ordered set of parents that uniquely identify the section that the commands should be checked against. If the parents argument is omitted, the commands are checked against the set of top level or global commands.
+
+        before: The ordered set of commands to push to the command stack if a change needs to be made. This practice allows the playbook designer the opportunity to perform configuration commands. This action happens before pushing any changes without affecting how the set of commands are matched against the system.
+
+        match: Instructs the module on the way to perform the matching of the set of commands against the current device config. If match is set to “line”, commands are matched line by line. If match is set to “strict”, command lines are matched regarding position. If match is set to “exact”, command lines must be an equal match. If the match is set to “none”, the module will not attempt to compare the source configuration with the running configuration on the remote device
+
+Note: take a good look at ansible documentation to understand each modules and its parameters
+
+        Note: The *_config module also supports a parameter that is called “src” that point to a template or a config file
+
+        You have seen variables in playbooks that are denoted with curly braces such as {{ username }}. This syntax is actually using Jinja2 variables within a playbook. Jinja2 is a templating language that is supported in Python (remember that Ansible is written in Python). One of the common tasks that are done with Ansible is to template device configurations using Jinja2 templates and push them using ios_config.
+
+            For example, you may define variables such as these:
+                snmp_ro: public123
+                snmp_rw: private123
+        And you can create a template that is called config.j2 that looks like the following:
+                snmp-server community {{ snmp_ro }} ro
+                snmp-server community {{ snmp_rw }} ro
+        In this task, there is a parameter that is called source and it references config.j2. When executed, it would automatically insert variables where appropriate, create the following two commands, and send them to the device:
+
+                snmp-server community public123 ro
+                snmp-server community private123 ro
+
+Performing compliance checks using ansible:
+    Even though the ios_command, and nxos_command have been investigated. The Ansible directive that is called register and a module that is called assert will be discussed. It works the same way, but you will want to show how to do compliance checks and validations using Ansible.
+
+    In this example, you want to be sure that the running OS version is the one expected. In order to do so, you will use the register directive with the assert module
+            - name: Ensure proper OS version is present on device
+              hosts: nxos
+              connection: local
+
+              tasks:
+              - name: show version
+                nxos_command:
+                  commands:
+                    - show version
+                  username: "{{ username }}"
+                  password: "{{ password }}"
+                  host: "{{ inventory_hostname }}"
+                register: output
+
+              - debug: var=output
+
+          $ ansible-playbook -i hosts test-nxos_command.yml
+
+          PLAY [Print output] *******************
+
+          TASK [debug] *******************************************************************
+          ok: [nxosv] => {
+              "output": {
+                  "changed": false,
+                  "response": [
+                      "\nCisco Nexus Operating System (NX-OS) Software\nTAC support: http://www.cisco.com/tac\nDocuments: http://www.cisco.com/en/US/products/ps9372/tsd_products_support_series_home.html\nCopyrOMITTEDOUTPUT
+                  ]
+              }
+          }
+
+          The register directive automatically creates (registers) a new variable and assigns it the value of the JSON object returned
+
+          The assert module is used for validation and you can now easily assert various conditions or configurations are true on a given device
+
+      In the playbook, you retrieve show version output and store it into a variable kthat is called “output” with register it in the first task. Then, in the second task, you ensure that the proper OS version is present on the device
+
+      In general, before you do assertions you need to know what is possible to assert. You need to know what is in the object you registered. One way to do that is to use the debug module that allows you to print any variable to the terminal as the playbook is executed. Once you see and understand the object being saved and registered, you can intelligently use assertions. The object may be a raw string like shown in the figure, or it maybe a nested object, which makes it much easier to work with
+
+      Another option is to use the verbose flag instead of debug, if you simply want to view the data module is returning. The one benefit of using debug is that it is pretty printed when used
+
+Note: you can run ansible-doc <ansiblemodulename> from a terminal to get module documentation. ansible-doc debug. ansible-doc assert
+
+sample playbook:
+      ---
+
+        - name: PERFORM COMPLIANCE CHECKS
+          hosts: ios
+          connection: local
+          gather_facts: no
+
+          vars:
+            provider:
+              username: cisco
+              password: cisco
+              host: "{{ inventory_hostname }}"
+
+          tasks:
+
+
+            - name: GATHER SHOW VERSION
+              ios_command:
+                commands:
+                  - show version
+                provider: "{{ provider }}"
+              register: output
+
+            - name: DUMP OUTPUT TO TERMINAL
+              debug:
+                var: output
+
+            - name: VERIFY OS AND CONFIG REGISTER
+              assert:
+                that:
+                  - "'Version 16.3' in output['stdout'][0]"
+                  - "'Configuration register is 0x2102' in output['stdout'][0]"
+
+            - name: ENSURE SNMP RO EXISTS
+              ios_config:
+                commands:
+                  - snmp-server community PUBLIC_SECURITY ro
+                provider: "{{ provider }}"
