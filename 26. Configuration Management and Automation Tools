@@ -425,3 +425,282 @@ Example ansible nexus playbook:
                 changed: [nxosv]
 
 Note: If you execute the tasks that were in the previous figure, you would see the output that is shown on the left. All tasks will show as changed. If you execute the same playbook again, you would see ok instead of changed showing that the change happens only once. This feature is the concept of idempotency that was previously covered. No matter how many more times the playbook is run, it will always show as «ok» as the change will only occur once
+
+Puppet:
+    Puppet models desired system states, enforces those states, and reports any variances so you can track what Puppet is doing. To model system states, Puppet uses a declarative resource-based language. This feature means that a user describes a desired final state (“this package must be installed” or “this service must be running”) rather than describing a series of steps to execute
+
+    You use the declarative, readable Puppet Domain Specific Language to define the desired end-state of your environment, and Puppet converges the infrastructure to the desired state. If you have a predefined configuration that every new switch should receive, the puppet intent-based automation solution can automate these repetitive configuration management tasks quickly
+
+    Puppet is an agent-based system. It is designed in a client/server manner with an agent software running on the remote hosts. Agents check configuration every 30 minutes by default and ensure that a match exists between expected configuration and their own
+
+    similar to ansible, puppet is available in a free open source version and a commercial version called puppet enterprise
+
+    puppet supports several agents for network devices, such as nxos and ios-xr
+
+    Puppet has several different components that make up their architecture:
+        They have a central control server, called the Puppet Master, that provides Enterprise features like reporting, security, a UI, and the like
+
+        They have a software agent that runs on the target node they will be managing. They have software agents for Linux hosts, windows machines, and various network devices. The software agents initiate the connection back to the Master and if the agent does not have the correct configuration. The Master ensures it is reapplied to the device
+
+        Puppet Forge is a cloud-based repository, that is community-based, and is a place for people to share their “Puppet programs” and manifests
+
+        puppet open source:
+            Open Source is a collection of smaller projects and binaries. There is the main puppet agent binary, mcollective, and facter. There is the main puppet agent binary, mcollective, and facter
+                mcollective = provides orchestration-like capabilities
+                facter = Separate binary that resides on the target node that gathers facts about the devices
+
+        puppet enterprise stack:
+            puppet agent = agent that sits on nodes such as servers, F5s, nx and ios-xr
+            puppet master = reporting, single pane of glass, manifests. logging, etc.
+            puppet enterprise console = user interface, live management and admin/security
+            puppet forge = free, cloud repository for sharing modules. manifests
+
+      how puppet works?
+          Step 1: Define using the Puppet DSL (domain specific language) what you want the desired state of the infrastructure to be. This procedure is done with Puppet manifests. Define what you want the desired state of the systems and network devices to be in. As an example, which VLANs should exist, which interfaces should be configured, and the like
+
+          Step 2: Simulate the change – see what would have happened if a push would have been made. Puppet allows you to run your manifest in “dry run” mode, thus you can see if you did run it, which changes would happen? here as you continue to run in dry mode, you could simply detect unauthorized changes taking place on a device
+
+          Step 3: Enforce the change. You know what changes are going to be made after the simulation. Do you want to enforce them? If so, now you can execute. If not, you can continue to run in dry mode and catch the people making changes in the environment that should not be making
+
+          Step 4: Report back to the Puppet Master. The dashboard within the console will track the status of the tasks being executed
+
+    puppet dataflow:
+         Remember that Puppet has an agent on the target device. The agent controls when “things happen.” First, assuming facter is installed on the target device. It runs on the device and collects facts about the device. Facts from a high level were covered earlier, but these facts are characteristics about the device: OS, hostname, number of interfaces, IP addresses, HW, and the like. The facts are then sent back to the Puppet Master.
+
+         The Puppet Master analyzes these facts and compares them against its known database. Puppet then builds a catalog that describes how the device should be configured. This catalog means, based on the facts reported back to the master. The master figures out who the device is and then what role or configuration should be assigned. Then, the device-specific catalog is created and pushed back to the device.
+
+         The device receives the catalog and because Puppet is declarative, the policy is compared against its current state. Only if the policies are different is a change a made. If everything is already in the desired state, no change is made.
+
+         After the agent runs, a report is sent back to the master
+
+Note: puppet implements a resource abstraction layer (RAL). you declare end state through a policy and puppet translate that into what a device understands. it doesn't matter if that device is nx or ios - how sweet abstraction is!!
+    There are resource types that are objects. This type is the high level of “what” you want to declare for your policy. Related resources are grouped into platform independent Resource Types
+    Resource providers are the “enablers” or “how” for the Resource types. Providers are required to give the resource types the abstraction between OSs when needed
+
+example puppet manifest:
+        #Configuring Interface eth1/1
+             cisco_interface { "Ethernet1/1" :
+                shutdown            => true,
+                switchport_mode     => disabled,
+                description         => 'managed by puppet',
+                ipv4_address        => '1.1.43.43',
+                ipv4_netmask_length => 24,
+              }
+
+        #Configuring interface
+             cisco_interface { "Vlan22" :
+                svi_autostate => false,
+                svi_management => true,
+             }
+
+puppet components:
+    The main components of Puppet are the server, the node (being automated), the agent (installed on the node), modules, and classes. The server, node, and agent components of the Puppet architecture will be investigated
+
+    puppet server:
+        source of truth
+        holds manifests and resources
+        central server or point of configuration and control for your datacenter, both switching and compute
+
+        installing puppet:
+            First, you need to enable the Puppet package repositories. This task depends on your environment, so you should pick the one related to the OS you’re running. Assuming the local server runs Ubuntu 16.04 OS, you can use the following commands to install Puppet:
+            wget https://apt.puppetlabs.com/puppetlabs-release-pc1-xenial.deb
+            sudo dpkg –i puppetlabs-release-pc1-xenial.deb
+            sudo apt-get update
+            sudo apt-get install puppetserver
+
+Note: For more information, visit: https://docs.puppet.com/puppetserver/2.4/install_from_packages.htm
+
+    puppet manifests:
+        Manifests are files containing Puppet code. They are standard text files that are saved with the .pp extension.
+
+        Puppet master always uses the main manifest set by the current node’s environment. The default main manifest name is site.pp but the user can change it according to its environment.
+
+        “The main manifest can be a single file or a directory of .pp files. By default, the main manifest for a given environment is <ENVIRONMENTS DIRECTORY>/<ENVIRONMENT>/manifests. (For example:/etc/puppetlabs/code/environments/production/manifests.) You can configure the manifest per-environment, and you can also configure the default for all environments. An environment can use the manifest setting in environment.conf to choose its main manifest.
+
+        If the main manifest is a directory, Puppet parses every .pp file in the directory in alphabetical order and evaluate the combined manifest.” (https://docs.puppet.com/puppet/latest/reference/dirs_manifest.html)
+
+        an example of a manifest to ensure that an interface is in layer3 mode
+                # Configuring the interface to routed interface
+                cisco_interface { "Ethernet1/1" :
+                    switchport_mode => disabled,
+                  }
+
+        If you’re the root user, the default location for your manifests is /etc/puppetlabs/code/environments/production/manifests/. Instead, if you’re not the root, your default location will be /home/user/.puppetlabs/etc/code/environments/production/manifests/
+
+        You can clearly understand what is going on without knowing how it is configured on each type of server.
+
+        Puppet DSL is said to be “executable documentation” because it is descriptive and transparent (although with more complex manifests they may not be as transparent).
+
+        Also, a Puppet module is just a collection of files and directories that can contain Puppet manifests. As well as other objects such as files and templates, all packaged and organized in a way that Puppet can understand and use. When you download a module from PuppetForge, you are downloading a top-level directory with several subdirectories that contain the components that are needed to specify the desired state. When you want to use that module to manage your nodes, you classify each node by assigning to it a class within the module.
+
+        A class is a set of common configurations — resources, variables, and more advanced attributes. Anytime you assign this class to a machine, it will apply those configurations within the class.
+
+Note: For a complete list of supported Puppet types, please reference the following: https://forge.puppet.com/puppetlabs/ciscopuppet
+
+puppet resources:
+    Puppet ships with several predefined resources, which are the fundamental components of your infrastructure. Puppet revolves around the management of these resources that are used to describe some aspects of a system. A resource declaration is composed by a “type”, a “name” and some “attributes”. As an example, the “cisco_interface” is the resource type, and “Ethernet1/2” is the managed resource name. These attributes are “description”, “shutdown” and “access_vlan”. If you are running Puppet on a user different from root, you can save the manifest into the /home/user1/.puppetlabs/etc/code/environments/production/manifests/ path.
+
+    Also, you can also modify the default manifest for this environment and change it to interface.pp.
+
+    Same thing is true for the “cisco_snmp_community ” type, where you are ensuring that Puppet snmp group exist
+
+    /home/user1/.puppetlabs/etc/code/environments/production/manifests/interface.pp
+
+    # A resource declaration:
+    cisco_interface { "Ethernet1/2" :
+        description => 'default',
+        shutdown    => 'default',
+        access_vlan => 'default',
+    }
+    /home/user2/.puppetlabs/etc/code/environments/production/manifests/snmp.pp
+
+    # Configure snmp community
+    cisco_snmp_community { “puppet":
+        ensure => present,
+        group  => "network-operator",
+    }
+
+puppet node and agent:
+    Node =  Any physical, virtual, or cloud machine or switch that is configured maintained by a puppet client, whether by server or switch
+    Agent: Runs locally on every node managed by the puppet master server. Performs all configuration tasks that are specified by the manifest and converges the node into desired state
+
+puppet agent installation:
+    Agent installation process depends on few things. First, you need to make sure that your OS version supports puppet agent. If so, you can decide the environment in which you want to install it. For n3k and n9k, you can choose between the Guestshell and the Bash-shell. For n5k, n6k and n7k you are forced to use the Open Agent Container (OAC)
+
+Note: for most nx platforms, nxos 7.0 and later required for puppet agent
+Note: see the following for more info on installing agent      https://github.com/cisco/cisco-network-puppet-module/blob/develop/docs/README-agent-install.md
+
+puppet installation with OAC:
+    This system is a 32-bit CentOS-based container that is created specifically for running Puppet Agent software. After you have downloaded the proper OVA (container) version that is based on your device OS, you can copy it to your switch. You can use scp to do this task. Now you can install the OVA environment with the virtual-service install name oac package bootflash:oac.1.0.0.ova command and verify the installation status with the show virtual-service list command. Once the install has finished, the OAc may be activated (nxosv(config)# virtual-service oac). Use 'show virtual-service list' for progress
+
+    Now you’re ready to access the OAC environment for the first time. The command 'virtual-service connect name oac console' will achieve this goal. You will have to insert default credential root/oac but then you will have to immediately change the access password
+
+    configuring OAC environment:
+    The open agent container is an independent CentOS container that does not inherit settings from NX-OS; thus it requires additional network configuration. This configuration will be applied inside the OAC container.
+
+    If you’re device is using the mgmt0 interface (and management VRF), you need to ensure that the container is also using management VRF. You enter the management VRF with chvrf management command. Now you can set up the hostname and DNS configuration. The default servers are two OpenDNS Public DNS
+
+            [root@localhost ~]# chvrf management
+            [root@localhost ~]#
+            [root@localhost ~]# hostname nxosv
+            [root@localhost ~]#
+            [root@localhost ~]# echo 'nxosv' > /etc/hostname
+            [root@localhost ~]#
+            [root@localhost ~]# cat /etc/resolv.conf
+            nameserver 208.67.222.222
+            nameserver 208.67.220.220
+            [root@localhost ~]#
+
+puppet installation with guest shell:
+    The guestshell container environment is enabled by default on most supported Nexus platforms. However, the default disk and memory resources that are allocated to the guestshell container might be too small to support Puppet agent requirements. These resource limits can be increased with the NX-OS CLI guestshell resize commands. To enter the guestshell, use the command guestshell
+
+    Guestshell environment:
+        A secure Linux container environment running CentOS
+        Enabled by default
+        Resize disk and memory (if needed) to minimum recommended values:
+            Disk: 400 MB
+            Memory: 300 MB
+        Enter the guestshell with the guestshell command
+
+    The guestshell is an independent CentOS container that does not inherit settings from NX-OS; thus it requires additional network configuration. First, become root with the sudo su – command. Then enter the management namespace if your device uses the management interface for connectivity with chvrf management. Now you can set up the hostname and DNS configuration
+
+            [guestshell@guestshell ~]$ sudo su -
+            [root@guestshell ~]#
+            [root@guestshell ~]# chvrf management
+            [root@guestshell ~]#
+            [root@guestshell ~]# hostname nxosv
+            [root@guestshell ~]#
+            [root@guestshell ~]# echo 'nxosv' > /etc/hostname
+            [root@guestshell ~]#
+            [root@guestshell ~]# cat /etc/resolv.conf
+            nameserver 208.67.222.222
+            nameserver 208.67.220.220
+            [root@guestshell ~]#
+
+puppet installation with bash shell:
+    This process is the native Wind River Linux environment underlying NX-OS. It is disabled by default on NX-OS. So, the first step would be to enable it. You can do that with the feature bash-shell command. After which you can access the bash-shell with the run bash command
+
+    Now you have to set up the environment. First, become root with the sudo su – command. Then enter the management namespace if your device uses the management interface for connectivity with ip netns exec management bash. Now you can set up DNS configuration
+
+        bash-4.2$ sudo su –
+        root@nxosv#
+        root@nxosv#ip netns exec management bash
+        root@nxosv#
+        root@nxosv#cat /etc/resolv.conf
+        nameserver 208.67.222.222
+        nameserver 208.67.220.220
+
+puppet agent setup:
+        Now that you have activated the proper environment in which to run the puppet agent, you are ready to finally install it. The procedure is common to all environments. First, you need to import the Puppet GPG keys. These keys are used for security reasons and to be sure about RPM authenticity. Then, you need to install the Puppet RPM. The proper RPM varies based on the environment, so you should choose the one matching your agent environment.
+
+        After that, you can install the appropriate RPM and install puppet. An RPM, or Red Hat Package Manager, is one of the oldest utilities that are used to manage software packages on Linux systems, including their installation and upgrade. It enables the user to install precompiled software, which will automatically build, resulting in a very easy and fast way to manage software. As you have just seen, these procedures can also be cryptographically verified with GPG
+
+        Then, you update PATH. This task is needed to be able to execute puppet-related commands using the “puppet” keyword.
+
+        The ciscopuppet module has dependencies on the cisco_node_utils gem, so you need to install it too
+
+Note: A gem is a ruby program or library. It can be easily managed with RubyGem, a package management tool for Ruby programs. The gem command is used to build, upload, download, and install these packages in a similar way to yum or apt-get
+
+       agent setup steps:
+         import the Puppet GPG keys
+            rpm --import http://yum.puppetlabs.com/RPM-GPG-KEY-puppetlabs
+            rpm --import http://yum.puppetlabs.com/RPM-GPG-KEY-reductive
+
+         install RPM
+         The recommended Puppet Red Hat Package Manager (RPM) varies by environment:
+                bash-shell
+                  http://yum.puppetlabs.com/puppetlabs-release-pc1-cisco-wrlinux-5.noarch.rpm
+                Guestshell
+                  http://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm
+                open agent container
+                  http://yum.puppetlabs.com/puppetlabs-release-pc1-el-6.noarch.rpm
+
+        using the appropriate RPM for your environment
+            yum install $PUPPET_RPM
+            yum install puppet
+        update PATH var
+          export PATH=/opt/puppetlabs/puppet/bin:/opt/puppetlabs/puppet/lib:$PATH
+
+        install the cisco_node_utils gem
+          /opt/puppetlabs/puppet/bin/gem install cisco_node_utils
+
+Note: “The CiscoNodeUtils gem provides utilities for management of Cisco network nodes. It is designed to work with Puppet and Chef and other open source management tools.” (https://github.com/cisco/cisco-network-node-utils)
+
+Establishing server-agent connection:
+    The first step is to run the puppet master. You can do this using puppet master --verbose --no-daemonize. This command will cause the master to print debug information and not send the process into the background.
+
+    The second step is to be sure that the Agent can reach the server with proper IP/names mapping. Once the Agent will run, by default it will look for the server using the “puppet” name. This action is configured by changing the puppet.conf file.
+
+    Puppet uses SSL to create secure channel over the network between Server and Agent. When the Agent starts and attempts to connect to the server, it sends its certificate so that the server can authorize the communication by signing it. The puppet agent –t command is used to start the agent immediately while the puppet cert sign --all is used to sign all incoming certificates on the server. The server can also sign single certificate by using “puppet cert sign certificate”. Certificate can be obtained from the “puppet cert list -a”
+
+Puppet examples:
+    as an example, the cisco_interface type can be used to manage interface configuration. Here, you are shutting down the interface with the shutdown attribute. This action makes it a layer3 port, disabling the swithport_mode. Then, you will add a description with the description attribute and configuring ipv4 address and mask with the ipv4_address and ipv4_netmask_length attributes.
+
+   this task can be stored in a manifest that is called site.pp, or anything else according to your environment. Remember that site.pp is the default main manifest and that it should be stored into etc/puppetlabs/code/environments/production/manifests by default
+
+        #Configuring Interface eth1/1
+        cisco_interface { "Ethernet1/1" :
+            shutdown            => true,
+            switchport_mode     => disabled,
+            description         => 'managed by puppet',
+            ipv4_address        => '1.1.43.43',
+            ipv4_netmask_length => 24,
+          }
+
+    another example: configuring ospf:
+        Three types are needed to add OSPF support on an interface: cisco_ospf, cisco_ospf_vrf, and cisco_interface_ospf. First, to configure cisco_ospf to enable ospf on the device.Then put the ospf router under a VRF, and add the corresponding OSPF configuration. If the configuration is global, use 'default' as the VRF name.Finally, apply the ospf configuration to the interface
+                cisco_ospf {"Sample":
+                   ensure => present,
+                }
+
+                cisco_ospf_vrf {"Sample default":
+                   ensure => 'present',
+                   default_metric => '5',
+                   auto_cost => '46000',
+                }
+
+                cisco_interface_ospf {"Ethernet1/2 Sample":
+                   ensure => present,
+                   area => 200,
+                   cost => "200",
+                }
