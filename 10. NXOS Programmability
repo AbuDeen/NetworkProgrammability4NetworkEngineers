@@ -393,5 +393,233 @@ Note: NETCONF Nexus-only exec-command sends raw CLI commands vs. XML strings.Lev
             commands = ['config t', 'interface Ethernet2/6', 'description Configured by Python ncclient']
             nc_config_reply = device.exec_command(commands)
 
+NX-API rest:
+    NX-API REST is supported on Nexus 9000 and 3000 series switches starting with 7.0(3)I2(2). NX-API REST is the next-generation API for the Nexus platform in that it supports sending and receiving objects in the API payload. If you recall, NX-API CLI supports sending commands to the device while receiving structured data back (JSON, XML). With NX-API REST, it is completely based on structured data meaning that JSON/XML payloads are sent to the device in the http request and received from the device in the response
 
-  
+    The implementation of NX-API REST is similar to the model used by Cisco’s ACI. All information about the switch, including configuration and state data, is stored in a hierarchical tree that is called the Management Information Tree, and every object in the tree can be directly access via the REST API
+
+    Every object in the Management Information Tree is referred to as a Managed Object.Each Managed Object is also of a certain type of class. For example, Ethernet interfaces are of type l1PhysIf and SVI interfaces are of type sviIf, but all interfaces are of type intf. These types are called classes
+
+    It is important to understand the relationship, between DNs and classes because you can make an API to the Nexus switch using NX-API REST using a DN-based query or Class-based query. Example: query a single interface (DN) or query all interfaces of a given type (Class)
+
+    The NX-API-REST API operates in forgiving mode, which means that missing attributes are substituted with default values (if applicable) that are maintained in the internal data management engine (aka DME). The DME validates and rejects incorrect attributes. The API is also atomic. If multiple MOs are being configured, and any of the MOs cannot be configured, the API stops its operation. It returns the configuration to its prior state, stops the API operation that listens for API requests, and returns an error code
+
+    URLs and URIs map directly to distinguished names identifying objects on the tree, and any data on the MIT can be described as a self-contained structured text tree document encoded in XML or JavaScript Object Notation (JSON)
+
+NX-API REST SUPPORTED HTTP VERBS:
+    Each API implementation that supports REST supports a specific amount of HTTP verbs and methods. The NX-API REST API supports three methods: POST, GET, and DELETE
+
+        GET: Used to retrieve and read information from the Management Information Tree
+
+        DELETE: Used to delete and remove an object from the Management Information Tree
+
+        POST: Used to create or update an object within the Management Information Tree. In the NX-API REST API, POSTs to the API are idempotent meaning that the change is made just once no matter how many times the API is called
+
+NX-API REST API authorization, content-type, and accept-headers:
+    There is a dedicated API to handle authorization when using the API. The device returns a token that is then sent in subsequent API calls that perform CRUD operations
+
+    Regarding Content-Type and Accept, they are ignored by the Nexus switches. It is the case because the payload format must be specified as a file extension. All API calls using NX-API REST will have either “.json” or “.xml” appended to them letting the switch know what the content-type is and how to response, for example, with which encoding format
+
+    e.g:
+        http://n9k/api/mo/sys/intf/phys-[eth2/5].json
+        http://n9k/api/mo/sys/bgp/inst.json
+
+Constructing nx-api rest calls:
+    Objects can be accessed at their well-defined address, their REST URLs, using standard HTTP commands for retrieval and manipulation of Cisco NX-API-REST object data
+
+    The URL format that is used can be represented as follows: /api/[mo|class]/[dn|class][:method].[xml|json]?{options}
+
+       The various building blocks of the preceding URL are as follows:
+            System: System identifier; an IP address or DNS-resolvable host name
+            mo | class: Indication of whether it is a managed object or tree or class-level query
+            class: Managed-object class (as specified in the information model) of the objects queried; the class name is represented as
+            dn: Distinguished name (unique hierarchical name of the object in the MIT tree) of the object queried
+            method: Optional indication of the method being invoked on the object; applies only to HTTP POST requests
+            xml | json: Encoding format
+            options: Query options, filters, and arguments
+
+NX-API rest call workflow:
+    The typical sequence of configuration is:
+        1- Authenticate: Call https://<IP of Nexus switch>/api/mo/aaaLogin.xml with a payload that in XML is. This call returns a cookie value that the browser uses for the next calls
+        2- Send HTTP POST to apply the configuration: The URL of the POST message varies depending on the object, the following is an example: https://<IP of Nexus switch>//api/mo/sys/bgp/inst.json, where api indicates that this call is to the API, mo indicates that this call is to modify a managed object, bgp/inst refers to the BGP instance, and .json indicates that the payload is in JSON format. If the end of URL is .xml, that would mean that the payload is in XML format
+        3- Verify the HTTP status code: One should want a response of 200 OK. With the capability to address and access an individual object or a class of objects with the REST URL, one can achieve complete programmatic access to the entire object tree and to the entire system
+
+Note: With the capability to address and access an individual object or a class of objects with the REST URL, one can achieve complete programmatic access to the entire object tree and to the entire system
+
+Examples nx-rest api call:
+    authentication call - uses POST:
+        URL: https://n9k2/api/aaaLogin.json
+
+        Body:
+
+        {
+          "aaaUser":{
+            "attributes":{
+              "name": "cisco",
+              "pwd": "cisco"
+            }
+          }
+        }
+
+        URL: https://n9k2/api/aaaLogin.xml
+        Body:
+        <aaaUser name="admin" pwd="C1sco12345"/>
+
+    The URL to log in to the device is: https://device/api/aaaLogin.json. It must be an HTTP POST. As you can see, the file extension still needs to be provided to specify the type of payload being used. Based on the data encoding type that is chosen, you use either one of these two bodies to log in and authenticate to the device
+
+    Here is an example of a Managed Object, or DN-based query. You know that based on the URI being used: /api/mo/sys/intf/phys-[eth2/5].json. You can also see that it is an HTTP GET, so you are only retrieving information with this API call
+
+    Remember that /api/mo signifies it is a DN-based query, thus, a specific object is being queried and in this example, that object is physical interface Ethernet2/5. You can also see in the response two keys that are used quote often. The first is “totalCount” and this count is “1” and of course, it makes sense as there is only ONE Ethernet2/5 interface. All data in NX-API responses is returned in the “imdata” key. “imdata” is a list of dictionaries (JSON objects) and in this case, it is a list of one
+
+    In this example, you can see that Postman is being used to make an HTTP POST request. This request is performing an admin down (shutdown) of Interface Ethernet2/5
+
+    You can see /api/mo/sys/intf.json is the URI being used and as such. It means it is a DN-based query. But in this example, you can see that the parent object “intf” is specified in the URL and the individual object being modified is in the JSON payload
+
+    You could have also used the full URI to specify Eth2/5 as well like: /api/mo/sys/intf/phys-[eth2/5].json and kept the same JSON body
+
+    In this example, Postman is being used to make an HTTP GET request. This request is in contrast to previous examples as it is a class-based query. The URI being used here is: /api/class/l1PhysIf.json. Notice how it starts with /api/class instead of /api/mo
+
+    All Ethernet interfaces are of type l1PhysIf which means you can query the class to obtain information for all interfaces (objects) within the class
+
+    You should now have an understanding of class-based versus DN-based queries and API calls
+
+Cisco nxtoolkit:
+    Cisco has published a Python library that is called Nxtoolkit that is a set of Python modules that simplify getting started to use Python to program against the NX-API REST API. The library can be used to perform common operations such as collect information from Nexus devices but also to make configuration changes. Using Nxtoolkt eliminates the need to worry about the underlying URLs being used as they are abstracted away from the developer and built-into the library itself
+
+    While Nxtoolkit is a Python library that simplifies working with the NX-API REST API on Nexus switches, it also comes with a collection of pre-built scripts that perform common operational tasks
+
+    These pre-built scripts can be used immediately to eliminate the need to write any code – all you need to do is enter in specific device information such as credentials and IP address information and execute the script
+
+    The Nxtoolkit is open source and available on GitHub at https://github.com/datacenter/nxtoolkit
+
+Visore:
+    Visore is a tool for NX-API REST that is built-into each switch. It is a managed object browser. It allows you to browse and navigate the Management Information Tree in real time and inspect the state of each and all objects. Visore is a great tool to understand and learn about the relationship between all objects of the system
+
+    You can access Visore by navigating to http(s)://<nexus>/visore.html and authenticating using standard device credentials
+
+    visore helps constructing the URL/URI
+
+    Remember that there are two types of queries you can make when using the NX-API REST API. You can make a class-based query and a DN-based query
+
+    This figure shows a class-based query being made for the class rmonEtherStats. Because it is a class, it is going to return interface stats for all associated interfaces. Notice how 63 objects are returned. Only the first one is shown in the figure, but you can see the first one displayed also includes an attribute for its DN
+
+    You can also see that Visore is helpful in the sense that it has two links in the center that is left of the figure that say “Display URI of last query” and “Display last response.” By clicking “Display URI of last query,” you get to see the URI, which for this API call was:
+        /api/node/class/rmonEtherStats.xml?query-target-filter=and(eq(rmonEtherStats.collisions,"0"))
+
+    Once you have the URI, you are able to make native REST calls using Postman or equivalent. As you can see, the API also supports filters and using Visore simplifies learning how to use them by seeing the URIs generated automatically. This API call queried the device for all objects of class type rmonEtherStats but then added a filter to only return those that interface that had 0 collisions
+
+    The previous figure was used to show how to make a class-based query for a specific interface. This example builds on it by using the DN provided in the API response from the class-based. This query, because it is based on DN, is specifically querying a single given object.
+
+    If wanted to get the results in JSON, you could use the URI generated and add “.json” to it like so:
+        /api/node/mo/sys/intf/phys-[eth1/3]/dbgEtherStats.json
+
+    Comparing and contrasting class-based and DN-based queries one more time, you can see you can query all switched virtual interfaces on the system with the class-based query:
+       /api/node/class/sviIf.xml
+
+    Notice how there were 10 objects that were returned with this API call. It means that there was 10 SVIs on the switch when this API was executed on the switch
+
+    You can also query a single SVI such as ‘interface vlan200’ with the following DN-based query:
+        /api/node/mo/sys/intf/svi-[vlan200].xml
+
+Note: /node is optional making API calls back into the system
+
+Python on nexus switches:
+    Nexus switches have a Python execution engine exposed that allow you to access the interpreter or run scripts directly on the switch.
+        nxosv# python
+        Copyright (c) 2001-2012 Python Software Foundation; All Rights Reserved
+        nxosv# >>>
+
+    The Nexus series switches have various APIs to enhance off box scripting capabilities, but there is also the ability to run Python scripts directly on each switch as well. There is a native Python execution engine that allows you to use the dynamic Python interpreter, was covered in the first module, directly from the switch command line. Also, you can also run standalone scripts from the command line.
+
+    To enter the interactive Python interpreter, simply type in the word python and hit enter
+
+Built-in python module:
+    The Python environment on each Nexus switch comes with a pre-installed Python module called cisco. You can use standard helper functions on this module to see a list of it’s available methods and attributes and how to use them
+
+    The help function can be used on the module itself as shown in the graphic, but the dir function can be used to see a summarized view of the available methods and attributes
+    nxosv# >>> import cisco
+    nxosv# >>> help(cisco)
+    ## omitted for brevity ##
+    FUNCTIONS
+        cli(...)
+            execute a cli command
+
+        clid(...)
+            execute a cli command, return name/value pairs
+
+        clip(...)
+            execute a cli command, dont return it, just display it
+
+        set_vrf(...)
+            specify the vrf name for socket operations
+    nxosv# >>> dir(cisco)
+
+    You can also use the help menu as you would normally to get help on a specific method:
+        nxosv# >>> help(cisco.set_vrf)
+    Help on built-in function set_vrf in module cisco:
+        set_vrf(...)
+           specify the vrf name for socket operations
+
+    There are three core APIs, or methods, that are available to use within the cisco Python module. They are cli(), clip(), clid():
+       They can be imported using a wildcard import:
+           from cisco import *
+       Or individually (and in good Python practice):
+           from cisco import cli
+           from cisco import clip
+           from cisco import clid
+
+    While they all execute commands natively on the local Nexus switch, the difference is in what each command returns and/or prints. The cli() method returns raw output just as if you were to connect to the device via SSH and execute commands while clip() does not return anything, but rather prints the output, which is just good for visualization
+
+    On the other hand, clid() issues commands but returns a dictionary of key-value pairs instead of raw text as with cli(). It is the preferred method assuming the command that you want to execute has support for structured data. You can usually test for this while on the CLI using the command “show command | json”
+
+    e.g:
+            nxosv# >>> from cisco import cli
+            nxosv# >>>
+            nxosv# >>> cli('config t ; interface Eth2/8 ; shutdown ')
+            ''
+            nxosv(config-if)# >>>
+            nxosv(config-if)# >>> cli('no shutdown ')
+            ''
+            nxosv(config-if)# >>>
+            nxosv(config-if)# >>> print cli('where')
+              conf; interface Ethernet2/8      ntc@nxosv%default
+
+    You can also make configuration changes using the CLI methods. You can send a semi-colon de-limited string of commands in a single API call to the switch. It is quite common to build a list of commands and then use the join() method of string, to build the required string to send to the device with the cli() method as follows:
+            nxosv# >>> commands = ['config t', 'interface Eth2/8', 'shutdown']
+            nxosv# >>>
+            nxosv# >>> cmd_string = ' ; '.join(commands)
+            nxosv# >>>
+            nxosv# >>> print cmd_string
+            config t ; interface Eth2/8 ; shutdown
+            nxosv# >>>
+            nxosv# >>> cli(cmd_string)
+
+Note: Pay special attention to various hardware platforms and if the commands are persistent through API calls
+
+Executing script on nx switches:
+    manually:
+       nxosv# source check_transit_interfaces.py
+
+    using scheduler feature:
+        feature scheduler
+        scheduler job name enforcer
+          source enforce_config.py
+        scheduler schedule name enforcer
+          job name enforcer
+          time start now repeat 00:00:10
+
+    using EEM:
+        event manager applet trigger_this
+        event cli match "show version"
+        action 1 cli command "source script.py"
+        action 2 syslog priority critical msg “CLOCK COMMAND EXECUTED:
+        action 3 event-default
+
+    As you have seen, Nexus has an onboard Python interpreter. Also, you can run pre-built Python scripts directly on the box. Based on the size of the environment, there may be a reason to perform large computations on the box vs. running them off box using API calls to 100s or 1000s of switches in a given environment
+
+    There is a directory that is called scripts within bootflash: on each Nexus switch. It is where scripts are meant to be saved. Once they are saved there, you can execute them directly on the switch using the source command
+
+    You can gain even more flexibility by leveraging existing features such as scheduler and EEM as well. These features can be used to repeatedly execute scripts on a given schedule- possibly to examine interface counters or CRC errors, or you can even use EEM to dynamically execute a script when a given CLI command is executed as shown in the figure
+
+Note: to view a script on nx cli:
+    show file bootflash:scripts/ip_port_mapping.py
