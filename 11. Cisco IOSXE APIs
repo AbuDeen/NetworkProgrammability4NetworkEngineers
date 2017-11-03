@@ -1,0 +1,287 @@
+Cisco IOS XE API offers two programmatic, model-driven interfaces using both the NETCONF and RESTCONF that are built off YANG models
+
+Cisco IOSXE apis overview:
+    IOS XE supports two extremely modern and robust programmatic interfaces, both of which are driven by the same YANG models. IOS XE has implemented industry standard NETCONF and RESTCONF interfaces. In fact, IOS-XE is one of the industry’s first device, excluding SDN controllers, supporting open RESTCONF interfaces purely modeled on YANG data models
+
+    Offering both interfaces simplifies how the API is used for developers that are accustomed to using XML along with the Python ncclient and to web developers using REST interfaces with HTTP applications. Because both are driven from YANG models, the data that is exchanged in both RESTCONF and NETCONF is the same from a data encoding perspective. Note that RESTCONF supports JSON and XML encoding while NETCONF only supports XML encoding
+
+    Accept NETCONF and RESTCONF requests and communicates directly to configuration datastore(s)
+
+    The internal architecture is quite robust and can be summarized as follows:
+        Both RESTCONF and NETCONF are exposed to developers
+        Both RESTCONF and NETCONF are YANG-based
+        Both RESTCONF and NETCONF integrate into the same underlying config database, for example, datastore
+        RESTCONF supports XML/JSON encoding
+        NETCONF supports XML encoding
+        The internal API translates them back to CLI and SNMP commands, which then writes to the config database
+        NETCONF rides over SSH/TLS, while RESTCONF over https
+
+IOSXE restconf api:
+    RESTCONF exposes a web-based interface in a consistent fashion in that it is just like any other REST API. The only differences are that you need to use specific Headers and that the URL and data is driven by YANG models
+
+    Two of the common headers are Content-Type and Accept when working with RESTful APIs. They are often set to application/json or application/xml. While there are a few variations supported for IOS XE, the common ones are:
+        application/vnd.yang.data+json
+        application/vnd.yang.data+xml
+
+Note: Also note that the REST interface that is exposed by IOS XE is the same interface that is exposed by the Cisco NSO
+
+IOSXE restconf requirements:
+    enable restconf
+    Ensure a user of privilege 15 exists on the device—it can be a local user or AAA user
+    Enable http(s) servers
+    Optionally, enable operational data for RESTCONF/NETCONF with the operational data manager commands
+
+    example config for above requirements:
+        restconf
+        !
+        username <username> privilege 15 password <password>
+        !
+        ip http server
+        ip http secure-server
+
+Restconf supported methods:
+    The IOS-XE RESTCONF API supports various HTTP verbs (get, put, post, patch and delete) – request methods. Many of the verbs are quite common for REST APIs, but you should always test specific API calls before using them in production. One example, is to point out a few times that the usage of PATCH vs. PUT and how it applies to applying configuration to an IOS XE
+
+    You can use PATCH to do a configuration “merge”. It will merge the configuration with the current resource. For example, you can PATCH one route to the static routing table
+
+    Be careful, if you PUT one route in the static routing table, you will end up with ONE route in the routing table, which is the route you just sent
+
+Note: The type of methods is unique per URI. Not all methods are supported for every API call. PATCH is the recommended method as you get started with the API
+
+    As expected with REST APIs, the RESTCONF interface on IOS XE return standard 200 and 400 series response codes
+
+    Any 20x number is to be expected a successful request. It indicates that there was no observed issue. The exception to that rule can be a 202, which indicates the request is complete, but the processing is not. As such a failure in the process, would not immediately be known
+
+Remember: using yang + xml/json allows for validation of config data passed through api call. api call will fail if config passed is incorrect, for example sending space in switch hostname
+
+Restconf api call examples:
+    getting running config (great starting point to explore data structure)
+        GET http://csr1kv/restconf/api/config/native
+        GET http://csr1kv/restconf/api/config/native?deep
+            ?deep query is used to get much more details such as leaf objects including ip address info
+
+    Constructing a URL is no different for RESTCONF as it is for common REST APIs. You need to understand the methods, entry points, resources, queries, and so on that are supported. For RESTCONF, they are determined by YANG models:
+
+        method: The HTTP method identifying the REST operation that is requested by the client, to act upon the target resource that is specified in the request URI
+        resource: The path expression identifying the resource that is being accessed by the operation. If this field is not present, then the target resource is the API itself, represented by the media type "application/vnd.yang.api"
+        query: The set of parameters that are associated with the REST message. They have the familiar form of "name=value" pairs. There is a specific set of parameters that are defined
+        fragment: This field is not used by the REST protocol
+
+    Retrieve Interface Configurations
+        GET http://csr1kv/restconf/api/config/native/interface
+        GET http://csr1kv/restconf/api/config/native/interface?deep
+        GET http://csr1kv/restconf/api/config/native/interface/GigabitEthernet/1
+        GET http://csr1kv/restconf/api/config/native/interface/GigabitEthernet/1/ip
+       GET http://csr1kv/restconf/api/config/native/interface/GigabitEthernet/1/ip/address
+
+Note: do you see how that tree-structured yang model allows to dig deeper in an api call
+
+    Adding an Interface
+       POST http://csr1kv/restconf/api/config/native/interface/
+       PATCH http://csr1kv/restconf/api/config/native/interface/Loopback
+       PUT http://csr1kv/restconf/api/config/native/interface/Loopback/100
+
+       api body:
+
+          {
+          "ned:Loopback": {
+          "name": 100,
+          "ip": {
+            "address": {
+              "primary": {
+                "address": "100.2.2.2",
+                "mask": "255.255.255.0"
+              }
+            }
+          }
+          }
+          }
+    In addition to retrieving configuration, you can also make configuration changes. You can use various request methods to make a given change. For each, you should always test because one method may act different than another.
+
+    Updating an Interface (same Body as previously used)
+       POST http://csr1kv/restconf/api/config/native/interface/ Response: 409; Error: Object Already Exists; No change in config
+
+       PATCH http://csr1kv/restconf/api/config/native/interface/Loopback Response 204; No change in config
+
+       PUT http://csr1kv/restconf/api/config/native/interface/Loopback/100 Response 204;
+
+Note: Also be aware that each method may respond with a different a response code
+
+    Update Static Routes
+
+        csr1kv# show run | inc route  (existing)
+        ip route 0.0.0.0 0.0.0.0 192.168.1.1
+
+        PATCH http://csr1kv/restconf/api/config/native/ip/route
+
+                {
+                  "ned:route": {
+                    "ip-route-interface-forwarding-list": [
+                      {
+                        "prefix": "172.16.0.0",
+                        "mask": "255.255.0.0",
+                        "fwd-list": [
+                          {
+                            "fwd": "192.168.1.1"
+                          }
+                        ]
+                ### output continues on next slide ###
+                ### continuation from previous slide ###
+                      },
+                      {
+                        "prefix": "10.0.100.0",
+                        "mask": "255.255.255.0",
+                        "fwd-list": [
+                          {
+                            "fwd": "192.168.1.1"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+
+        Remove a Route
+            DELETE http://csr1kv/restconf/api/config/native/ip/route/ip-route-interface-forwarding-list/10.0.100.0,255.255.255.0
+                No Body Required
+
+            RESTCONF also supports the DELETE HTTP request method. In this figure, you can see how to delete a route.
+
+Performing restconf calls using python requests library:
+        #!/usr/bin/env python
+
+        import requests
+        import json
+        from requests.auth import HTTPBasicAuth
+        requests.packages.urllib3.disable_warnings()
+
+        if __name__ == "__main__":
+
+            auth = HTTPBasicAuth('cisco', 'cisco')
+            headers = { 'Accept': 'application/vnd.yang.data+json'}
+            url = 'http://csr1kv/restconf/api/config/native/ip/route?deep'
+            response = requests.get(url, verify=False, headers=headers, auth=auth)
+            print json.dumps(json.loads(response.text), indent=4)
+
+IOSXE NETCONF api
+    There has been a NETCONF interface on the IOS XE platform for quite some time, but prior versions of software supported sending only CLI commands over NETCONF. In most recent versions of NETCONF, the configuration is modeled using YANG, and as such, the NETCONF interface is now extremely robust in that native XML objects can be sent and received from the device.
+
+    NETCONF on IOS-XE supports NETCONF 1.1 and along with that common operations such as “<get-config>, <get>, <copy-config>, <commit>, <validate>, <lock>, <unlock>, <edit-config>, <delete-config>”
+
+    NETCONF* on the IOS XE platform is based off XML representation of YANG models. netconf supports operations including rollback on error, stop on error, continue on error, default operations, merge (default), replace, create, delete, remove. May vary per hardware platform
+
+netconf IOSXE requirements:
+    In order to get started with NETCONF on IOS XE, a few steps are required:
+        Enable NETCONF-YANG
+        Ensure a user of privilege 15 exists on the device
+        Optionally, enable operational data for RESTCONF/NETCONF with the operational data manager commands.
+
+    Once these commands are configured, NETCONF is enabled
+
+Note: Sub-commands may be needed to enable operational data for specific features/data
+
+    client's requirements:
+        In order to get started with NETCONF on IOS XE devices, you must prepare the client and the server. The client must support NETCONF over SSH as IOS XE supports NETCONF as an SSH subsystem. On a Linux system, the default SSH configuration works just fine.
+
+        You can directly access the NETCONF subsystem by using an SSH client and using the following statement:
+            $ ssh –p 830 cisco@csr1kv
+
+        You may need to include “-s netconf” in certain implementations of SSH such as ssh –p 830 cisco@csr1kv –s netconf . Once you connect to the device, you can start testing different XML documents that adhere to the YANG models that IOS XE supports
+
+IOSXE netconf utilities and tools:
+    There are two unique commands and tools to be aware of when using NETCONF on IOS XE devices
+
+    NETCONF Server/Agent: The SSH service acting as the XML/NETCONF server/agent. You can test XML objects and filters directly through an SSH client without having to write code. It is similar to sandbox environments such as the NX-API Sandbox or API Console on the ASA that allow you to test the objects that are required for the request and shows you object in the response. It is very helpful for getting familiar with the device’s NETCONF interface.
+
+    ncclient: An open source Python NETCONF client. It aims to offer an intuitive API that sensibly maps the XML-encoded nature of NETCONF to Python objects and constructs.
+
+    using the on-box netconf service:
+        When you connect to the device, authenticate, and access the IOS-XE NETCONF SSH subsystem, the device (NETCONF server) responds with its NETCONF capabilities. These capabilities could be based on open vendor-neutral or platform/vendor specific capabilities
+
+        NETCONF over SSH is initiated by the exchange of a hello message between the client and the server. After the initial exchange, the client sends XML requests to which the server responds with XML responses. The client and server terminate requests and responses with the character sequence ]]>]]>. Because this character sequence is not valid in XML, the client and the server can interpret when the messages end which keeps communication synchronized
+
+        You (NETCONF client) must respond with supported capabilities
+
+        After the NETCONF server sends their capabilities, you (the XML client) must send a hello message with the capabilities that the client supports
+
+        Here is simply a copy and paste of a hello object. Everything in bold in this figure was the response by a user/client responding to the server’s hello message
+
+Note: You must end all XML documents with ]]>]]> to support synchronization in NETCONF over SSH
+
+        After connecting directly to the NETCONF server, you can test XML documents for collecting data and configuration changes. It can ensure that they are properly formatted and adhere to the YANG models supported by the IOS XE device before you start using them in network applications
+
+        e.g:
+           request:
+                <?xml version="1.0"?>
+                <nc:rpc message-id="101" xmlns:nc="urn:ietf:params:xml:ns:netconf:base:1.0">
+                    <nc:get>
+                        <nc:filter type="subtree">
+                            <native xmlns="http://cisco.com/ns/yang/ned/ios">
+                             <interface>
+                              <GigabitEthernet>
+                               <name>1</name>
+                              </GigabitEthernet>
+                             </interface>
+                            </native>
+                        </nc:filter>
+                    </nc:get>
+                </nc:rpc>
+                ]]>]]>
+
+          response:
+                <?xml version="1.0" encoding="UTF-8"?>
+                <rpc-reply message-id="101" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:nc="urn:ietf:params:xml:ns:netconf:base:1.0">
+                    <data>
+                        <native xmlns="http://cisco.com/ns/yang/ned/ios">
+                            <interface>
+                                <GigabitEthernet>
+                                    <name>1</name>
+                                    <negotiation>
+                                        <auto>true</auto>
+                                    </negotiation>
+
+        Based on what you have done with RESTCONF, you should be able to clearly see what information is going to be collected. Also, note that these tags are wrapped under the rpc, get, and filter-type tags as well. It tells the server that this request is an XML RPC using the NETCONF get operation and the content includes a filter, which is driven by the YANG model
+
+    using python ncclient:
+        The ncclient is the common NETCONF client for Python. It only takes a few Python statements to establish a connection to the device, send XML documents, and receive a response
+
+        example script:
+                #!/usr/bin/env python
+
+                from lxml import etree
+                from ncclient import manager
+
+                if __name__ == "__main__":
+
+                    with manager.connect(host='csr1kv', port=830, username='cisco', password='cisco',hostkey_verify=False, device_params={'name': 'csr'},
+                                         allow_agent=False, look_for_keys=False) as device:
+
+                    ### output continues on next slide ###
+                ### continuation from previous slide ###
+
+                        get_filter = """
+                            <native xmlns="http://cisco.com/ns/yang/ned/ios">
+                             <interface>
+                              <GigabitEthernet>
+                               <name>1</name>
+                              </GigabitEthernet>
+                             </interface>
+                            </native>
+                        """
+
+                        nc_get_reply = device.get(('subtree', get_filter))
+                        print etree.tostring(nc_get_reply.data_ele, pretty_print=True)
+
+        There are many defaults being used here, but the important parameters to update as you connect to devices are host, port, username, password, and device_params
+
+        You can also see that you need to still need to define a filter the same way that you saw with NETCONF on the IOS-XE platform
+
+        In the next statement, the actual XML document is sent to the device. If you wanted to retrieve the full configuration, you would not need a filter. However, because you want just the hostname, you also include the “subtree” keyword when using the get operation. IOS XE also supports “xpath” filtering as opposed to “subtree” as well
+
+        Finally, use a python method that is called “tostring” to pretty print the XML response
+
+Note: Keep in mind the following as you continue to work with NETCONF on different hardware and OS platforms:
+    All successful NETCONF changes respond with <ok/>
+    The response from a NETCONF request using ncclient is a ncclient.operations.rpc.RPCReply
+
+    This example simply prints the reply. You can use attributes of this object to print the XML object or XML string representation of the response                             
