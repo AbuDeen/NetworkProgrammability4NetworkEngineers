@@ -1,0 +1,188 @@
+Recently, significant shifts in network configuration practices have led to controller networking. This shift is focused on a dynamic, self-adapting, and policy-driven paradigm in order to reduce complexity and solve scaling challenges. The origins can be traced back to the development of the OpenFlow protocol in 2005, though Cisco was already using a centralized management interface for wireless access points and unified communications devices
+
+Since 2005, the WAN Automation Engine has been a powerful, flexible software-defined networking (SDN) platform. It abstracts and simplifies your WAN environment while making it fully open and programmable. You can deploy innovative services such as Coordinated Maintenance, bandwidth calendaring, and premium network-routing solutions. Cisco has developed and released into production various controllers and domain managers to abstract hardware and software for the network operator
+
+It’s no longer viable to manage devices box by box – there needs to be a unification of the systems that are deployed, ultimately treating a collection of devices as a system, also creating better abstractions without the need to know the commands that are needed to configure a certain feature on any given platform
+
+Traditional network operations suffer from three core problems including complexity, scaling, and the impact humans have on managing the network. Let’s take a look at each:
+
+    Complexity:
+    The distributed nature of network infrastructure devices, network administrators must manage and monitor each device as a separate autonomous entity. As well, because of the lack of a central place to define policy, complexity quickly starts to rise as multiple features and protocols must be layered on top of each other to provide the desired network behavior. This layered protocol approach quickly results in a network that is not only difficult to troubleshoot, but also extremely fragile to further change. More over and the biggest issue at hand today is that many networks are unique as snow flakes and there should not non-standard configurations that exist “just because”
+
+    Scaling Challenges:
+    As the size of the network grows, the amount of effort that is required to implement any change, new feature, or solution scales linearly with the size of the network. Imagine the effort that is required to deploy a new ACL or QoS policy across 5000 switches
+
+    Human Error
+    The undisputed number one cause of network outages is human error. Whether due to poor typing skills, simple errors, tired network administrators attempting changes at 2am, or just plain lack of attention to detail; it is clear that human beings manually making changes are the number one cause of downtime or degradation in networks
+
+    People are just not good at performing repetitive tasks with a high degree of consistency. As the number of devices increases, so the number of changes increases required to manage the network. As the scale increase, it becomes more likely that any changes that are implemented by humans are going to have a higher chance of misconfigurations, whether that be simple typos, applying a new change to the wrong device, or even completely missing a device altogether
+
+    And the number of changes humans are making is increasing as there are more demands from the business to deploy more applications at a faster rate than ever before
+
+    One solution to simplify how networks are built and managed are controller-based networking solutions and architectures. They address many of the issues managing networks manually using the following methods:
+
+       Single Point of Administration:
+           Similar to what’s available how all IP phones in a Cisco Unified Communications Manager deployment are configured through the CUCM server interface, the controller provides a single point of administration for network administrators to be able to manage and monitor multiple switches and routers as if they were single entity. This single point of administration addresses the scalability problem in that administrators are no longer required to touch each individual device to be able to make changes to the environment. This concept is also not new as controllers have also been around for over ten years and used for campus wireless networking.
+
+      Centralized Policy:
+          Similar to what the behavior is between Cisco Wireless LAN Controllers and its managed Access Points, the controller provides a single point to define policy, reducing overall complexity through the consistent application of policy to all devices that fall within the controllers management domain. It is this policy management that is also needed on the physical network. Think about how easy it is to enable AAA for wireless clients vs. AAA for wired client (need AAA changes on a controller vs. on every switch!).
+
+       Automated Change:
+           By pushing responsibility for changes to the centralized controller, human error can be avoided through various methods including:
+
+               Validation of the change on the centralized controller
+               Consistent application of the change to all devices
+               Ability to disable changes to the device outside of the controller itself
+
+Origin of controller-based networking:
+    In 2005, various academics started pushing research in controller-based networking attempting to imagine what a new “clean-slate” approach to networking which decoupled the forwarding plane from the control plane, ultimately resulting in the OpenFlow protocol and various open-source controllers such as NOX
+
+    The academic community was asking questions around what networking would look like if you redesigned them using the knowledge that you had learned from the past. Many new concepts and terms entered the everyday vocabulary of the network engineer in these days such as control plane, abstractions, SDN, forwarding plane, and many others. Various approaches were proposed, but one specific approach gained momentum during this time; Controller-based networking with OpenFlow at its core
+
+Controller based networking timeline:
+    Although the Origins of Controller Based networking can be traced back to a series of academic papers which focused on reimagining networking in an attempt to address the perceived problems with modern networking, the concept of centralized controllers is not new
+
+    Cisco has been investing and innovating in the controller-based network domain for years in various versions of controller-based networking including:
+
+        Release of Cisco Unified Communications Manager (1999)
+        Release of Airespace (2005) controller-based wireless solution
+        Release of Cisco Nexus (2008)
+        Release of Cisco UCS (2008)
+        Release of Cisco ACI (Insieme) (2013)
+        Release of Cisco NSO (Tail-f) (2015)
+
+     There are several more controllers and domain manager that Cisco offers including, but not limited to, UCS Manager, UCS Director, APIC-EM, and WAN Automation Engine
+
+The original openflow controller:
+    In 2008, Stanford University released the NOX controller to open-source (https://github.com/noxrepo). The NOX controller provided a C++ and Python for applications to consume and would translate into OpenFlow 1.0 on the southbound side. NOX provided researchers and enthusiast an opportunity to experiment with controller-based networking in a limited fashion as there were no commercially available hardware platforms which supported OpenFlow under generally available code at the time. Virtual devices, such as Open vSwitch and Mininet sprang up to fill the need of the infrastructure components
+
+    Although NOX was one of the first, many other controllers were released in this period, including POX, FloodLight, Beacon, and various others which have fallen into disuse over time
+
+Modern controllers:
+    Since the introduction of the original OpenFlow based platforms, controller architectures have evolved to include a southbound abstraction layer. This abstraction layer allows policies to be translated from an application through the API layer, using whichever southbound protocol is supported and available on the controller and infrastructure device. This new approach allows for the inclusion of both new and Southbound Controller Protocols/APIs including (but not limited to):
+
+        OpenFlow Standard: Standard communications interface defined between the control and forwarding layers of an SDN architecture. OpenFlow allows direct access to and manipulation of the forwarding plane of network devices such as switches and routers, both physical and virtual (hypervisor-based)—(https://www.opennetworking.org/sdn-resources/openflow)
+
+        SNMP: The Simple Network Management Protocol is used to communicate management information between the network management stations and the agents in the network elements (https://tools.ietf.org/html/rfc1157)
+
+        NETCONF:  Developed and standardized by the IETF. It was developed in the NETCONF working group and published in December 2006 as RFC 4741 (https://tools.ietf.org/html/rfc4741)
+
+        REST: Is the software architectural style of the World Wide Web. REST APIs allow controllers to monitor and manage infrastructure through the HTTP/HTTPS protocols, with the same HTTP verbs (GET, POST, PUT, DELETE, and so on) that web browsers use to retrieve web pages
+
+        RESTCONF: REST-based IETF draft protocol running over HTTP for accessing data that is defined in YANG using datastores that are defined in NETCONF (https://tools.ietf.org/html/draft-ietf-netconf-restconf-15)
+
+        BGP: the same protocol that is currently used on network devices can also be used on controllers as it provides a more streamlined way to learn about network topologies and distribute routing policy in a more centralized manner
+
+Controller-based networking use cases:
+    Centralized Policy:
+        Controller-based networking's nature makes centralized policy easy to achieve. Network-wide policy can be easily defined and distributed consistently to the switches connected to the controller. Instead of attempting to manage access-control-lists across many individual devices, a flow rule can be defined on the central controller and pushed down to all the forwarding devices as part of the normal operations
+
+    Traffic Engineering
+        As opposed to traditional networking, controller-based networking makes it easy to define special treatment for specific network traffic. Instead of adding complexity to the network through policy based routing or MPLS-TE, a flow rule can be defined on the controller and pushed down to all the forwarding devices as part of normal operations. The largest benefit here is that there is a device, a controller, that has a unified view of the network in one location
+
+    Improved Telemetry
+        In traditional network, information is gathered from various points in the network through methods such as Netflow and SNMP. This information is collected on a central server and then stitched back together to understand the overall traffic patterns and the health of the network and the devices within it. Because the controller has a centralized view of the network devices and the traffic flowing through them, a more accurate view can be pulled out of the controller
+
+    Improved Automation
+        In traditional networking, automation is achievable, but is complicated by having to address every individual network switch individually, as well keeping track of the authentication data for the same. Controller-based networking greatly simplifies automation tasks by providing a single point of administration for the programming of the infrastructure
+
+Openflow:
+    The origin of OpenFlow goes back to 2006 when a graduate student at Stanford University, Martin Casado, developed a new method for managing global networking policy. Casado created “Ethane,” which is a flow-based network management controller
+
+    Soon, a collaborative effort between researchers at both Stanford and the University of California, Berkeley developed this concept into the OpenFlow protocol that was first released in 2011. OpenFlow gained significant traction outside of academia with early supporters such as Cisco, Google, IBM, Microsoft, and Facebook. In fact, by 2012, Google re-designed their entire portion of their WAN network infrastructure in order to reap the benefits of OpenFlow increasing efficiency on their backbone networks
+
+    Also in 2011, a new standards body, the Open Networking Foundation, was developed to standardize emerging software technologies such as OpenFlow. The ONF now manages releases of OpenFlow, and at the time of this writing, the current version of OpenFlow is 1.4
+
+    OpenFlow utilizes a centralized server style of network management making it a controller-based SDN solution. It uses a set of APIs in its controller framework to manage network processes separately from the network device hardware disaggregating the control and forwarding planes. Also, OpenFlow is policy-based utilizing rules and corresponding actions to make intelligent forwarding decisions. In this way, not only are forwarding decisions that are removed from the local network device, but so are the networking features themselves enabling a centralized location for a true network-wide operating system. Also note that OpenFlow isn’t meant only for LAN switches, but you can also utilize it for other devices such as wireless access points
+
+    The Current OpenFlow spec is both a device model and a protocol:
+       OpenFlow Device Model: An abstraction of a network element (switch/router); currently (versions <= 1.4.0) focused on Forwarding Plane Abstraction
+       OpenFlow Protocol: A communications protocol that provides access to the forwarding plane of an OpenFlow Device
+
+Openflow architecture:
+    in a nutshell, controller speaks to open vswitch through open flow protocol utilizing secured channel. open vswitch maintains a number of flow tables
+
+    There are three main components in an OpenFlow architecture:
+
+        OpenFlow Protocol:
+            The OpenFlow channel is the interface that connects each OpenFlow device to a controller. Through this interface, the controller configures and manages the device, receives events from the switch, and sends packets out the switch. The OpenFlow specification defines the transport protocol between the OF-device and OF-controller. Interestingly, IP-connectivity must pre-exist between the controller and the device, typically requiring an out-of-band IP network in addition to the OpenFlow infrastructure
+
+        OpenFlow Network Device:
+            An OpenFlow network device consists of one or more flow tables and a group table, which perform packet lookups and forwarding, and an OpenFlow channel to an external controller. The switch communicates with the controller and the controller manages the switch via the OpenFlow protocol
+
+        OpenFlow Controller:
+            The OpenFlow controller is the single point of managing forwarding policy in an OpenFlow network. Using the OpenFlow protocol, the controller can add, update, and delete flow entries in flow tables, both reactively (in response to packets) and proactively. Each flow table in the switch contains a set of flow entries; each flow entry consists of match fields, counters, and a set of instructions to apply to matching packets
+
+    OpenFlow has evolved significantly since its introduction in 2008. Much of the evolution of this protocol is due to the “working code before standards” approach that the ONF (open network foundation) has encouraged
+
+    The current “long-term support” version of OpenFlow is 1.3 and most commercial implementations of OpenFlow conform to this version of the specification. This approach long-term vs. experimental approach allows stable implementations to emerge in commercial products while encouraging the community to continue innovating in the protocol itself
+
+How does openflow deliver packets?
+    openflow utilizes openflow matching, which  is very similar to the concept of policy-based routing that is used in traditional networks. A group of rules is defined based on various characteristics of a flow and defines a set of actions to be applied to the flow upon matching. Although OpenFlow has progressed to a multi-table model, it is useful to look at the original implementation to easily understand the match-action principle which is at the core of how OpenFlow works. A controller holds a series of flow rules which define the interesting traffic that a specific rule should apply to. This function can be thought of as providing the same functionality as a traditional access-control-list on a switch or router. These rules can match on various different fields including source MAC, destination MAC, source IP, destination IP, source port, destination port, etc
+
+    Each flow entry is associated with zero or more actions that dictate how the switch handles matching packets. If no forward actions are present, the packet is dropped. Action lists for inserted flow entries MUST be processed in the order specified. However, there is no packet output ordering guaranteed within a port. For example, an action list may result in two packets sent to two different VLANs on a single port. These two packets may be arbitrarily re-ordered, but the packet bodies must match those generated from a sequential execution of the actions. When a new flow is received by the switch, the flow is compared to the current flow rules to see if the flows characteristics match the specific rules in the flow table. If the new flow matches the rule, the action for that specific rule is now evaluated an applied to the new flow. Actions based on matches can be very specific as well including mark and forward at a specific bit-rate, overwrite the header, drop the packet, or forward it to a specific port
+
+Note: It is important to understand that not all actions are available in the OpenFlow specification are implemented on all physical devices which support OpenFlow
+
+    OpenFlow can match upon various criteria providing great flexibility in choosing traffic to which you wish to apply policy. OpenFlow 1.0 matches can be made on the following:
+        Ingress Port
+        Source MAC Address
+        Destination MAC Address
+        Ethernet type
+        IPv4 or IPv6 protocol number
+        IPv4 or IPv6 source address
+        IPv4 or IPv6 destination address
+        IPv4 or IPv6 destination address
+        TCP or UDP destination port
+
+    The various match criteria can be used to apply very coarse-grained policy. Such as, match on ingress port which will apply the corresponding action to every flow coming in a specific Ethernet interface or switch-defined logical port, or a very fine-grained policy matching only the specific traffic which corresponds to a multi-criteria match using various fields of the flow
+
+    Once a flow has been matched, various actions can be applied to the flow. OpenFlow defines multiple different action types, but it is important to note that not all these actions are required. Although OpenFlow actions do include the ability to push/pop MPLS or PBB tags, these capabilities are still dependent on the hardware’s capabilities to support these features
+
+    Several OpenFlow actions include:
+       Output:
+           OpenFlow switches must support forwarding the packet to physical ports and the following virtual ones:
+               ALL: Send the packet out all interfaces, not including the incoming interface
+               CONTROLLER: Encapsulate and send the packet to the controller
+               LOCAL: Send the packet to the switches local networking stack
+               TABLE: Perform actions in flow table (Only for packet-out messages)
+               IN PORT: Send the packet out the input port
+
+        Set-Queue: The enqueue action forwards a packet through a queue that is attached to a port. Forwarding behavior is dictated by the configuration of the queue and is used to provide basic Quality-of-Service support
+
+        Drop: There is no explicit action to represent drops. Instead, packets whose action sets have no output actions should be dropped. This result could come from empty instruction sets or empty action buckets in the processing pipeline, or after executing a Clear-Actions instruction
+
+        Group: Process the packet through the specified group. The exact interpretation depends on group type
+
+        Push-Tag/Pop-Tag: Switches may support the ability to push/pop tags such as 802.1q VLAN tags, or even MPLS and PBB tags. When multiple push actions are added to the action set of the packet, they apply to the packet in the order that is defined by the action set rules, first MPLS, then PBB, then VLAN
+
+        Set-Field: The various Set-Field actions are identified by their field type and modify the values of respective header fields in the packet. While not strictly required, the support of rewriting various header fields using Set-Field actions greatly increase the usefulness of an OpenFlow implementation
+
+        Change-TTL: The various Change-TTL actions modify the values of the IPv4 TTL, IPv6 Hop Limit, or MPLS TTL in the packet
+
+Openflow deployment models:
+    OpenFlow controllers are deployed in one of three models:
+        Proactive: In this model, the network administrator pre-defines rules that will match all traffic that is expected to be seen on the network. Once a OpenFlow switch first connects to the controller through a secure communications channel, the controller pushes all its match rules down to the switches flow table. In this deployment model, the switches are able to perform at line-rate speeds as there is no requirement for the switch to ever check with the controller as the various rules are pre-installed in the switch upon boot up. The major disadvantage of this model is that all expected network traffic must be known before it is put on the network. In addition, because of the limitation in table sizes, proactive flow deployments are generally only able to apply coarse-grained policy as the hardware just does not have enough resources to hold all the rules that are required to define a more specific policy on the network. In this mode, the controller proactively pushes all flows into the forwarding elements. This mode is popular when performing integrations with virtualized or cloud workloads, since the network information for these workloads is already known, and can therefore get pushed into the network immediately when a virtual machine or container is spun up. These flows can also be immediately deleted when the workloads are decommissioned
+
+        Reactive: In this mode, the network administrator will pre-define rules that will match all traffic that is expected on the network. Once an OpenFlow switch first connects to the controller through a secure communications channel, the controller pushes a minimal set of match rules to the switches flow table. This model allows for much greater flexibility of policy. In this model, the controller is aware of all the flows that are pushed into it by higher entities (applications), but does not make an extra effort to push these flows down to the data plane (switches). When the data plane receives a packet that it does not have a local match for, the entire packet is sent up to the controller from that forwarding element. The controller then responds with a decision, and the data plane keeps this flow entry so that future packets in this flow can happen without controller intervention.The major limitation of this deployment model is latency and scale. Because the first packet of any flow must first be sent to the controller to request the appropriate match rule and action, additional latency is added as every new flow comes on the network. This issue is similar to the fast-switching where the first packet of any new conversation is sent to the CPU of a switch for analysis and all subsequent packets in the flow are then switched in hardware.This deployment becomes un-scalable in various types of network that have 1000s of new flows or more per second.
+
+        Hybrid: With Hybrid, you get the best of both worlds. You can selectively turn on OpenFlow for a given number of ports and/or run traditional L2/L3 protocols on other ports. In fact, there is another way to run Hybrid in that use OpenFlow, but if there isn’t a match, then use the default forwarding pipeline of the switch
+
+Integrating openflow with existing network devices (hybrid model):
+    One of criticisms of OpenFlow is that forcing all decision making to go back to a centralized controller is making all switches “dumb”. Instead of leveraging the past of network protocol development and innovation, OpenFlow is forcing you to “re-create the wheel” by having to re-implementing the entire control plane. The hybrid forwarding model addresses this issue by leveraging the OpenFlow controller where necessary to address specific requirements that just could not be achieved with traditional networking, while also allowing the existing features, functionality and protocols in the networking devices to continue to work as they always have
+
+Note: Hybrid Model acknowledges a more generic approach: Re-architect the control plane architecture where needed
+
+    The Hybrid OpenFlow deployment model can be deployed in two different versions:
+       Ships-in-the-Night: This deployment model provides vertical partitioning by assigning certain resources in the switch or router to be controlled by the OpenFlow controller. Typically, these resources may be a group of ports which are assigned to a specific VLAN which has been put under the OpenFlow controllers administrative control. The only match/action combinations available to flows in this VLAN are those programmed into the device by the controller
+
+       Integrated: This deployment model provides horizontal partitioning by using the OpenFlow match/rules combinations selectively to augment the native capabilities of the device. In this deployment model, traffic is first inspected by the OF table to check if there is a specific rule which matches the new flow. If a match occurs, the ACTION is evaluated and applied to the new flow. If no match occurs, the flow is forwarded to the NORMAL pipeline which allows the switch to process the traffic according to whatever rules are in place in the configuration. This model keeps flow rules at a minimum as most desired forwarding behavior is already available in the traditional forwarding stack
+
+Openflow hybrid model concerns:
+    Scalability: OpenFlow based controllers are limited to the resources of the server running the controller and, as such, is bound by hardware constraints of memory and CPU of the platform. Due to limitations of currently available hardware, scale challenges can only be addressed through distributing the controller functions onto multiple, federated controllers which increases the complexity that controller-based networks were designed to avoid in the first place
+
+    Hardware Limitations: Although OpenFlow was designed to decouple the forwarding from the control plane, hardware capabilities still matter. The inconsistency in hardware features, such as ACL and route table sizes, TCAM, MAC address tables, etc. result on widely varying degree of functionality between platforms when connecting a switch to a controller. This inconsistency in switch capabilities forces the controller to make decisions about what rules can be sent to which platform depending on the switch capabilities. The requirement to deal with variability in the switch platform increase the complexity that controller-based networks were designed to avoid in the first place
+
+    Availability: The centralizing of the control plane into a controller creates a potential single-point-of-failure for the network. Depending on the method of instantiating flows into the forwarding devices, it is possible for the entire network to stop in the event of the loss of the controller. Various methods, including controller federation, forwarding to normal-pipeline rules, and software level redundancy methods have been proposed to deal with the availability risk, but the introduction of all these techniques inevitably increases the complexity of the environment
+
+    Different Protocol Versions: The OpenFlow specification has evolved swiftly since its original introduction in 2008. The original OF1.0 specification proposed a simple single table design using easily understand match -> action rules. Since then, multiple versions of the OF spec have been released, each one adding additional features and capabilities and extending the potential of OpenFlow based networks with every version. Unfortunately, hardware support for the various versions of the OpenFlow protocol has not kept up and capabilities can vary widely between the forwarding devices (switches)         
