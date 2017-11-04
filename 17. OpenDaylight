@@ -1,0 +1,134 @@
+In order to further the adoption and innovation of SDN technologies, the OpenDaylight project was created in April of 2013 under the Linux Foundation. The ODL project is a growing body of work with contributors from the open source community and governed by the OpenDaylight Board
+
+OpenDaylight (ODL) overview:
+    OpenDaylight is an Open Source Software project under the Linux Foundation with the goal of furthering the adoption and innovation of SDN through the creation of a common industry supported platform. OpenDaylight project embraces three core principles:
+       Code: To create a robust, extensible, open source code base that covers the major common components that are required to build an SDN solution
+
+       Acceptance: To get broad industry acceptance among vendors and users. Using OpenDaylight code directly or through vendor products. Vendors using OpenDaylight code as part of commercial products
+
+        Community: To have a thriving and growing technical community contributing to the code base, using the code in commercial products, and adding value above, below and around.
+
+    On April 8, 2013, The Linux Foundation announced the founding of the OpenDaylight Project as a community-led and industry-supported open source framework to accelerate adoption, foster innovation, and create a more open and transparent approach to Software-Defined Networking and Network Functions Virtualization. The project’s founding members: Arista Networks, Big Switch Networks, Brocade, Cisco, Citrix, Ericsson, HP, IBM, Juniper Networks, Microsoft, NEC, Nuage Networks, PLUMgrid, Red Hat, and VMware, committed to donating software and engineering resources for OpenDaylight’s open source framework to help define the future of an open source SDN platform
+
+ODL main elements:
+    The presentation layer of the system includes RESTCONF APIs, NETCONF, and the DLUX and NeXt UI sub-systems. The RESTCONF sub-system is part of the Model-Driven Service Adaptation Layer. RESTCONF APIs are auto-generated from the Yang models used to define the public interfaces for all ODL components. Alongside RESTCONF, ODL also exposes a NETCONF capability to configure ODL itself
+
+    The DLUX UI is one of the UI frameworks, and includes applications such as the Yang UI, topology, and connection manager tools. The other web UI framework is NeXt which provides anetwork-centricc topology UI component. The NeXt and DLUX frameworks are used together
+
+    The AAA Filter sub-system handles authentication, authorization, and accounting functions. All API requests are filtered through this sub-system
+
+    The services and applications layer is where the main features and applications of the system are implemented as OSGi bundles. OSGi is a Java framework for developing and deploying modular software programs and libraries
+
+    The MD-SAL and Yang Tools layer provides the functions that create and manage the use of the public interfaces and data models for the features and applications, based on Yang models. MD-SAL and Yang Tools are discussed in below
+
+    The Southbound Plugins are the components that provide adaptation to different device management capabilities, and expose those capabilities as common, Yang based, models. Southbound Plugins include NETCONF, OpenFlow, OVSDB, BGP, and many others as illustrated above - interestingly enough, no SSH as southbound
+
+ODL governance:
+    Board > TSC > project1.....N (each project has committers and contributors)
+
+    A key element of the success of the ODL community is the governance model that facilitates the formation of project proposals and the rules that facilitate how the project is developed
+
+    The ODL community operates under the aegis of the Linux Foundation. The ODL governance structure encompasses the board and the technical steering committee. The board sets the overall policy for the project. In general, the policy relates to areas including processes, technical scope, business goals, and interactions with other groups
+
+    There are many components, and so inter-dependencies between components, in a given ODL release. One of the main tasks of the TSC is to coordinate simultaneous releases of components such that a given component version, and the versions of the components that it depends on, are released at the same time
+
+    Generally, projects govern themselves, though the TSC also has a role to facilitate, as required, communication between project teams. This is often focused on explaining core architectural components, such as the MD-SAL and Yang Tools
+
+    Projects have a well-defined scopes, which are defined by a project charter. The process for creating a new project is well-defined. The high-level steps are: create a proposal; engage the TSC in a creation review; go into incubation; graduate to mature; potentially be promoted to core or top level
+
+    The TSC is supposed to ensure that projects have non-overlapping charters, but it is possible that projects do overlap, for example the DLUX and NeXt UI frameworks. Competition can be a good thing in some circumstances
+
+    In common with most open source projects, anyone can contribute. Contributions can come in many ways, including finding bugs, fixing documentation, submitting patches and so on. Some contributors may, on a per project basis be promoted to “committers” and be able to add code to the master code repository. A committer will typically have an in-depth knowledge of the code base and long-term goals of a given project, and so necessarily be largely dedicated to that project
+
+ODL project structure:
+    OpenDayLight has many projects running simultaneously to support a given release. The overall structure of ODL can be better understood by sorting the individual projects into four categories:
+
+        Kernel: Kernel projects form the core of the ODL controller and make up the most important parts of the project: Mdsal and yangtools
+
+        Protocol Plugins: Protocol plugins extend the ODL controller capabilities, allowing the controller to communicate to new devices through specific protocols such as: BGP, NETCONF, OpenFlow, SNMP, Ovsdb
+
+        Applications: Examples of applications could be as simple as a simple forwarding application to allow basic connectivity, a load-balancer application which shares the load of a specific traffic type between different servers , or even a statistics application that helps to monitor and visualize the controller, devices, and the amount of traffic flowing throw them
+
+        Support: Support projects involve tasks that are required to make the overall project supportable and consumable by customers and developers. Projects here include: Documentation, tutorials, integration
+
+Note: MDSAL = model-driven (i.e. yang) service abstraction layer
+
+ODL architecture:
+    The OpenDaylight Controller architecture can be simplified into a conceptual three tier model:
+
+    Applications: Applications can run in the controller or be external apps which communicate with the controller via REST, RESTCONF, or NETCONF APIs. These applications will make request of a specific service from the controller
+
+    Core: Role of the core is to adapt between the applications and the different protocol plugins. The core provides a northbound API to the applications and a southbound API to the devices. The northbound will accept multiple interfaces including REST and Netconf. The south bound abstraction layer, or MD-SAL (model driven service adaptation layer) effectively translates the requests from the application to the protocol plugins which then communicates to the networking devices.
+
+    Device Plugin: Protocol plugins define the method which the controller communicates with network devices. This feature is not limited to a single protocol and includes such industry standards as OpenFlow, BGP, REST, SNMP, etc
+
+    This modular approach allows for the inclusion of new protocols and devices such as IoT devices as they become popular in the industry
+
+Model-Driven service abstraction layer:
+    The MD-SAL is the core architectural foundation of ODL. It implements the datastore and communication mechanisms that all other system components rely on. The “model driven” aspect derives from the use of YANG as a data modeling language and interface definition language. For all components in the ODL system the external interfaces, and the data models those interfaces use, are defined in Yang models
+
+    One of the key goals of ODL is to support multi-protocol network management. The key point is that services and applications should be insulated from the specifics of how a given device is managed. This insulation is provided by the “Protocol Plugins”. The interface that any given protocol plugin exposes is defined by common Yang models, so that, for example, all nodes are represented with the same inventory model regardless of whether they are managed via OpenFlow or NETCONF.
+
+    The “Protocol Plugins” and the “Service/Application Plugins” share a common development model, and are managed by the OSGi based system in an identical fashion. The interfaces and models for services and applications are also managed via Yang. The MD-SAL and Yang Tools components, described in detail below, manage how those interfaces are translated in to Java code, and how they can be consumed
+
+    The NETCONF configuration sub-system allows ODL to be configured and managed via NETCONF.
+
+    The generic nature of the system communications, using a common message bus, and with common configuration and operational data store concepts, makes it easier to form ODL clusters. In a cluster, service providers, such as a component that implements an interface, can be resident in the JVM of an instance distinct from its client. Communication between components is handled transparently by the MD-SAL, regardless of location.
+
+    To the extent possible, given the progress of standardization, the data models that are used by the Yang defined interfaces are those models that are defined by the IETF, or other standards setting bodies, as discussed in the introduction. Of course, as noted above, this is a two-way street, as the standardization process also relies on models being proven in practice through use in ODL
+
+Yang tools for ODL:
+    YANG Tools is an infrastructure project aiming to develop necessary tooling and libraries providing support of NETCONF and YANG for Java (JVM-language-based) projects and applications, such as Model Driven SAL for Controller (which uses YANG as its modeling language) and Netconf / OFConfig plugins.
+
+    Yangtools provides the following features:
+        Generate Java Code: High-quality Java classes can be auto-generated from existing YANG models
+
+        Provide “Codecs” to convert Java Classes to DOM: DOMs can be auto-generated from the Java class and then converted into various formats such as XML, JSON, etc.
+
+        Codecs also make it possible to auto-generate RESTCONF, NETCONF, and other bindings without human from the existing YANG model
+
+        The Yang Tools are, in effect, an interface definition language compiler from Yang to Java. From Java, “codecs” can automatically generate DOMs. From a DOM it is then possible to generate XML, JSON and many other document formats, as might be required. Importantly, these mechanisms make it possible to auto-generate RESTCONF APIs, NETCONF bindings, AMQP messages, and so on. So, from the Yang interface definition, the same interface, and model semantics can be represented in multiple communication mechanisms
+
+ODL APIs:
+    The APIs for developers using ODL fall into two main groups: the RESTCONF APIs; and plain old Java objects. A noted above, all components, including the “southbound”, such as a device facing APIs, are modeled in Yang and go through the development process that is outlined above.
+
+    For each plugin installed, MD-SAL will, as discussed above, generate both the RESTCONF APIs, and the Java POJO APIs. These APIs are facades on the generic request dispatching, notification, and data management capabilities of MD-SAL.
+
+    The Java POJO APIs are used, during normal Java development, when applications use services, such as topology or inventory
+
+    The RESTCONF APIs are used in two main ways:
+        When a NETCONF managed device is mounted, a RESTCONF API binding is auto-generated from the YANG schema provided. This process allows devices to be managed directly via RESTCONF, much as though ODL were an element management system
+
+        The RESTCONF APIs generated by YANGTools can be explored via the “YANG UI” application, which you will look at next
+
+ODL use cases:
+    ODL is currently being used to address multiple use-cases including:
+
+        Network Resources Optimization: Dynamically optimizing the network based on load and state. This use is the most common carrier use case as it optimizes the network using the near-real-time state of traffic, topology, and equipment. Network Resources Optimization uses various southbound protocols (for example, NETCONF, BGP-LS or OpenFlow) depending on the underlying network. In addition to being used “under the covers” by many telcos and cable operators, this use case is a top use case for enterprise and financial institutions
+
+        Cloud and Network Function Virtualization: Agile service delivery on cloud infrastructure in either the enterprise or service provider environment. The underlay will frequently be OpenStack in all cases, and in the carrier case will often also include Network Functions Virtualization
+
+        Automated Service Delivery: Automating the service delivery lifecycle imposes several requirements on the network and has significant implications on the organization, and ultimately the business as well:
+                Rapid service definition, creation, and provisioning
+                Self-service management
+                Virtual networks running on top of multiple vendors' equipment
+                Reduce the cost to deploy, deliver, and manage new services
+                Elastic network capacity
+                Adopting consumption-based business models
+
+        Visibility and Control:
+            Centralized administration of the network and/or multiple controllers. This type of administration is sometimes used by carriers or enterprises as a precursor to Network Resource Optimization:
+
+                An open platform capable of bridging the gap between the physical, virtual, and user domains
+                Ability to support a flexible range of network applications
+                Robust topology and network state in both the physical and virtual domains
+                Flexible policy management options and enforcement
+                Network programmability to enable enhanced network operations to support diagnosis, troubleshooting, and analysis
+                Ability to operate over multi-vendor infrastructure including non-SDN-enabled hardware
+
+        Research, education, and government:
+            Networks can benefit from SDN in multiple ways. The problem sets, value propositions, and markets vary slightly. For instance:
+
+                Universities may need specialized high performance networks
+                Municipal or state governments may be able to improve the quality of life via machine-to-machine applications
+                National Research and Education networks may have multiple use cases over large geographical areas
