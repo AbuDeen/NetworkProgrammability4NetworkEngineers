@@ -1,0 +1,120 @@
+The Cisco IOS XR API offers three programmatic interfaces that are used for device configuration management and obtaining operational data including RESTCONF, NETCONF, and gRPC. In this lesson, the focus is predominately on NETCONF as RESTCONF and gRPC are not due out until XR 6.0
+
+Of these APIs, only NETCONF is supported in iosxr 5.3. RESTCONF, and gRPC are supported in 6.0+ of IOS XR. Included is brief sections towards the end of this lesson on RESTCONF and gRPC as they play a part in the IOS XR API strategy
+
+IOS XR Supports various types of YANG data models, including:
+    Cisco
+    OpenConfig
+    IETF
+
+    Models that are supported can be examined during the capabilities exchange
+
+Note: Also note that the IOS XR supports more than a running and startup configuration. It supports a candidate, or staged configuration. It allows you to push changes to the candidate configuration and apply all changes at once as opposed to streaming configurations directly to the real-time running configuration
+
+NETCONF on iosxr:
+    There has been a NETCONF interface on the IOS XR platform for quite some time, but prior versions of software supported sending only CLI commands over NETCONF. In most recent versions of NETCONF, the configuration is modeled using YANG, and as such, the NETCONF interface is now extremely robust in that native model-driven XML objects can be sent and received from the device
+
+    NETCONF on IOS-XR supports NETCONF 1.1 and common operations such as “<get-config>, <get>, <copy-config>, <commit>, <validate>, <lock>, <unlock>, <edit-config>, <delete-config>
+
+    NETCONF* on the IOS XR platform is based off XML representation of YANG models. it supports operations including rollback on error, stop on error, continue on error, default operations, merge (default), replace, create, delete, remove. May vary per hardware platform
+
+Remember: iosxr supports candidate configuration datastore
+
+NETCONF requirements:
+    on iosxr device:
+        Enable NETCONF-YANG over SSH
+        Configure the port to use for NETCONF (certain versions of software default to 830)
+        Ensure a user of privilege 15 exists on the device
+        Optionally, enable the tty which is used to access the NETCONF sub system while locally on the box
+    Once these commands are configured, you are all set to NETCONF
+
+    on the client:
+        The client must support NETCONF over SSH as IOS XR supports NETCONF as an SSH subsystem. On a Linux system, the default SSH configuration works just fine
+
+        You can directly access the NETCONF subsystem by using an SSH client and using the following statement:
+
+            $ ssh –p 830 cisco@xrv –s netconf
+
+Note: You may not need to include “-s netconf” in certain implementations of SSH.
+
+NETCONF tools and utilities:
+    There are two unique commands and tools to be aware of when using NETCONF on IOS XR devices:
+
+        NETCONF Server/Agent: The SSH service acting as the XML/NETCONF server/agent. You can test XML objects and filters directly through an SSH client without having to write code .It is similar to sandbox environments such as the NX-API Sandbox or API Console on the ASA that allow you to test the objects that are required for the request and shows you object in the response. It is very helpful for getting familiar with the device’s NETCONF interface
+
+        ncclient: An open source Python NETCONF client. It aims to offer an intuitive API that sensibly maps the XML-encoded nature of NETCONF to Python objects and constructs
+
+Note: The command netconf agent tty needs to be configured on the router in order for you to access the sub system locally as opposed to SSH’ing to it
+
+    testing netconf using the on-box netconf service:
+        When you connect to the device, authenticate, and access the IOS XR NETCONF SSH subsystem, the device (NETCONF server) responds with its NETCONF capabilities. These capabilities could be based on open vendor-neutral or platform/vendor specific capabilities
+
+        NETCONF over SSH is initiated by the exchange of a hello message between the client and the XML server. After the initial exchange, the client sends XML requests, which the server responds to with XML responses. The client and server terminate requests and responses with the character sequence ]]>]]>. Because this character sequence is not valid in XML, the client and the server can interpret when the messages end, which keeps communication synchronized
+
+        After the NETCONF server (the IOS XR device) sends its capabilities, you (the XML client) must send a hello message with the capabilities that the client supports
+
+Note: You must end all XML documents with ]]>]]> to support synchronization in NETCONF over SSH
+
+    connecting to netconf using python ncclient:
+        The ncclient is the defacto common NETCONF client for Python. It only takes a few Python statements to establish a connection to the device, send XML documents, and receive a response. It is no different than you have seen with Nexus and IOS XE. The connection is made to the device in the first statement:
+
+            device = manager.connect(host=host, port=port, username=user, password=pwd,
+            hostkey_verify=False, device_params={'name': iosxr'}, allow_agent=False, look_for_keys=False)
+
+        There are many defaults being used here, but the important parameters to update as you connect to devices are host, port, username, password, and device_params
+
+        You can also see that you need to still need to define a filter the same way that you saw with NETCONF on IOS XE and Nexus. It is shown in the script as the nc_filter variable:
+
+                nc_filter = """
+                              <interface-configurations xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-ifmgr-cfg">
+                               <interface-configuration>
+                                <interface-name>MgmtEth0/0/CPU0/0</interface-name>
+                               </interface-configuration>
+                              </interface-configurations>
+                        ""“
+
+        In the next statement, the actual XML document is sent to the device. If you wanted to retrieve the full configuration, you would not need a filter, but because you want the hostname, you also include the “subtree” keyword, when using the get operation:
+
+             nc_get_reply = device.get(('subtree', nc_filter))
+
+        Finally, simply print the reply printing the actual ncclient RPC Reply Message
+
+        The only difference in this script as compared to other NETCONF configuration scripts thus far is the script is making a change to the device’s candidate configuration. Since it is the case, the change still needs to be committed. It is done with the commit method of the ncclient device (manager) object:
+              nc_filter = """
+                    <config>
+                     <bgp xmlns="http://openconfig.net/yang/bgp">
+                      <global>
+                       <config>
+                        <as>65512</as>
+                       </config>
+                      </global>
+                     </bgp>
+                    </config>
+               """
+               nc_reply = device.edit_config(target='candidate', config=nc_filter)
+               device.commit()
+
+Note: You can also use any supported data model by referencing the appropriate URL and mapping it to an XML namespace. There are various data models that are supported for BGP on IOS XR, some that are Cisco/XR specific and other open standard’s, such as what is shown in the figure. This XML string is a representation of a vendor neutral data model that was produced by the OpenConfig Working Group
+
+    sample script:
+            #!/usr/bin/env python
+
+            from lxml import etree
+            from ncclient import manager
+
+            if __name__ == "__main__":
+
+                with manager.connect(host='xrv', port=830, username='cisco', password='cisco',
+                                     hostkey_verify=False, device_params={'name': 'iosxr'},
+                                     allow_agent=False, look_for_keys=False) as device:
+
+                    nc_filter = """
+                          <interface-configurations xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-ifmgr-cfg">
+                           <interface-configuration>
+                            <interface-name>MgmtEth0/0/CPU0/0</interface-name>
+                           </interface-configuration>
+                          </interface-configurations>
+                    """
+
+                    nc_get_reply = device.get(('subtree', nc_filter))
+                    print nc_get_reply
