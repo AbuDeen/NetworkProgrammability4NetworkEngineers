@@ -1,0 +1,86 @@
+APIC-EM overview:
+    As network programmability has evolved to policy-based control of network infrastructure, the balance has changed between policy-based automation and feature-based configuration
+
+    Feature-based configuration is simply the first step in the programmability evolution utilizing templates to create static configurations for network devices. Accomplished with Cisco’s Prime Infrastructure platform, the feature-based configuration model can be used to design and apply uniform and consistent configurations across a network architecture. These templates can be made up of tested command scripts which vary only in several areas such as device hostnames and IP addresses
+
+    Policy-based automation, on the other hand, is intended for environments in which the business requirements are more fluid and are expected to change frequently. Therefore, the infrastructure has to be able to adapt quickly to support the changing business needs. APIC-based systems make it significantly easier to take advantage of network capabilities already built-in to today’s popular networking platforms. However, many of these capabilities are not utilized to their fullest extent because they’re difficult to configure or too impactful to change when business requirements change. Therefore, APIC-based policy-based automation helps speed up the introduction or the change of IT services
+
+    The Cisco Application Policy Infrastructure Controller—Enterprise Module is an SDN controller that is targeted at providing SDN network programming capabilities and advanced automation for enterprise LAN and WAN where much of the network infrastructure is managed via CLI and SNMP. APIC-EM exposes applications and REST APIs that you can use to drive policy-based automation of your network infrastructure. APIC-EM translates intent, expressed as policies, into the configuration commands that are required to implement that intent in your network
+
+    APIC-EM exposes REST APIs to interface with a built-in set of applications that automate common networking tasks. The REST APIs are exposed by the APIC-EM system services, and the implementations of those system services handle the details of how to manage devices using the command line interface, SNMP, or other mechanisms. That means network operating systems that are deployed in production do not need to be upgraded because existing CLI and SNMP interfaces can be used
+
+    “Policy-based” automation defines the intent of the desired system in terms of statements that are similar to business rules. The APIC-EM policy-based automation mechanism then figures out how to configure the network in such a way as to meet those rules
+
+    Policy-based automation focuses on business intent. This mechanism decreases the need for manual intervention on each individual device. Also, this method more closely aligns business needs with the behavior of the network infrastructure
+
+    APIC-EM hosts multiple SDN applications that expose REST APIs for various network automation tasks. Southbound protocols such as SNMP, NETCONF, and RESTCONF enable it to communicate with network devices already in production enabling the benefits of SDN without requiring that the network infrastructure be upgraded
+
+Main features and benefits of APIC-EM:
+    Virtual and Physical — Runs on x86 platforms as a virtual machine or as an appliance, such as a dedicated physical server
+
+    Network Information Database - APIC-EM periodically scans the network to create a “single source of truth” for IT. This inventory includes all network devices and attached hosts. The NIB abstracts devices which allow applications to be device-independent, so configuration differences between device NOSs are not exposed to application developers
+
+    Network topology visualization — APIC-EM auto-discovers and maps network devices to a physical topology with detailed device-level data. With its auto-visualization feature, it presents a highly interactive mechanism for viewing and troubleshooting the network. You can also easily customize its GUI, with tags and geo-locations
+
+    Plug and Play application — Cisco Network Plug-and-Play provides a highly secure, scalable, seamless, and unified zero-touch-deployment experience for customers across the entire Cisco enterprise network portfolio of wired and wireless devices. It reduces the burden on enterprises by greatly simplifying the deployment process for new devices, which can significantly lower operating expenditures. For more details, refer to the Plug and Play Application section later
+
+    Cisco Intelligent WAN application — The IWAN application greatly simplifies the provisioning of IWAN network profiles with simple business policies. The IWAN application defines business-level preferences by application or groups of applications. It then translates that priority into the network configuration that drives quality of service, preferred path routing over hybrid WAN links, secure overlay, performance visualization, and more. This advanced software-defined-WAN capability guarantees delivery of application experience over any connection using otherwise inactive or backup links. For more details, refer to the IWAN Application section later
+
+    Public Key Infrastructure service — The PKI service provides an integrated authentication server for automated key management. It automates the lifecycle management of issuing, renewing, and revoking the PKI X.509 certificate for apps such as IWAN. This service greatly simplifies the process of establishing and maintaining trust in the network
+
+    Path Trace application — Inspection, interrogation, and remediation of network problems rely on manual techniques today, which can be slow, inaccurate, and expensive. Given a five-tuple description, the Path Trace application automates inspection and visualization of the path that is taken by a flow between two endpoints in the network. For more details, refer to the Path Trace Application section later
+
+    High availability — High availability is provided in N+1 redundancy mode with full data persistence for high availability and scale. All the nodes work in active-active mode for optimal performance and load sharing. It is important to understand you need an odd number of nodes in the cluster to allow for a quorum
+
+    Backup and restore — APIC-EM supports complete backup and restore of the entire database for added protection. The network database can now be easily backed up and restored in a user-friendly way with a few clicks from the controller UI
+
+APIC-EM simplified configuration:
+    APIC-EM simplifies network configuration and management by automating common and complex tasks eliminating the need for manual device interaction by a network engineer. This controller-based method of programmability is much more scalable, especially when deployed in a cluster, than the limited scaling potential with device-by-device manual configuration. In fact, orchestrating configuration from a single controller also provides much more consistent device configurations across an infrastructure. This method is extremely valuable in terms of stability and the incredible amount of time that is saved in manually maintaining any semblance of consistency among devices
+
+    APIC-EM uses both traditional and very modern mechanisms to actually connect and communicate with network devices, but it provides this functionality to the network operator through a graphical user interface. From the GUI, you can use built-in mechanisms to deploy policy to an entire scope of network devices rather than one at a time. This interface between APIC-EM and you, the network operator, is achieved through open APIs which provide an ability for customization and innovation
+
+APIC-EM northbound and southbound APIs:
+    The APIC-EM controller both simplifies and abstracts the network by using open northbound and southbound APIs in order to communicate with a wide variety of network devices. This ease of use that is provided through using open APIs creates a much more intelligent and programmable single point for network-wide automation and control
+
+    Northbound communication relies on REST APIs in order to enable applications to discover and manage network devices using HTTPS and its familiar verbs. This fact makes northbound communication highly functional, secure, and programmatic
+
+    The APIC-EM southbound interface communicates with network devices using traditional command line interface and SNMP. This method ensures that APIC-EM can communicate with a very wide variety of devices that are already commonly deployed in networks today
+
+    In the center is APIC-EM, the SDN controller, that centralizes management, policies, features, and applications
+
+APIC-EM web user ui dashboard:
+    The APIC-EM web UI dashboard provides access to applications, services, and information about the system and APIs. As you continue learning about APIC-EM, you will refer to the “SYSTEM HEALTH” item, that is located in the upper left next to the “HOME” item. You will also look at the “API” item that is located in the top right of your dashboard
+
+APIC-EM platform architecture:
+    The basis of the APIC-EM system is the Grapevine elastic services infrastructure based on a platform-as-a-service model. Grapevine supports an auto-scale service model using Linux containers for scaling the APIC-EM environment. Therefore, it is similar to container management in that Grapevine is able to create and clone containers that live on the APIC-EM hosts. This model allows you to scale the load in the network and provide controller fault tolerance
+
+    The southbound abstraction layer utilizes several protocols to speak with devices, but notice that CLI and SNMP are supported. Though this method seems like a legacy connection method, using the CLI and SNMP is what enables the SDN capabilities of APIC-EM in a brown field environment, or in other words, in an existing network with various Cisco platforms that support only CLI and SNMP
+
+    APIC-EM Services are the capabilities, features and functionalities of APIC-EM. Notice that they are all separated. APIC-EM features and capabilities are modular and can be combined in any direction
+
+    Lastly, APIC-EM Applications use the northbound REST API. This fact is very important to note because it means that the applications are separated from the controller itself. These applications are not static, and the range of APIC-EM applications will grow and develop in the coming years. The details of how the applications and system services work together can be viewed by selecting the “System Health” option from the dashboard home page. The Swagger documentation for the APIs can be accessed by selecting the API button on the right of the APIC-EM dashboard
+
+APIC-EM supported devices:
+    The APIC-EM 1.2 GA release supports various devices including platforms that are used in the LAN, WAN, wireless LAN, and data center. Almost all these devices are supported using the CLI and SNMP as southbound protocols, and though APIC-EM itself supports NETCONF and RESTCONF, currently NETCONF is available only on certain ASR platforms
+
+APIC-EM common tasks:
+    Common tasks you will perform when using APIC-EM are:
+        Network Discovery
+        Viewing Host and Device Inventories
+        Visualizing the Network Topology
+        Configuring Backup and Restore
+        Managing Users
+
+    You may not use every feature and application APIC-EM has to offer, but there are some common tasks that you will likely perform during setup and from time-to-time. Some common tasks include running a network discovery, viewing host and device inventories, visualizing the network topology, configuring the backup and restore feature, and configuring users
+
+    The network device Discovery is a good place to start when first using APIC-EM. The discovery uses ping and CDP to discover devices, so it is important that both are allowed on a network in order to use this APIC-EM function. Also remember that CDP is disabled by default on most devices, so you will have to enable it explicitly on devices in your network to run the APIC-EM Discovery. Once a device is found, whether by using ping or CDP, APIC-EM will utilize SNMP to find out important information about the device
+
+    The APIC-EM controller has a database of entries for all network elements. These elements includes all your network devices of various platforms, and it includes actual end-hosts that are attached to these devices. You use the Discovery feature to scan your network and populate the database with an initial set of entries. Then, APIC-EM performs automated scans periodically to keep the database up-to-date
+
+    Once you have populated Device and Host inventories, you can then assign tags and locations to each element, pull the current configuration of a device, and access important operational state information such as link state and a topology diagram of a specific port
+
+    The discovery function uses two main mechanisms, ping and the CDP to discover the network. The ping mechanism looks for devices at specific IP addresses, typically defined by a range, from the APIC-EM server itself. CDP runs from one device to another in order to discover devices on the network running CDP and builds a topology
+
+    Once a device is discovered either by ping or CDP, APIC-EM will attempt to use SNMP to access a MIB to find out what the device is. APIC-EM can also try to access the device via SSH and/or Telnet to use CLI commands to gain further information about the device
+
+                                
