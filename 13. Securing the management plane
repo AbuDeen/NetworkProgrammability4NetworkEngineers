@@ -1,0 +1,29 @@
+Management plane:
+    The management plane provides the ability for configuration, management, and monitoring of a network device. Therefore, it consists of all the functions that achieve the management goals of the network
+
+    The management plane includes utilize SSH, SNMP NetFlow, and all APIs including NETCONF, REST APIs, RESTCONF, gRPC, and so on to manage devices. Because this part of a network device is so foundational to its function, it is critical that the management plane is protected
+
+    If a security incident is able to undermine the functions of the management plane, it can be impossible for you to recover or stabilize the network. Therefore, with more protocols and APIs being used with network devices, a much greater attention is needed to make sure protocols that are not in use are disabled. Protocols that are enabled but forgotten about by network administrators and engineers is a common attack vector for compromising a network device. With more protocols and APIs being implemented on network devices, more attention is required to ensure unused protocols and APIs are disabled
+
+Access control lists:
+    Devised to prevent unauthorized direct communication to network devices, infrastructure ACLs are one of the most critical security controls that can be implemented in networks
+
+    ACLs are built on the premise of permitting connections among trusted hosts or networks that require communication with network infrastructure devices according to established security policies and configurations
+
+    This required communication typically consists of management- and control-plane traffic. Common examples of these types of connections are external BGP, SSH, SNMP, and now specific APIs that could use various ports and protocols such as http/80 and https/443
+
+    After the required connections have been permitted, all other traffic to the infrastructure is explicitly denied
+
+    For the strongest protection of infrastructure devices, deployed ACLS should be applied in the ingress direction on all interfaces for which an IP address has been configured, including interfaces that connect to other organizations, remote-access segments, user segments, and segments in data centers. Note that an ACL cannot provide complete protection against vulnerabilities when the attack originates from a trusted source address
+
+    A common method to add an increased layer of security and resiliency to the network is to use a dedicated out of band management network. It allows network administrators to segregate management traffic from normal network traffic even further
+
+    e.g:
+        ip access−list MGMT_IN
+        !−−− Permit required host connections to network management segment
+           permit tcp host <−mgmt−> any eq 22
+           permit tcp host <−mgmt-> any eq 80
+           permit tcp host <−mgmt−> any eq 443
+           permit udp host <−mgmt−> any eq 161
+        interface mgmt0
+           ip access-group MGMT_IN in
