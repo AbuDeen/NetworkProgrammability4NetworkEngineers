@@ -1,0 +1,60 @@
+The Cisco Application Centric Infrastructure (ACI) is means to leverage next generation data center protocols and technologies in a centralized management interface on the Nexus 9000. ACI is Cisco’s main data center SDN solution and is actively being deployed as the core of data centers across the world. ACI provides a common policy and operations framework for the data center in order to consolidate IT roles and provide a single pane-of-glass model to deploy and monitor applications
+
+ACI overview:
+    The Nexus 9000 has two modes of operation to fit different operational models. In the NX-OS mode of operations, the Nexus 9000 platform utilizes a traditional operating system with enhancements to provide a platform for existing network deployments, while maintaining the capability to leverage next-generation data center protocols and technologies. These NXOS enhancements provide for for Standalone programmability (NX-API) on a per-chassis basis
+
+    With Cisco Nexus 9000 in Application Centric Infrastructure (ACI) mode, the infrastructure is centrally managed by a cluster of controllers– the Application Policy Infrastructure Controllers (APICs). ACI is Cisco’s core SDN solution for the data center
+
+    NX-OS and ACI modes have independent road maps and feature sets while relying on a common hardware platform to provide customers flexibility, choice, and value. On most Nexus 9000 hardware, customers can perform a software upgrade to migrate hardware to ACI, an SDN-focused model of operations. The underlying hardware is the foundation for this new mode of operation, and can operate in NX-OS mode or ACI depending on the code version running on the switches
+
+Nexus 9k switches:
+    9500 Series: 9504,9508,9516
+    9300 Series: 9332PQ,9372PX/9372TX,9396PX/9396TX,93128TX, 9336PQ (ACI Spine Switch)
+
+    The Cisco Nexus 9000 switching platform provides three key benefits to next-generation data centers:
+        Provides a scalable 1/10/40/100G platform for scalable and evolvable switching for the data center in the data plane
+
+        Provides a range of additional programmability features to bring the benefits of flexibility and agility not previously available for those customers requiring new levels of network programmability, based on leveraging new NX-OS enhancements (NX-API)
+
+        Support of centralized fabric programmability with control plane abstraction for individuals wishing to move to a new model of centralized operations with granular policy control, with decoupling of control and data planes; based on an application centric and centralized programming model called ACI. ACI is Cisco’s primary offering in the SDN space
+
+ACI fabric:
+    ACI operates as an object-based model – entirely differently from how the NX-OS software operated previously. The switches running in ACI mode are only programmable via an object-based Policy Engine operating in the APIC controller. The controller now becomes an integrated part of the network, and holds the profiles containing the policies for programming the switches centrally. The switches themselves do not maintain a CLI configuration file as previously used in NXOS based systems. The configuration is held on the APIC and is an object-oriented schema that is written in XML/JSON and stored in a profile to implement application-driven, network-driven, and security-driven policies
+
+    The core components of an ACI deployment include the following:
+        2 Tier Spine and Leaf Topology — With a leaf-spine network, every server on the network is exactly the same distance away from all other servers. Therefore, latency across the network is predictive, even when leveraging numerous paths for a single traffic flow
+
+        Leaf Switches — The Leaf switches provide external connectivity into the Fabric. Gigabit or 10-Gigabit Ethernet is offered for connected devices, with 40-Gigabit uplinks to the spines. Leaf switches serve as the policy enforcement points, and spines provide a high-throughput fabric with fast failover. To achieve high degrees of scale, utilization of expensive memory resources (such a TCAM) required may be effectively limited to the applications and endpoints locally pertinent to each individual leaf
+
+        Spine Switches — These switches utilize 40-Gigabit Ethernet to provide a non-blocking fabric with rapid failure detection and re-routing. Spine switches aggregate data such as the location of endpoints across the fabric, and can serve to forward traffic to remote devices that were previously unknown to a leaf switch
+
+        APIC Controllers — APICs provide the centralized point of management for fabric configuration and observing the summary operational state. It is implemented using a distributed framework across a cluster of appliances. From a policy perspective, the APIC is the primary point of contact for configuration and acts as the policy repository
+
+        External Connectivity — Layer 2 or Layer 3 connections to devices outside of the ACI fabric, which is connected to the leaf switches
+
+        Services — Service Nodes are physical or virtual appliances which provide specialized network functionality that the traditional bridging and routing network elements do not or cannot provide. Examples of service nodes include stateful firewalls, load balancers, and NAT devices
+
+Overloaded Network Constructs:
+        When first looking at the reasons behind ACI, it is important to discuss some of the issues that ACI is meant to solve. Presently, VLANs and IP subnets are primarily used as policy boundaries (such as Subnets defined in ACLs, QoS, load-balancing); forcing these networks constructs to have a lot of significance. When one defines a VLAN, it is usually associated with an IP address; which may automatically imply some sort of policy because of the use of IP addresses/subnets in defining a device’s purpose, its physical location, or a security or traffic filter for ACL or QoS. This use of VLANs/IPs is entirely unrelated from the original reason why VLANs were created – to provide segmentation against broadcast traffic. Over the last two decades, network engineers have falsely layered numerous additional responsibilities on top of the Subnet/VLAN construct, and it has become increasingly hard to decouple these relationships
+
+Application Language Barriers:
+        Depending on the number of applications and policies in place, the provisioning of services across a multitude of network devices can be cumbersome thanks, in part, to the previously mentioned legacy constructs. This complexity is in opposition to the goals of business stakeholders and the application developers that are tasked with making services available to clients and end users
+
+        Developers talk about providers and consumers in relation to services offered among clients and servers. One group of components within an application will provide a function, which is consumed by another group of components. Network teams must translate the developers’ vernacular into VLANs, subnet, switch-port settings, etc. Network teams care about ports and protocols; however, there may not be much awareness on their part of the intricacies of the applications crossing the network. By removing IP Address/subnet/VLAN constraints when discussing applications, infrastructure teams and developers can start communicating among each other using a similar vernacular. ACI attempts to shrink the timeframe from application development to testing, to implementation, and finally to production
+
+What is an Application to the Network?
+    At the network layer, ACI attempts to rewrite the conversation regarding IP addresses, subnets, and VLANs, among other network constructs. Instead, ACI seeks to guide the conversation towards applications, types of policies needed (security or QoS policies, for example), and hosts to which those policies should be similarly applied – which in the ACI world, are termed endpoint groups
+
+    You define an application in ACI as having these attributes:
+
+        Collection of Endpoints — Not necessarily hosts or applications, an endpoint can be a network device, it could be a firewall, a router, or providing L4-7 services
+
+        Endpoints do not change the behavior of traffic flows; so you use Policies. Policies are configured to match one or more types of traffic, and provide an action that the fabric will take regarding allowing, blocking, or prioritizing
+
+        Relationship definitions are achieved with what you call Contracts. One or more policies are assembled in an object that is called a ‘Contract’, and this contract is provided by the group of endpoints offering the services and consumed by the client of the services
+
+        These objects may be created individually per application requirements or, as in any object-based model, which is reused numerous times across the architecture as desired
+
+        ACI is an attempt to bring things closer to application terms: for example, traffic enters the ACI fabric where it is directed through various services and filters before it hits the Web tier; more filters and actions are applied as the packets travel from the Web tier to the Application tier; and again from the Application tier to the database
+
+                               
