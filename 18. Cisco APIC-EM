@@ -83,4 +83,139 @@ APIC-EM common tasks:
 
     Once a device is discovered either by ping or CDP, APIC-EM will attempt to use SNMP to access a MIB to find out what the device is. APIC-EM can also try to access the device via SSH and/or Telnet to use CLI commands to gain further information about the device
 
-                                
+
+Performing APIC-EM tasks:
+    viewing device inventory:
+        Now look at the results of the discovery by selecting “Device Inventory” from the menu on the left. The result is a list of devices that are discovered by APIC-EM. Using SNMP, the discovery feature will return the device hostname, IP address, and a Status message. Devices can appear Reachable or Unreachable. This information is all stored and maintained in the APIC-EM Network Information Base (NIB). Unreachable devices exist in the NIB but either do not exist on the network or are not reachable by APIC-EM. Because the system gathers data on the network in 30 minute intervals refreshing the Device Inventory table accordingly, the devices that are identified as unreachable may have been reachable in a previous system polling. These devices can be manually deleted
+
+        In this figure, notice the last device in the list, csr1kv.cisco.com. APIC-EM discovered the device and is reporting its IP address, its Device Status (reachability), Up Time, and the last time the device information was updated in the NIB
+
+    Deleting a Device:
+        In order to manage information about devices in the NIB, the Device Inventory feature supports several operations. You can use the Device Inventory to add location and tags and to delete devices. In this figure, you can see that the csr1kv.cisco.com was selected by checking the box next to the hostname as shown in 1. Next, the device is deleted from the NIB by pressing the Delete button at the top of the screen as shown in 2
+
+    Viewing Host Inventory:
+        The Host Inventory application shows hosts and endpoints such as network devices, PCs, telephones, printers, tablets, and other devices connected to the network. Like the device inventory, the host inventory is maintained by regularly polling the network environment using CDP or LLDP in order to determine what is connected to devices in the NIB. Host Inventory data includes information such as the MAC and IP address, hostnames, the type of device, and even the port the endpoint is attached to
+
+        In this figure you can see two endpoints: a wireless and wired host. The APIC-EM Host Inventory feature is able to provide you their MACs, Host IP Addresses, Connected Network Device IP address (the IP address of the network device to which the host is connected), the Connected Interface name (a switchport for wired hosts), and the Host Name
+
+    Network Topology Visualization:
+        An important feature of APIC-EM is the topology representation. Selecting Topology from the menu on the left causes the system to generate from the NIB an HTML 5 Javascript visualizer that uses REST APIs to deliver an interactive graphical network topology. The system uses mechanisms already familiar to you (such as CDP) in order to generate a map of device and host connectivity including connected interfaces, MACs, and IP addresses. The Topology application can auto-visualize topologies at Layer 2 and Layer 3. This feature allows you to more easily examine and troubleshoot the physical inventory, Layer 2 issues, and Layer 3 issues including routing. Using additional tags can represent any additional data 5that you need for your network architecture or for network device inventory management
+
+    Backing up and Restoring the Database:
+        Because the APIC-EM database contains all the information that is derived from the network including tags, discovery configurations, etc, regular backups are very important. APIC-EM makes it easy to create a database backup with a one-click capability. Also, the backup file should be copied to an external location. The system allows you to drag and drop a file from an external location making the restore process equally simple
+
+        Backup options are accessed from the “Settings->Controller Settings->Backup & Restore” menu item which can be accessed using the gear wheel at the top right of the dashboard. Very important to note is that the restore process will stop the entire system, overwrite all current data in the system, and then restart system services and applications. This process can take a considerable period of time
+
+    Users and RBAC Roles and Privileges:
+        APIC-EM utilizes role based access control to control the access that users have to the system. Users can be defined locally on the APIC-EM system or in an external AAA server. There are two options for managing the creation of users and their authentication. Internal users are defined within local on the system, and credentials and roles are managed using the Internal Users setting. External users are defined in a AAA server such as the Cisco Identity Services Engine which is defined using the “External Authentication” settings option.
+
+        Whether the user is internally or externally defined, they are assigned a role. The four built-in roles are as follows:
+            Administrator = A user that can access all system features, change settings, add users, etc
+            Observer = A user that can view inventory, topology, and most applications but cannot make system changes such as deleting inventory
+            Policy Administrator = A user with similar privileges to Administrator but with no access to Controller settings such as the ability to add or delete users
+            Installer = A user role that is designed specifically for use with the Plug and Play application
+
+        In a typical operational environment, most users should have the ROLE_OBSERVER role meaning that such a user can see inventory, topology, and use most applications, but they cannot change the system by deleting inventory, or change settings
+
+APIC-EM applications:
+    APIC-EM has several built-in advanced applications which use the underlying system services to provide automation and management capabilities for various common though sometimes complex provisioning and management tasks. Network Plug and Play application provides automated device provisioning, IWAN application provides automated WAN optimization, Path Trace applications greatly eases and accelerates the task of connection troubleshooting, and lastly EasyQoS application provides end to end Orchestration of QoS in Enterprise Networks
+
+Network plug and play application:
+    There are significant costs to deploy the large number of networking devices that go into an Enterprise data center, branch networks, and campus. Typically, each individual device has to be pre-staged by a skilled professional installer and loaded, typically through manual interaction via a console connection, with a CLI configuration. This process is extremely time consuming and error-prone. However, any attempt to increase the speed and reduce complexity of the deployment must not compromise security
+
+    Built-in to APIC-EM is the Network Plug and Play application which provides a simple, secure, unified, and integrated solution for enterprise network device rollouts and for provisioning updates to an existing network. PnP provides a powerful means to provision enterprise networks that are comprised of routers, switches, and wireless devices with a near zero touch deployment experience.The goal is ultimately to simplify and expedite the process of deploying new devices. In practice, when a network device is shipped from the warehouse it has no initial configuration, and it will not operate in the target environment until it is configured. That configuration task requires a skilled network engineer to connect to the device and use CLI commands via a terminal emulator
+
+    Network PnP eliminates the need for a trained engineer to manually configure a device. Instead, a device is registered in the APIC-EM system using the Network Plug-and-Play application. Then the device can be connected to a network cable with IP connectivity and powered up. From that point on, an agent on the device will discover a PnP server (APIC-EM) using DHCP, DNS, or a proxy server, which identifies the device and automatically provides its configuration
+
+Note: as you can see, new device still needs an ip and must be able to discover APIC-EM
+
+    The Cisco Network PnP solution provides:
+        Simplified and consistent deployment of Cisco network devices
+        Automated and centrally managed remote device deployment from the Cisco Application Policy Infrastructure Controller Enterprise Module (APIC-EM)
+        Converged solution for Cisco routers, switches, and wireless access point devices
+        Support for switch stacks with up to 9 members
+        Devices can automatically discover the APIC-EM controller through DHCP, DNS, or a proxy server, and predefined configurations and images can be pushed out as devices come online
+        Mobile iOS or Android application helps the device installer to bootstrap devices and monitor installation from remote site
+        Secure device authentication and communication using secure unique device identifiers, and certificates that are stored in a Cisco managed trustpool bundle, which is a special store of certificates that are signed by trusted certificate authorities and published by Cisco InfoSec
+
+    Network Plug-and-Play Components:
+        The Network Plug-and-Play capabilities are a combination of several system components which are describe here:
+
+            PnP Agent = This agent is built into IOS and starts automatically when a device is turned on without a running configuration. The agent goes through a discovery process to locate the server, which includes using DHCP options and pre-defined host names. If that process fails, the agent connects to the Cloud Redirection Service which is explained below
+
+            PnP Server = The server is an application that is built on APIC-EM. The server has a list of registered devices and configuration templates. It responds to requests from the agent and supplies configuration and device software images details
+
+            PnP Protocol = The protocol between the agent and the server is based on the exchange of XML documents over HTTPS or XMPP
+
+            PnP Helper Application = This application can be used to monitor the process and provide an initial bootstrap when the device cannot establish IP connectivity to the PnP server
+
+            Cloud Redirection Service = If the agent does not find the server via DHCP options or well pre-defined host names, then it will contact the Cloud Redirection Service. That service will have been configured with an IP address for a PnP Server for the devices unique serial number. The agent can then contact the server at that IP address
+
+Cisco IWAN (aka SDWAN):
+    Software Defined Wide Area Networking, or SD-WAN, is probably one of the mature aspects of the SDN trend seeking to accomplish several straightforward goals:
+        Simplify WAN Management
+        Reduce Costs and Mitigate Risk
+        Deploy WAN Service More Quickly
+        Deliver a Better User Experience
+
+    Cisco’s solution, Cisco Intelligent WAN, or IWAN, centralizes WAN management and automates provisioning and dynamic policy application. This fact means branch office networks can take advantage of centralized traffic control and security features greatly increasing flexibility for WAN connectivity and reducing cost. For example, IWAN can dynamically route traffic over a combination of your private MPLS connection, public internet connection or even cellular connection. This flexibility provides much greater performance, uptime and, even security
+
+    IWAN is not itself a router per se; instead, it integrates with Cisco’s routing platforms including the Cisco ISR, ASR1000 and CSR1000V in order to leverage tested hardware that is already deployed in production. Therefore, utilizing Cisco IWAN has few barriers and requires little to no hardware refresh
+
+    Cisco IWAN delivers:
+        Intelligent path control
+        Application optimization
+        Secure connectivity
+        Transport independence
+
+    Upon power-up, the branch-office routers are automatically configured and ready for production. This architecture is based on open interfaces, a software-defined networking services plane, and device-layer abstraction. This approach abstracts the network topology and provides you with full policy-directed deployment and operation of the network. A common WAN design is to have secure IP-VPNMPLS links from a branch office to a data center or multiple data centers where applications and data are hosted. The IWAN solution is able to automatically determine which traffic must go over the WAN and which traffic may not under specific circumstances and performance constraints
+
+    A common design for branch offices is to have all traffic sent out corporate WAN links to a central location, for example a company-hosted data center. The corporate WAN is distinct from the public internet which would typically be used as a backup option. This design has the advantage of being simple to deploy and secure with well-defined service level agreements for latency and jitter. Since some traffic will be destined for the public internet, it does not need to be secured or require the same SLAs as traffic sent via the corporate WAN. This fact means that some traffic can be redirected to public internet links creating a cheaper and more flexible branch WAN topology. However, the power of IWAN is to provide the same SLA outcomes as with the corporate WAN but on the public internet
+
+    IWAN dashboard:
+        The APIC-EM IWAN application centralizes and automates the configuration of the components of IWAN. The IWAN configuration and operational lifecycle is brief and straightforward. Starting in the upper left of the figure:
+
+            1- Configure a “hub” site which is where the APIC-EM instance will run. Here you will configure global device credentials, settings for Netflow, SNMP, DNS, IOS releases, IP address pools, service providers, and the IWAN aggregation site
+
+            2- Then you will set up branch sites which rely on the Network PnP application
+
+            3- Then you administer application policies which allow you to define applications in terms of URLs, IP address and port, or DiffServ, with properties for jitter, loss, and delay. You then use a drag-and-drop user interface to determine which links applications to policies
+
+            4- Next you will have ongoing monitoring and troubleshooting in order to monitor provisioning and configuration status, bandwidth utilization, application health, and similar properties
+
+Path trace application:
+    Similar to the familiar Packet Tracer tool on Cisco Adaptive Security Appliances, the Path Trace functionality of Cisco APIC-EM determines the path that traffic takes from one network node to another. Tracing paths between network nodes is useful for monitoring and debugging traffic paths that are distributed among the various devices throughout your network
+
+    A common scenario for a help desk is to trace a path from an end user to an application in order to determine whether a system component is impacting a service. For a help desk technician to do this function manually is slow, complex and error prone. The Path Trace application makes this task quick, simple, and consistent.
+
+Easy QOS application:
+    Quality of Service is familiar mechanism to network engineers and is used to identify certain traffic types so they can be given priority over other traffic types. This feature has typically been somewhat difficult to configure end-to-end on networks because the platform, hardware version, and software version all play into what QoS features and commands are supported. The actual configuration is complex and, especially in a campus network, must be configured on many devices making successful enterprise deployment of QoS tedious and error-prone
+
+    The EasyQoS application automates QoS configuration end-to-end. The main concepts in the EasyQoS application are:
+
+        Policy scopes = The named collections of devices that are grouped
+        Applications = URLs, IP addresses, ports, and traffic classes
+        Policies = The relative business importance of given applications in a given scope
+
+    Once it is defined, you can apply a policy to a scope at which point the Easy QoS application orchestrates the configuration with devices in that scope. The application will also report on which devices support the required policy configurations. Therefore, the main benefit of EasyQoS is that it reduces the configuration times for QoS from months to minutes
+
+    Easy qos talks northbound to apic-em via restapi. apic-em translates qos policy you define is plain/simple english into configs/commands which then pushed southbound to devices via supported apis
+
+APIC-EM APIs:
+    The REST APIs supported by APIC-EM are available in the dashboard using the “API” link toward the upper right of the screen. This also provides access to the built-in Swagger API documentation pages. Swagger is a framework or set of rules for REST APIs that give structure to the description and visualization of RESTful web services. The framework is both human and machine readable which enables Swagger to update document information on a client system and server to update at the same time. This feature actually allows the automation of API-related processes which is why it is a powerful part of APIC-EM. The built-in Swagger API documentation pages are a good place to start to explore and experiment with the APIs. Using the “API” button in the top right of the dashboard, you can navigate to the documentation pages as shown in the figure
+
+Using postman with apic-em:
+    Postman is a popular tool for developers using REST APIs. You can use Postman to test APIs and generate the code that you need to call those APIs. Postman is installed on your lab PC, and if you visit GitHub’s Postman repository that you will see many resources for integrating with APIC-EM. For example, for this course several collections and environments have been cloned from GitHub to your lab computer
+
+    The first thing to do when using Postman with APIC-EM is to authenticate the Postman application to the APIC-EM server. This step requires some very minor editing of default settings in Postman in order to use the correct IP address/FQDN of the APIC-EM server and the right logon credentials. Because APIC-EM uses a self-signed certificate and because Postman is Chrome application, you will see an error that is related to a bad certificate when attempting to place your first API call. Therefore, the next step is to log in to the APIC-EM server using Chrome, export the certificate, and then import it to your local computer. Once the certificate is imported, you can create a “Service Ticket” which is the basis of the authorization mechanism for APIC-EM REST APIs. This task is a very simple task and requires that you make an authenticated POST to the /api/v1/ticket API. In the response will be the “serviceTicket identifier” which acts as a token for subsequent API calls. An important thing to remember is that service tickets have an idle timeout of 1800 seconds and an absolute timeout of 6 hours, but these settings can be changed from the Settings menu
+
+    At this point, you are ready to start placing API calls from Postman to the APIC-EM server
+
+Using python with apic-em:
+    Postman is able to generate Python code which is a very helpful feature to developing and troubleshooting scripts. just click on "generate code" and you're all set - you still need to add two lines to script: import json and ignore SSL warnings. refer to previous sections for syntax
+
+    The “uniq” APIC-EM Python Library, can be found at https://github.com/ciscodevnet/uniq
+
+    you can also make rest api calls to apic-em using python requests library we have used to make a rest api call to iosxe, iosxr and nx
+
+Note: when using postman, you add a header field called "x-auth-token" which equals to the service ticket you receive from apic-em when you first authenticated. that's in addition to "content-type" which should be set to application/json
