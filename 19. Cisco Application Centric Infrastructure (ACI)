@@ -94,3 +94,966 @@ Introduction to ACI gui:
         Right-click the containing folder within the left-hand window pane and choosing the creation option, or;
 
         With the folder selected, click the Actions menu in the upper right of the main window section
+
+ACI object model:
+    VRFs and Subnets are independent between tenants
+
+    An illustration of the logical model hierarchy:
+        The top of the ACI logical model is represented by the ‘root’ (or universe). The next hierarchical separation is the Tenant. Each tenant will have at least one or more VRF
+
+        Tenant — Logically separates customers, business units, or departments to restrict visibility into the ACI fabric
+
+        VRF (L3) — Formerly termed a Private Network, serves as a logical separation in routing table (L3) information
+
+        Bridge Domain — Comparable to, but not the same as a VLAN. More correctly seen as a broadcast boundary
+
+        Endpoint Group — Container for hosts (endpoints) requiring the same policy treatment, such as an application or service tier
+
+        Application Profile — A collection of related EPGs that form an application within the same Tenant
+
+    The policy model manages the entire fabric, including the infrastructure, authentication, security, services, applications, and diagnostics. Logical constructs in the policy model define how the fabric meets the needs of any of the functions of the fabric
+
+    E.g:    root
+             |
+    Tenant A | Tenant B
+    VRFA     | VRFB
+    BD       | BD
+    subnet A | subnet B&C
+    EPG EPG  | EPG EPG
+
+Note: a good analogy can be drawn between OSI model and ACI model:
+    L1 == AEP – Attachable Entity Profile Domains (Physical/VMM) – Group of Like Interfaces
+    L2 == EPG – Endpoint Group, Collection of Endpoints Policy Group – Method to Group Interfaces Encapsulation – VLAN, VXLAN, NVGRE
+    L3 == VRF (formerly Private Network)– Layer 3 Segment Bridge Domain (SVI/BVI) – Layer 2 Segment
+    L4-7 == Tenant – Highest level of Object-Model Separation Contracts – Policy Between EPGs Service Graphs – Method to Attach L4-7 Service Application Profile – Logical Collection of EPGs
+
+ACI MIT (management information tree):
+    The ACI fabric comprises the physical and logical components as recorded in the MIM (mgmt information model), which can be represented in a hierarchical MIT. The information model is stored and managed by processes that run on the APIC. The APIC enables the control of managed resources by presenting their manageable characteristics as object properties that can be inherited according to the location of the object within the hierarchical structure of the MIT
+
+    The hierarchical structure starts with the policy universe at the top (uni) and contains parent and child nodes. Each node in the tree is an MO and each object in the fabric has a unique DN that describes the object and locates its place in the tree
+
+    Each node in the tree represents an MO or group of objects. MOs are abstractions of fabric resources. An MO can represent a concrete object, such as a switch, adapter, or a logical object, such as an application profile, endpoint group, or fault
+
+    Some objects can only have one parent, such as the EPG that can only reside in one Application Profile, which resides in one Tenant. Many-to-many relationships also exist, in the case of EPGs and Contracts, which can have multiple bindings to different objects
+
+    If you look at the formal name of each, you can see how the package name that is combined with the object names creates the full name of the Managed Object name. Provided here is a mapping of the friendly name to the actual resource name within an ACI fabric:
+        Tenant: fvTenant
+        Bridge Domain: fvBD
+        Application EPG: fvAEPg
+        Filter: fzFilter
+Note: fv = fabric virtualization. vz = virtual zone
+
+Note: MIM Documentation as can be found here: https://developer.cisco.com/media/mim-ref/
+
+    You can notice five important attributes as you browse each object:
+        The name of the object as documented is the package such as “fv” and the name of the specific object such as “Tenant”
+        Is the object configurable?
+        What is the specific object? The definition of the object.
+        The relative name
+        The distinguished name
+
+    When attempting to gather statistics and object information from hardware devices, it is important to understand that not every leaf within an ACI fabric will have the entire object model residing within its live configuration. As ACI policies are configured on the APIC, they are deployed immediately or on-demand to whichever leaf nodes pertain to the endpoints and objects required. For example, if VRF, BD, Subnet objects belong to customer C, and customer C is only connected Leafs 205-206, then the configuration information for those objects will only be deployed to those two leafs. The process on the leaf then takes that subset of the entire logical model, and turns that in to concrete objects assigned to physical interfaces which occupy TCAM memory resources on the leaf.
+
+    Here is a summary of the process of how policy is deployed throughout an ACI fabric:
+        First, an endpoint attaches to a leaf, or moves to a new leaf through migration
+        Then endpoint is discovered by the fabric when traffic is received from the endpoint, or potentially through an out-of-band mechanism
+        The APIC determines what configuration components are necessary for the leaf to properly function, if it is the first member of the EPG on that particular leaf
+        The APIC pushes the appropriate, pertinent portion of the logical object model to the leaf
+        The switch allocates memory and TCAM resources in support of this newly attached endpoint
+
+Visore:
+    Visore is a valuable tool for browsing and running queries against any objects within the ACI fabric. Visore provides value in querying both logical and concrete objects — they actually instantiated on a particular node. It returns all properties of any object queried – including any statistics and faults
+
+    APIC Object Store Browser
+    Directly read properties, associations, statistics, relationships
+    Can search for all instances of a type (class) of object
+    Where does this subnet exist? What BD is it tied to?
+    https://<APIC IP ADDRESS>/visore.html
+        Log in with APIC credentials
+
+   Visore Interface:
+       Initial screen is all MO's of class fabricNode
+       Navigate Up and Down the MIT
+       Search on Class or DN
+       Filter on property, name, equal/not-equal
+
+       Through filtering in Visore, filtering can restrict the view down to a single object’s DN, or a specific set of objects (class) across the entire fabric.
+
+       Stats, Faults via Visore:
+           Left arrow: Parent of the Managed Object
+           Right arrow: Children of the Managed Object
+           Statistics for the Managed Object (if supported)
+           Faults for the Managed Object
+           HealthScore ("healthInst”) for the Managed Object
+           Navigating up and down the tree is possible via the left and right arrows. Statistics, faults, and health scores can be returned per object if applicable
+
+      Class-based and DN-based Query:
+          Query based on Class
+          Returns all objects of class, e.g. all Tenants (fvTenant)
+          Examine URI. Visore also includes a link to Display the URI of the Query, which is extremely helpful if you’re also using the REST API in native languages such as Python
+
+APIC rest api:
+    overview:
+        APIC is based on a hierarchical object model. EVERYTHING is represented as an object and every object can be manipulated via REST
+        REST operations: POST, GET, DELETE
+        Support for JSON and XML
+        Supports event driven notification (subscriptions)
+        api call construct:
+            https://apic-ip/api/mo|class/dn|classname.xml|json?options
+
+    One of the most important points to note that from the above figure is that the ACI API provides comprehensive access to the underlying object model. Often times applications or vendors will only publish a portion of their product’s API for use – forcing customers to continue to rely upon proprietary applications in order to achieve full functionality of the product. As everything within APIC configuration occurs through the API, it is absolutely not the case with Cisco ACI – access is comprehensive and all-inclusive
+
+    Requests and responses can be made and received in either JSON or XML formats. Other than preference, there is no difference between the functionality of the two
+
+Logging in to APIC:
+    JSON:
+        URL: https://apic/api/aaaLogin.json
+        Body:
+        {
+          "aaaUser":{
+            "attributes":{
+              "name":"admin",
+              "pwd":”cisco123"
+            }
+          }
+        }
+
+        XML:
+        URL: https://apic/api/aaaLogin.xml
+        Method: POST
+        Body:
+        <aaaUser name="admin" pwd=”cisco123"/>
+
+    Before any request can be issued to the APIC, a successful login must occur. The above figure illustrates the same request in JSON and XML format.The valid duration of the received authentication token is 600 seconds by default. That value can be modified under Admin > AAA > Security Management
+
+API inspector:
+    When you perform a task in the APIC GUI, the GUI creates and sends internal API messages to the operating system to execute the task. By using the API Inspector, which is a built-in tool of the APIC, you can view and copy these API messages. An administrator can replicate these messages in order to automate key operations, or you can use the messages as examples to develop external applications that will use the API
+    located under apic-gui > click on username > show api insepctor
+
+Using postman rest client:
+    When utilizing Postman or another application to issue individual calls to the Cisco APIC, one must first specify whether the call is a POST (in the case of login, configuration update/change, or object deletion) or GET (query of one or more objects). The URL must be specified, and in the case of a POST, the body of the request should be included in raw format
+
+    Much like Visore, Postman can be used to return all properties of a specific object by using the full distinguished name. The result is displayed in JSON format, as the .json extension was specified in the GET request. If .xml was specified, the result would be displayed in XML format
+
+    By gathering an example of a POST request from an API Inspector, all the necessary properties are collected to convert it or a similar request to be used by Postman. The HTTP type of POST, URL, and raw body are all included. Provided the syntax is correct and authentication token is still valid, a 200 OK should be returned when the request is issued
+
+Using python for api calls:
+    Remember, the first task that you need to always perform is authentication. Even in Python, you need to login to the device and retrieve a session cookie that will be used in subsequent API calls.
+        import requests
+        import json
+
+        def get_cookies(apic):
+        	username = 'admin'
+        	password = 'cisco123'
+        	url = apic + '/api/aaaLogin.json'
+        	auth = dict(aaaUser=dict(attributes=dict(name=username, pwd=password)))
+        	authenticate = requests.post(url, data=json.dumps(auth), verify=False)
+        	return authenticate.cookies
+
+    You will pass the two variables APIC and cookies into other functions going forward in order to make subsequent API calls within the same script:
+          if __name__ == "__main__":
+          protocol = 'http'
+          host = 'apic'
+          apic = '{0}://{1}'.format(protocol, host)
+          cookies = get_cookies(apic)
+
+    subsequent call:
+          def get_subnets(apic, cookies):
+          	uri = '/api/class/fvSubnet.json'
+          	url = apic + uri
+          	req = requests.get(url, cookies=cookies, verify=False)
+          	response = req.text
+          	return response
+
+          rsp = get_subnets(apic,cookies)
+          # rsp is a unicode string
+
+          rsp_dict = json.loads(rsp)
+          subnets = rsp_dict['imdata']
+
+Note: API endpoints return a JSON string, so in order to access it as a dictionary in Python, you will need to use the json.loads() method to load the string as a dictionary
+Note: Attributes are stored as the value of the imdata key
+
+Cobra SDK:
+    As you have seen, the Cisco ACI platform has a robust RESTful API. Anything which you can do via the GUI, you can do via the API. However, using the raw API can be tedious and cumbersome as you need to know and configure low-level details such as which HTTP verb is being used, the URI, headers, and encoding supported. It is true for any REST API. In addition, you need to take care of any error handling within any custom code you write when using a native REST API – for example, with the Python requests module. In order to simplify application development with ACI, Cisco has developed Cobra, a robust Python library for the APIC REST API. Objects in the Cobra library (SDK) are a 1:1 mapping to the objects within the ACI MIT. You will see this first hand as you walk through various examples using Cobra
+
+    If you are planning to dive deeper into Cobra, the best place to start is the official Cobra documentation that Cisco has hosted on readthedocs (http://cobra.readthedocs.io/). These documents review everything from the installation to showing examples and they even include a Frequently Asked Questions in order to jump-start individuals looking to test Cobra
+
+    Remember that everything in an ACI fabric is an object and as such is the exact way Cobra is modeled meaning everything in Cobra is an object
+
+    A common workflow for retrieving data using Cobra is as follows:
+        Create a Session Object
+        Log in to APIC
+        Perform Lookup by Class or DN
+
+    In the same fashion, a common workflow for configuring the ACI Fabric is as follows:
+        Create a Session Object
+        Log in to APIC
+        Create Configuration Object by first looking for an object by DN or Class and then creating the new object. you also need to reference the parent object when building a configuration object.
+        Create a Configuration Request Object
+        Add your Config Object to the Request
+        Commit
+
+Cobra Installation
+    In order to obtain Cobra, you should connect directly to your APIC controller at the following url: https://apic/cobra/_downloads. You will see two Python egg files that you can download and then install with easy_install. These egg files, when used together, act as the full Cobra SDK. Of these egg files, one file begins with “acicobra” and another begins with “acimodel”. acicobra is technically the actual SDK and acimodel is a set of Python modules that is a representation of the ACI model as implemented in the Management Information Tree (MIT)
+
+    easy_install –Z acicobra-1.*-py2.7.egg acicobra
+    easy_install –Z acimodel-1.*-py2.7.egg acimodel
+
+Note: yet on pypi (installable via pip)
+
+    acicobra:
+        This is technically the SDK and includes:
+            cobra
+            cobra.mit
+            cobra.internal
+
+            from cobra.mit.access import MoDirectory
+            from cobra.mit.session import LoginSession
+            from cobra.mit.request import ConfigRequest
+            from cobra.internal.codec.xmlcodec import toXMLStr
+
+   acimodel:
+       These are python packages that model the MIT and includes:
+            cobra
+            cobra.model
+            from cobra.model.fv import Tenant
+            from cobra.model.vz import Filter
+
+    To make things a little clearer between both egg files, you can take a look at the usage of these Python packages. You can take note based on the objects being imported that acicobra is the SDK and is used to create the LoginSession and ConfigRequest objects while the acimodel is used to import the required objects from the MIT. You can also see this information if you import the model from cobra and use the help function
+
+Cobra examples:
+Example 1 - Get Tenant – DN Lookup
+
+def get_tenant(moDir, name):
+
+    mo = moDir.lookupByDn('uni/tn-{0}'.format(name))
+    return mo
+
+if __name__ == "__main__":
+
+    username = 'admin'
+    password = 'Cisco123'
+    protocol = 'https'
+    host = 'apic'
+
+### output continues on next slide ###
+### output continuation from previous slide ###
+
+    apic = '{0}://{1}'.format(protocol, host)
+
+    session = LoginSession(apic, username, password)
+    moDir = MoDirectory(session)
+    moDir.login()
+Now you will look at a few examples of using Cobra. In this first example, take note of two things:
+
+How to Log in and Authenticate using Cobra
+
+How to perform a “get” or query based on DN using Cobra
+
+There are three Python statements are needed to Log in to the APIC:
+
+session = LoginSession(apic, username, password)
+ moDir = MoDirectory(session)
+ moDir.login()
+Once you are logged in, you can execute this script using the –i flag from the Linux terminal as such:
+
+$python –i get_tenant.py
+Using the “-i” flag will automatically drop you into the Python shell and give you access to all objects in the global namespace. You can now access any variable that exists under if __name__ == "__main__": or any function.
+
+Here is what it’s like to call the get_tenant() function.
+
+>>> tenant = get_tenant(moDir, 'Marketing')
+>>> print tenant
+None
+
+Notice how the result was None as the tenant called Marketing does not exist.
+
+>>> tenant = get_tenant(moDir, Finance')
+>>> print tenant
+<cobra.model.fv.Tenant object at 0x7f387105ac50>
+>>>
+Here you see that an object is returned because the Finance tenant does exist.
+
+Example 1 - Get Tenant – DN Lookup (continued)
+
+>>> tenant = get_tenant(moDir, 'Finance')
+>>>
+>>> print tenant
+<cobra.model.fv.Tenant object at 0x7f387105ac50>
+>>>
+>>> tenant.dn
+<cobra.mit.naming.Dn object at 0x7f3866af5450>
+>>>
+>>> str(tenant.dn)
+'uni/tn-Finance'
+>>>
+>>> tenant.name
+'Finance'
+>>>
+
+Note: You see that the tenant that is called Finance does exist, but a Python object is returned. Remember, everything in ACI and in Cobra is an object. Since you received an object back, you can then explore it’s built-in methods and attributes. By using the dir() function as shown below. After seeing its supported properties, you iterate through them or simply view them.
+
+Note: These are the same properties that you previously saw when navigating through Visore and the Management Information Model documentation
+
+>>> tenant = get_tenant(moDir, 'Finance')
+>>>
+>>> print tenant
+<cobra.model.fv.Tenant object at 0x7f387105ac50>
+>>>
+>>> dir(tenant)
+['_BaseMo__children', '_BaseMo__dirtyProps', '_BaseMo__dn', '_BaseMo__meta', '_BaseMo__modifyChild', '_BaseMo__parentDn', '_BaseMo__parentDnStr', '_BaseMo__parentMo', '_BaseMo__rn', '_BaseMo__setModified', '_BaseMo__setprop', '_BaseMo__status', '_ChildContainer', '__class__', '__delattr__', '__dict__', '__doc__', '__format__', '__getattr__', '__getattribute__', '__hash__', '__init__', '__module__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_attachChild', '_children', '_delete', '_detachChild', '_dirtyProps', '_dn', '_isPropDirty', '_numChildren', '_parent', '_parentDn', '_resetProps', '_rn', '_setParent', '_status', 'childAction', 'children', 'delete', 'descr', 'dirtyProps', 'dn', 'isPropDirty', 'lcOwn', 'meta', 'modTs', 'monPolDn', 'name', 'numChildren', 'ownerKey', 'ownerTag', 'parent', 'parentDn', 'prop', 'resetProps', 'rn', 'status', 'uid']
+>>>
+>>> tenant.rn
+<cobra.mit.naming.Rn object at 0x7f3870050350>
+>>>
+>>> tenant.dn
+<cobra.mit.naming.Dn object at 0x7f3866af5450>
+>>>
+>>> str(tenant.dn)
+'uni/tn-Finance'
+>>>
+>>> str(tenant.rn)
+'tn-Finance'
+>>>
+>>> tenant.name
+'Finance'
+>>>
+
+Example 2 - Get Tenants – Class Lookup
+
+def get_tenants(moDir):
+
+    tenants = moDir.lookupByClass('fvTenant')
+    return tenants
+
+>>> tenants = get_tenants(moDir)
+>>>
+>>> for tenant in tenants:
+...     print tenant.name
+...
+Accounting
+common
+infra
+mgmt
+Finance
+In the previous example, you saw how to perform a lookup based on a DN. In this example, you examine how to perform a lookup based on Class. You will query the ACI fabric for all existing tenants using the class that is called fvTenant.
+
+>>> tenants = get_tenants(moDir)
+>>>
+>>> tenants
+[<cobra.model.fv.Tenant object at 0x7f52ddb506d0>, <cobra.model.fv.Tenant object at 0x7f52ddb50290>, <cobra.model.fv.Tenant object at 0x7f52ddb503d0>, <cobra.model.fv.Tenant object at 0x7f52ddb50a50>, <cobra.model.fv.Tenant object at 0x7f52ddb50850>]
+>>>
+Again, remember that everything that comes back is an object and these objects usually have a property that is called name. You will now look through each tenant object and print the associated name for each tenant
+
+>>> for tenant in tenants:
+...     print tenant.name
+...
+Accounting
+common
+infra
+mgmt
+Finance
+Example 3 – Configuring Application Profile
+
+    tenant = 'Finance'
+    ap = 'Finance-3Tier-App'
+
+    tenant_mo = moDir.lookupByDn('uni/tn-{0}'.format(tenant))
+
+    ap_mo = Ap(tenant_mo, name=ap, descr='new ANP for Finance')
+
+    config_req = ConfigRequest()
+    config_req.addMo(ap_mo)
+
+    moDir.commit(config_req)
+In this final example, you can add a new application networking profile for the Finance tenant. Remember, you also need to be aware of the object you are configuring and it’s associated parent. Here you want to add an ANP, so you first lookup the tenant based on DN. Just after you look up the tenant object, you need to pass it as an object as you instantiate the AP. This action is how ACI will know which tenant to add this ANP too.
+
+After configuration you wish to send to the device is modeled, you will perform three steps:
+
+Build a ConfigRequest() object
+
+Add your configuration to the ConfigRequest() object
+
+Push (or Commit) your Configuration
+
+Here is the full script as the figure only shows a portion of it:
+        if __name__ == "__main__":
+            username = 'admin'
+            password = 'CiscoAci123'
+            protocol = 'https'
+            host = 'apic'
+            apic = '{0}://{1}'.format(protocol, host)
+            session = LoginSession(apic, username, password)
+            moDir = MoDirectory(session)
+            moDir.login()
+            tenant = 'Finance'
+            ap = 'Finance-3Tier-App'
+            tenant_mo = moDir.lookupByDn('uni/tn-{0}'.format(tenant))
+            ap_mo = Ap(tenant_mo, name=ap, descr='new ANP for Finance')
+            config_req = ConfigRequest()
+            config_req.addMo(ap_mo)
+            moDir.commit(config_req)
+
+Arya:
+    Ayra is short for APIC REST to pYthon Adapter. It offers a way to auto-generate Python code from XML or JSON objects. Arya was built to simplify working with Cobra as there is a steeper learning curve with Cobra as compared to ACI Toolkit, which is covered later in this section.
+
+    Before looking at Arya in more detail, remember two main points:
+        The APIC GUI issues API calls as the GUI is simply an API client
+        You can view the actual API calls being made as you manage an ACI Fabric using API Inspector. API inspector shows the URL plus the JSON body being sent to the APIC
+
+        It is this JSON object that is displayed with API inspector that you can use to auto-generate Cobra code in order to jump-start creating applications with Cobra
+
+Note: You can also generate JSON/XML objects in the GUI. Simply right click on an object, select save as, and select the respective data encoding format you wish to download it as, i.e. JSON or XML
+
+    Arya is open source and available on GitHub at: https://github.com/datacenter/arya
+
+Arya workflow:
+    There are only a few steps that are required to more simply use Cobra by way of Arya:
+        First, you need to obtain an XML or JSON object representing something that you want to configure on an ACI fabric. The figure shows an example JSON object as the following:
+
+            {"fvTenant":{"attributes":{"dn":"uni/tn-TENANT6","name":"TENANT6","descr":"sample-test-for-cisco","rn":"tn-TENANT6","status":"created"},"children":[]}}
+
+    This object represents a Tenant with the name “TENANT6” and with a description of “sample-test-for-cisco”
+
+    Once you obtain the object, you simply store it in a file
+
+    Once the object is saved to a file, you use the arya.py script to automatically generate a fully functioning Python script that uses Cobra. In order to do this, you would issue the following command on the terminal: arya.py –f filename.json
+
+Note: -f stands for file
+
+    example arya output:
+        $ arya.py -f newtenant.json
+        #!/usr/bin/env python
+        '''
+        Autogenerated code using arya.py
+        Original Object Document Input:
+        {"fvTenant":{"attributes":{"dn":"uni/tn-TENANT6","name":"TENANT6","descr":"sample-test-for-cisco","rn":"tn-TENANT6","status":"created"},"children":[]}}
+        '''
+        raise RuntimeError('Please review the auto generated code before ' +
+                            'executing the output. Some placeholders will ' +
+                            'need to be changed')
+        # list of packages that should be imported for this code to work
+        import cobra.mit.access
+        import cobra.mit.session
+        import cobra.mit.request
+        import cobra.model.fv
+        import cobra.model.pol
+        from cobra.internal.codec.xmlcodec import toXMLStr
+        # log into an APIC and create a directory object
+        ls = cobra.mit.session.LoginSession('https://1.1.1.1', 'admin', 'password')
+        md = cobra.mit.access.MoDirectory(ls)
+        md.login()
+        # the top level object on which operations will be made
+        topMo = cobra.model.pol.Uni('')
+        # build the request using cobra syntax
+        fvTenant = cobra.model.fv.Tenant(topMo, name=u'TENANT6', descr=u'sample-test-for-cisco')
+        # commit the generated code to APIC
+        print toXMLStr(topMo)
+        c = cobra.mit.request.ConfigRequest()
+        c.addMo(topMo)
+        md.commit(c)
+
+    Arya also provides several flags that can be used when generating the Cobra code. For example, you may want to auto populate the correct IP/name of your APIC controller and credentials to minimize the manual changes that are needed after generating code. You can do this using –i (IP address/name), -u (username), and –p (password). Also, you may also want to add to the –nc flag to not include the statement that says “md.commit(c)” such that you don’t accidentally commit something that you are just testing
+
+Arya examples:
+Example 1 - Create Tenant, Bridge Domain, Subnet
+
+bd.xml:
+
+<polUni>
+    <fvTenant name="Tenant_7">
+        <fvBD name="T7_BD">
+            <fvSubnet subnet="10.10.10.1/24">
+            </fvSubnet>
+        </fvBD>
+    </fvTenant>
+</polUni>
+
+$ arya.py -f bd.xml
+Now take a look at another example. This example shows a tenant object too, but this time it is in XML, and it is being used to create a Tenant, Bridge Domain, and Subnet. It will generate a single script that auto-configures this Cobra.
+
+The output of this arya program is as follows:
+cisco@cisco:~/arya/acicourse$ arya.py -f bd.xml
+#!/usr/bin/env python
+'''
+Autogenerated code using arya.py
+Original Object Document Input:
+<polUni>
+    <fvTenant name="Tenant_7">
+        <fvBD name="T7_BD">
+            <fvSubnet subnet="10.10.10.1/24">
+            </fvSubnet>
+        </fvBD>
+    </fvTenant>
+</polUni>
+'''
+raise RuntimeError('Please review the auto generated code before ' +
+                    'executing the output. Some placeholders will ' +
+                    'need to be changed')
+# list of packages that should be imported for this code to work
+import cobra.mit.access
+import cobra.mit.session
+import cobra.mit.request
+import cobra.model.pol
+import cobra.model.fv
+from cobra.internal.codec.xmlcodec import toXMLStr
+# log into an APIC and create a directory object
+ls = cobra.mit.session.LoginSession('https://1.1.1.1', 'admin', 'password')
+md = cobra.mit.access.MoDirectory(ls)
+md.login()
+# the top level object on which operations will be made
+topMo = cobra.model.pol.Uni('')
+# build the request using cobra syntax
+fvTenant = cobra.model.fv.Tenant(topMo, name='Tenant_7')
+fvBD = cobra.model.fv.BD(fvTenant, name='T7_BD')
+fvSubnet = cobra.model.fv.Subnet(fvBD, subnet='10.10.10.1/24')
+# commit the generated code to APIC
+print toXMLStr(topMo)
+c = cobra.mit.request.ConfigRequest()
+c.addMo(topMo)
+md.commit(c)
+
+$ arya.py -f bd1.xml -i apic -u admin -p cisco123 -nc
+
+ou can now build on the previous example adding in your APIC name and desired credentials. You also want to set the –nc flag, so that output does not include the commit operation. Here is the full output. Notice the difference from the previous example.
+
+cisco@cisco:~/arya/acicourse$ arya.py -f bd.xml -i apic -u admin -p cisco123 -nc
+#!/usr/bin/env python
+'''
+Autogenerated code using arya.py
+Original Object Document Input:
+<polUni>
+    <fvTenant name="Tenant_7">
+        <fvBD name="T7_BD">
+            <fvSubnet subnet="10.10.10.1/24">
+            </fvSubnet>
+        </fvBD>
+    </fvTenant>
+</polUni>
+'''
+# list of packages that should be imported for this code to work
+import cobra.mit.access
+import cobra.mit.session
+import cobra.mit.request
+import cobra.model.pol
+import cobra.model.fv
+from cobra.internal.codec.xmlcodec import toXMLStr
+# log into an APIC and create a directory object
+ls = cobra.mit.session.LoginSession('https://apic', 'admin', 'CiscoAci123')
+md = cobra.mit.access.MoDirectory(ls)
+md.login()
+# the top level object on which operations will be made
+topMo = cobra.model.pol.Uni('')
+# build the request using cobra syntax
+fvTenant = cobra.model.fv.Tenant(topMo, name='Tenant_7')
+fvBD = cobra.model.fv.BD(fvTenant, name='T7_BD')
+fvSubnet = cobra.model.fv.Subnet(fvBD, subnet='10.10.10.1/24')
+# commit the generated code to APIC
+print toXMLStr(topMo)
+c = cobra.mit.request.ConfigRequest()
+c.addMo(topMo)
+
+Example 2 - Create App Pro, EPG, Associations
+
+{
+    "fvAp": {
+        "attributes": {
+            "dn": "uni/tn-Finance/ap-Finance-3Tier-App",
+            "name": "Finance-3Tier-App",
+            "rn": "ap-Finance-3Tier-App",
+            "status": "created"
+        },
+        "children": [
+            {
+
+### output continues on next slide ###
+### output continuation from previous slide ###
+                "fvAEPg": {
+                    "attributes": {
+                        "descr": "descr-epg-web",
+                        "dn": "uni/tn-Finance/ap-Finance-3Tier-App/epg-web_epg",
+                        "name": "web_epg",
+                        "prio": "level1",
+                        "rn": "epg-web_epg",
+                        "status": "created"
+                    },
+
+         ### output shortened for brevity ###
+You can even use arya to auto-generate a complete Application Profile, EPG, and association. Again, as long as you have the proper JSON or XML representation of what you want to configure, you can use arya to auto-generate the code for you.
+
+Here is an example that configures an Applicatoin Profile, EPG, and associates the EPG to two contracts and a Bridge Domain.
+
+The original JSON OBJECT:
+
+{
+    "fvAp": {
+        "attributes": {
+            "dn": "uni/tn-Financei/ap-Finance-3Tier-App",
+            "name": "Finance-3Tier-App",
+            "rn": "ap-Finance-3Tier-App",
+            "status": "created"
+        },
+        "children": [
+            {
+                "fvAEPg": {
+                    "attributes": {
+                        "descr": "descr-epg-web",
+                        "dn": "uni/tn-Finance/ap-Finance-3Tier-App/epg-web_epg",
+                        "name": "web_epg",
+                        "prio": "level1",
+                        "rn": "epg-web_epg",
+                        "status": "created"
+                    },
+                    "children": [
+                        {
+                            "fvRsCons": {
+                                "attributes": {
+                                    "status": "created",
+                                    "tnVzBrCPName": "App_Con"
+                                },
+                                "children": []
+                            }
+                        },
+                        {
+                            "fvRsProv": {
+                                "attributes": {
+                                    "status": "created",
+                                    "tnVzBrCPName": "Web_Con"
+                                },
+                                "children": []
+                                }
+                        },
+                        {
+                            "fvRsBd": {
+                                "attributes": {
+                                    "status": "created,modified",
+                                    "tnFvBDName": "Finance_BD1"
+                                },
+                                "children": []
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}
+
+The output that is generated from arya:
+
+import cobra.mit.access
+import cobra.mit.session
+import cobra.mit.request
+import cobra.model.fv
+import cobra.mit.naming
+from cobra.internal.codec.xmlcodec import toXMLStr
+# log into an APIC and create a directory object
+ls = cobra.mit.session.LoginSession('https://apic', 'admin', 'CiscoAci123')
+md = cobra.mit.access.MoDirectory(ls)
+md.login()
+# the top level object on which operations will be made
+# Confirm the dn below is for your top dn
+topDn = cobra.mit.naming.Dn.fromString('uni/tn-Finance/ap-Finance-3Tier-App')
+topParentDn = topDn.getParent()
+topMo = md.lookupByDn(topParentDn)
+# build the request using cobra syntax
+fvAp = cobra.model.fv.Ap(topMo, name=u'Finance-3Tier-App')
+fvAEPg = cobra.model.fv.AEPg(fvAp, name=u'web_epg', prio=u'level1', descr=u'descr-epg-web')
+fvRsCons = cobra.model.fv.RsCons(fvAEPg, tnVzBrCPName=u'App_Con')
+fvRsProv = cobra.model.fv.RsProv(fvAEPg, tnVzBrCPName=u'Web_Con')
+fvRsBd = cobra.model.fv.RsBd(fvAEPg, tnFvBDName=u'Finance_BD1')
+# commit the generated code to APIC
+print toXMLStr(topMo)
+c = cobra.mit.request.ConfigRequest()
+c.addMo(topMo)
+md.commit(c)
+
+
+ACI toolkit:
+    The acitoolkit serves to expose a small subset of the RESTful API in a way that is meant to provide an introduction to the ACI concepts and allow users to get the most common workflows up and running as quickly as possible. These tools are intended to ease the workload of ACI administrators and enhance the functionality of the fabric. In some cases, tools have been incorporated into upcoming ACI releases as a function of the product. These tools are freely available, community-driven, and are not directly supported by Cisco or any manufacturer
+
+    https://github.com/datacenter/acitoolkit
+
+    http://datacenter.github.io/acitoolkit
+
+    There are three core components of the ACI toolkit, which include the following:
+        Python library (classes) — Similar to Cobra, toolkit can be used to build custom applications. However, only a sub-set of the objects are exposed via Toolkit as Cobra is an exact 1:1 representation of the ACI MIM
+
+        Applications — Toolkit also comes with pre-canned applications that target common use cases. You cover Application in more detail later in this topic
+
+        Scripts — There are over a dozen pre-built scripts that allow you to perform common operations. Here is a sub-set of “show” scripts that come with ACI toolkit:
+                Show
+                Contexts
+                Contracts
+                Domains
+                Endpoints
+                EPGs
+                Filter Entries
+                Interface Stats
+                Tenants
+                Physical Inventory
+
+Installing aci toolkit:
+    There are two options for installing the ACI toolkit. They are as follows:
+          Option 1:
+          $ git clone https://github.com/datacenter/acitoolkit.git
+          $ cd acitoolkit
+          $ python setup.py install
+
+          Option 2:
+          $ docker pull dockercisco/acitoolkit
+          $ docker run dockercisco/acitoolkit
+
+ACI toolkit object model:
+    Earlier, you reviewed the object model of an ACI fabric. You should understand that the Object Model of the ACI toolkit is only a sub-set of what ACI offers which is why and how toolkit only covers the common use cases. There are three distinct areas of the core ACI Toolkit object model. They include: Application Topology, Interface model, and the Physical topology
+
+    application topology:
+        includes:
+            Tenant is the root class within the acitoolkit object model hierarchy. All the application topology configuration occurs within a Tenant
+
+            AppProfile is the Application Profile class. It contains the configuration for a given application
+
+            EPG is the Endpoint Group class. It is the object for defining configuration that is applied when endpoints connect to the fabric
+
+            Context is the class representing an L3 namespace (roughly, a traditional VRF in Cisco terminology)
+
+            BridgeDomain is the class representing an L2 forwarding domain (roughly, a traditional VLAN). It is associated with a single Context
+
+            Subnet is the class representing an L3 subnet. It is associated with a single BridgeDomain
+
+            OutsideEPG is the class representing an EPG that connects to the world outside the fabric. It is where routing protocols such as OSPF are enabled
+
+            Contracts define the application network services being provided and consumed by EPGs. EPGs may provide and consume many contracts
+
+            Taboos define the application network services that can never be provided or consumed by EPGs
+
+            FilterEntry contained within either a Contract or a Taboo. Defines the traffic profile that the Contract or Taboo applies
+
+Note: As mentioned ACI toolkit is a Python library at its lowest level. Here you can walk through a basic workflow just like you did with Cobra
+
+ACI toolkit workflow:
+    A common workflow for retrieving data using ACI Toolkit is as follows:
+       1- Create a Session Object (notice it is simpler than cobra)
+       2- Log in to APIC
+       3- Perform Lookup Using pre-built objects
+
+    In the same fashion, a common workflow for configuring the ACI Fabric is as follows:
+      1- Create a Session Object
+      2- Log in to APIC
+      3- Create Configuration Object (simpler than Cobra)
+      4- Push your config object to the APIC one of two ways: using push_to_apic() method of the config object or of the session object
+
+ACI toolkit examples:
+Example 1 – Tenant Configuration
+
+# Create the Tenant
+tenant = Tenant('toolkit_tenant')
+
+# Create the Application Profile
+app = AppProfile('app_tk', tenant)
+
+# Create the EPG
+epg = EPG('epg_tk', app)
+
+# Create a VRF and BridgeDomain
+context = Context('vrf_tk', tenant)
+bd = BridgeDomain('bd_tk', tenant)
+bd.add_context(context)
+# Place the EPG in the BD
+epg.add_bd(bd)
+
+# Create Session object
+session = Session(apic, username, password)
+
+# Login to APIC
+session.login()
+
+# Push configuration
+resp = session.push_to_apic(tenant.get_url(), tenant.get_json())
+This figure provides a walk-through how to create a tenant, application profile, VRF, Bridge domain, and how to push it to the ACI fabric.
+
+Example 2 – Get Interface Info
+
+>>> interfaces = Interface.get(session)
+>>> interfaces = Interface.get(session=session, pod_parent='1', node='101', module='1', port='15')
+
+>>> intf = interfaces[0]
+>>> print intf.porttype
+leaf
+>>>
+>>> print intf.port
+15
+>>> print intf.name
+eth 1/101/1/15
+>>>
+           ### output continues on the next slide ###
+### output continuation from the previous slide ###
+
+>>> print intf.mtu
+9000
+>>> print intf.adminstatus
+up
+>>> print intf.speed
+inherit
+>>>
+>>> print intf.descr
+None
+>>> print intf.is_cdp_enabled()
+False
+
+Here you explore the physical topology object model of an ACI Fabric. As you can see, you still need to understand which parameters are required when using objects such as Interface. You need to specific the parent, node, module, and port in order to gather interfaces of a given port in the fabric.
+
+Example 3 – Subscriptions - Event Driven Notifications
+This example highlights the facts that you can subscribe to events on an ACI fabric. It is a power feature as you do not need to continuously poll the fabric. Rather, a web socket connection is opened, and APIC notifies you when an event occurs.
+
+ACI Toolkit Applications:
+    CLI
+    Diagrams
+    Lint
+    Cable Plan
+    Event Feeds
+    Fake APIC
+
+    In addition to ACI toolkit being used a library, it also comes with pre-built applications to server the needs of common use-cases
+
+    A few common applications and use-cases that you cover in the course are:
+        CLI – The ability to use a NX-OS-like CLI to interact with the ACI Fabric
+        Diagrams – Automatically draw diagrams of the application architecture for each tenant
+        Lint – Allows you to “lint” the ACI configuration. It stems from linters being used to validate code, data encoded objects, etc. for example a common linter is JSONlint.com to validate JSON objects. ACI Lint validates ACI configurations
+
+        Cable Plan – Validate an ACI fabric is cabled correctly
+
+        Event feeds – You can use this application subscribe to events and have them show up in your RSS feed
+
+        Fake APIC – Simulates APIC APIs and is commonly used for testing
+
+ACI toolkit cli application:
+    To run CLI commands from the APIC, navigate to the acitookit/cli directory and type:
+        Host# python acitoolkitcli.py -l admin -p cisco123 -u https://apic
+
+    The CLI enables functions such as switching tenants, creating contexts, creating bridge domains, and creating endpoint groups
+
+    Some examples of the common commands you might use to create these logical objects:
+
+        Switch to a tenant configuration mode:
+            fabric# switchto tenant <tenant-name>
+            fabric-tenant# switchback
+            Create a bridge domain and assign it to a context:
+            fabric-tenant(config)# [no] bridgedomain <bd-name>
+            fabric-tenant(config-bd)# [no] context <context-name>
+
+       Create a subnet under the bridge domain:
+            fabric-tenant(config-bd)# [no] ip address <ip-address>/<masklength> [name <subnet-name>]
+
+ACI toolkit diagram application:
+    The ACI Diagram Tool is a simple tool to connect to a Cisco ACI Application Policy Infrastructure Controller using the acitoolkit library, interrogate the configuration and generate logical diagrams
+
+    Auto-generate visual representation of tenant objects and relationship between parent and child objects
+
+    $ python diagram.py -o aci.png
+
+ACI toolkit lint application:
+    ACI Lint can be run against the current running APIC configuration or a previously saved set of configuration snapshot files.
+
+    Fun Fact: In computer programming, Lint was the name that was originally given to a particular program that flagged some suspicious and non-portable constructs (likely to be bugs) in C language source code. The term is now applied generically to tools that flag suspicious usage in software that is written in any computer language. The term lint-like behavior is sometimes applied to the process of flagging suspicious language usage. Lint-like tools generally perform static analysis of source code. Source: https://en.wikipedia.org/wiki/Lint_(software)
+
+    python acilint.py -0 html
+
+    It is recommended that warnings and errors should be investigated. Presently, the alert library is as listed below, but you can configure what you deem a warning or error, or add-on to the application to add more checks.
+
+    Warnings:
+        warning_001 - Tenant has no app profile warning_002 - Tenant has no context warning_003 - AppProfile has no EPGs warning_004 - Context has no BridgeDomain warning_005 - BridgeDomain has no EPGs assigned warning_006 - Contract is not provided at all warning_007 - Contract is not consumed at all warning_008 - EPG providing contracts but in a Context with no enforcement warning_010 - EPG providing contract but consuming EPG is in a different context warning_011 - Contract contains bi-directional TCP Subjects warning_012 - Contract contains bi-directional UDP Subjects warning_013 - Contract has no Subjects warning_014 - Contract has Subjects with no Filters
+
+    Errors:
+        error_001 - BridgeDomain has no context error_002 - EPG has no BD assigned error_005 - Duplicate or overlapping subnets in Context error_006 - ExternalNetwork Subnets duplicated in fabric
+
+    Critical:
+        critical_001 - Compliance check example
+
+Note: You can also choose to output the errors to the Linux terminal instead of an HTML page as you will see in the upcoming Discovery Lab
+
+    Example Use Cases:
+        Configuration Analysis – Determine whether any of the configuration could be possibly problematic or suspicious. Based on a defined number of conditions (can be expanded)
+
+        Compliance & Auditing – Determine if any violations occur from a policy and security perspective. Compliments APICs use of tags for user-defined groups
+
+ACI toolkit cableplan application:
+    The Cable Plan application allows you to easily import existing cable plans from XML files, import the currently running cable plan from an APIC controller, export previously imported cable plans to a file, and compare cable plans. More advanced users can use the Cable Plan to easily build a cable plan XML file, query a cable plan, and modify a cable plan
+
+    e.g:
+        $ python cableplan.py -e existing_cabling
+        $ cat existing_cabling
+        <?xml version="1.0" encoding="UTF-8"?>
+        <?created by cableplan.py?>
+        <CISCO_NETWORK_TYPES version="None" xmlns="http://www.cisco.com/cableplan/Schema2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cisco.com/cableplan/Schema2 nxos-cable-plan-schema.xsd">
+            <DATA_CENTER networkLocation="None" idFormat="hostname">
+                <CHASSIS_INFO sourceChassis="Spine1" type="n9k">
+                    <LINK_INFO sourcePort="eth5/2" destChassis="Leaf2" destPort="eth1/49"/>
+                    <LINK_INFO sourcePort="eth5/1" destChassis="Leaf1" destPort="eth1/49"/>
+
+        ### output continues on next slide ###
+        ### output continuation from previous slide ###
+
+                </CHASSIS_INFO>
+                <CHASSIS_INFO sourceChassis="Spine2" type="n9k">
+                    <LINK_INFO sourcePort="eth5/2" destChassis="Leaf2" destPort="eth1/50"/>
+                    <LINK_INFO sourcePort="eth5/1" destChassis="Leaf1" destPort="eth1/50"/>
+                </CHASSIS_INFO>
+            </DATA_CENTER>
+        </CISCO_NETWORK_TYPES>
+
+    The ‘export’ flag, which is selected with the ‘-e’ option, will create a cable plan by reading the state of the ACI fabric from the APIC controller. This cable plan will be either displayed on the monitor or, if a filename is specified, will be placed in a file. It will be in nicely formatted XML, an example of which is provided above
+
+    The CHASSIS_INFO tag identifies the spine switches and the leaf switches are contained in the LINK_INFO. When the XML is read in, both leaf and spine switch objects will be created and the get_switch() and get_link() methods can be used to access them
+
+    You can see how if you pre-build this cable plant, deploy a fabric, you can use the cable plan application to verify that all cabling is as expected
+
+ACI toolkit event feeds application:
+    ACI Events to Atom Feeds
+
+    Subscribes to APIC Managed Objects and records any updates to the objects over a web socket connection
+
+    Monitor changes & Display updates in a reader of your choice!
+
+    Monitoring tools readers, or individual, etc.
+
+    Some sample use cases for the ACI Events to Atom Feed application:
+        Display recent endpoints in a NOC
+        Display updated tenants on an IPTV
+        Monitor EPG changes in a feed client
+        Start the eventfeeds application
+        Available feeds are accessible via web
+        Subscribe
+
+    $ python eventfeeds.py --ip 192.168.56.101 --port 5001
+        192.168.56.101 == ip of feed server
+
+Note: Once the event feed application is running, it will connect to the APIC and subscribes (over a websocket) to any requested classes in the configuration file
+
+    Events can be recorded and notifications that are issued for the following classes: Tenant, Application Profile, Common EPG, EPG, Endpoint, Contract, and Bridge Domain
+
+    Whenever an update is received a row is inserted into a local database table named events. Each row has the Class Name, Name, Timestamp, and JSON representation of the object. When you request a feed, the Flask web application will query the database for the relevant events and then dynamically generate an Atom compatible feed. Note that updates to the database will only occur when the ACI Events to Atom Feed is running
+
+ACI toolkit fake apic application:
+    The Fake APIC is designed for users to view Managed Objects (and their properties) based on JSON configuration files. The Fake APIC works as an offline tool for users who may not have access to the APIC, but still want to see certain (or all) Managed Objects on the network
+
+        import json
+
+        session = FakeSession(filenames)
+        query = '/api/mo/uni/tn-tenant1/BD-1.json?query-target=children'
+        fake_ret = fake_session.get(query)
+        fake_data = fake_ret.json()['imdata']
+        data = fake_ret.json()['imdata']
+        # print the data from the Fake APIC
+        print json.dumps(data, indent=4)
+
+    The Fake APIC can only retrieve data that are in the JSON files, it cannot retrieve any data from the real APIC. The Fake APIC does not check for bad queries
+
+Note: It does need aciconfigdb.py that is part of another ACI toolkit called snapback as well as the acifakeapic module
+
+    You can look to use Fake APIC for unit testing as you build more robust applications and want to simulate responses
+
+    Warning 010: No contract provided within this tenant 'Manufacturing'
+
+    
