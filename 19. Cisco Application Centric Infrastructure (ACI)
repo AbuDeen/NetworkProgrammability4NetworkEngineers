@@ -57,4 +57,40 @@ What is an Application to the Network?
 
         ACI is an attempt to bring things closer to application terms: for example, traffic enters the ACI fabric where it is directed through various services and filters before it hits the Web tier; more filters and actions are applied as the packets travel from the Web tier to the Application tier; and again from the Application tier to the database
 
-                               
+ACI key architectural benefits:
+    As leaf switch configurations/policies are maintained by the centralized APIC cluster and can be deployed to leaf switches on an as-needed or on-demand basis, the switch’s live configuration is now determined by and relegated to the applications and endpoints currently utilizing that particular leaf, and not every individual switch in the data center is required to have the full configuration or be capable of provisioning the amount of resources that are required for all fabric endpoints to communicate. This concept, along with the distributed Anycast Layer 3 gateway at each top-of-rack switch allows for the decoupling of endpoint identity, location, and associated policy from the underlying hardware configuration. Coupled with a scalable endpoint-learning mechanism, the distributed Anycast gateway provides optimal traffic forwarding, even as endpoints configured on the same layer 3 subnet are seen attached to various leafs and actively migrate between one rack to another
+
+    The use of VXLAN headers across the spine-leaf fabric provides a mechanism to normalize the encapsulation of all types of traffic that is provided to the fabric — 802.1Q VLAN, VXLAN, NVGRE, or untagged. VXLANs allow for intelligent Layer 2 bridging across the high-speed L3 backbone
+
+    As the placement of devices is now no longer a physical constraint upon the infrastructure, devices providing L4-7 services can be attached to one set of leafs, and ACI can be configured to logically place these devices in-line, regardless of endpoint location
+
+    The distributed Anycast Layer 3 gateway at each top-of-rack switch also provides method of containment for broadcast, unknown-unicast and multicast traffic within a single rack. Depending on configuration, the administrator may decide whether to allow this traffic to be flooded across the fabric
+
+    Common policy and operations framework:
+        Not all ACI’s benefits are related to infrastructure — because ACI is now the central point for the network, application, and security administration of the organization’s next-generation cloud architecture, all IT roles interact with a single pane-of-glass to deploy and monitor applications that are deployed across a common pool of resources – the ACI fabric and attached compute resources
+
+Fabric Initialization & Maintenance
+    Once removed from the packaging, the first thing on the list is to connect the ACI devices and begin the initialization process. This process is mostly automated, managed by processes hosted on the APIC:
+
+        The first APIC in the cluster is powered on and given its initial configuration via console or CIMC connect. The APIC, a C-Series server, is connected via 10G to two leaf switches for redundancy purposes
+            APIC bootstrap config: APIC cluster config, fabric name and TEP address space (infra-vrf)
+
+Note: all apic nodes in the same apic cluster should contain same bootstrap information if they are intended to form a cluster
+
+        The directly connected leafs are detected and added to the APIC GUI, where an administrator can assign a node ID and hostname
+            leaf switches discover attached APIC via LLDP, requests TEP address and boot file via DHCP
+
+        As leafs are connected to all spines, once the leafs nearest APIC #1 are assigned node IDs/hostnames, the spines are displayed within the inventory of the APIC GUI
+            spine switches discover attached leafs via LLDP, requests TEP address and boot file via DHCP
+
+        The administrator assigns node IDs / hostnames to all spine switches. In practice, it is helpful to have recorded the serial numbers of the devices before to this process
+
+        As spines are connected to all leafs, the remainder of the leafs are viewable within the discovered inventory and can be assigned node IDs and hostnames by the administrator
+
+Introduction to ACI gui:
+    After logging in to the APIC GUI, the user is presented with two-levels of navigation at the top of the screen. If one of the main levels with configurable items is selected (such as Tenants, as in the figure above), the left pane contains the items in a nested folder structure
+
+    There are two methods to add an object to the fabric:
+        Right-click the containing folder within the left-hand window pane and choosing the creation option, or;
+
+        With the folder selected, click the Actions menu in the upper right of the main window section
