@@ -1,0 +1,123 @@
+Cisco virtual topology system:
+    Cisco VTS extends the Cisco SDN strategy and portfolio, which includes Cisco Application Centric Infrastructure, as well Cisco’s programmable NX-OS platforms, to a broader market and for additional use cases
+
+    Cisco ACI offers automation solutions from the physical hardware through virtual services and it is targeted at the mass market and at cloud provider environments
+
+    For service provider customers and enterprise private clouds with expertise in managing separate underlay and overlay fabrics, Cisco offers programmable fabrics that are based on Virtual Extensible LAN and support central provisioning through the Cisco Virtual Topology System controller or third-party controllers. It improves IT automation and optimizes cloud networks across the entire Nexus switching portfolio
+
+    Cisco VTS is an overlay provisioning and management system. It automates data center network fabric provisioning for virtual and physical infrastructure. You can interact with VTS in various ways, including a Web GUI, often times you can directly access it from OpenStack, or VMware vCenter or even from Cisco Network Service Orchestrator (NSO)
+
+    The key capabilities of the VTS are:
+        Flexible Overlays:
+            It supports the creation of both physical and virtual overlay networks enabling NFV and service chaining. It means, for example, that when you set a VXLAN you will not have physical constraints
+
+        Open and Programmable:
+            It’s based on REST Northbound APIs enabling the integration with Orchestration systems like Cisco NSO. It has also multi-protocol and multi-hypervisor support to not be bounded to some specific solution but being able to choose the best one for your infrastructure. It supports standard protocols like Supports Border Gateway Protocol-Ethernet VPN, Virtual Extensible LAN, and Multi-protocol Label Switching.
+
+        Automated:
+            One of the most important and challenging side. Everything can be automated, from the integration with Orchestrators to the provisioning etc. Simplifies operations, and reduces time to provision from weeks to seconds
+
+        Scalable VXLAN Mgmt:
+            If you are a service provider, you want to do all the above at scale. VTS leverages MP-BGP EVPN Control plane to achieve that scale, supporting thousands of Virtual Tenants Networks and providing high performance virtual forwarding
+
+Note: VTS supports NX 2k,3k,5k, 7k and 9k. also ASR 9k
+
+VTS use case:
+    Operators want to provision VXLAN that scale in an efficient and quick way. Here you have a hybrid approach with some physical VTEPs and some virtual ones. Cisco VTS can be used to achieve this result
+
+    Network automation and self-service are main tenets of the Virtual Topology System solution. Instant availability of computing and application workloads in the virtualized data center have made network provisioning a major bottleneck, leading to the belief that networks are impediments to a software-defined data center. Virtual Topology System removes these barriers by using overlay connectivity orchestrated through an SDN-based control plane
+
+    The solution uses VXLAN to overcome scale limits in the data center and to better segment the network
+
+    Virtual Topology System implements the highly scalable MP-BGP with the standards-based EVPN address family as the overlay control plane to:
+
+        Distribute attached host MAC and IP addresses and avoid the need for the flood-and-learn mechanism for broadcast, unknown unicast, and multicast traffic
+
+        Support multi-destination traffic by either using the multicast capabilities of the underlay or using unicast ingress replication over a unicast network core (without multicast) for forwarding Layer 2 multicast and broadcast packets
+
+        Terminate Address Resolution Protocol requests early and avoid flooding
+
+    Control-plane separation is also maintained among the interconnected VXLAN networks. As with large-scale BGP implementations, capabilities such as route filtering and route reflection can be used to provide greater flexibility and scalability in deployment. Virtual Topology System supports both VXLAN overlays using the BGP EVPN control plane and VXLAN overlays using IP Multicast-based flood-and-learn techniques. The BGP EVPN solution is the preferred option, and it can be flexibly implemented using the infrastructure policy constructs within the Virtual Topology System environment
+
+Cisco nexus data broker:
+    Cisco Nexus Data Broker is a network packet broker solution that includes Nexus switches and an SDN controller. It allows you to use Nexus switches as “brokers” between taps/span ports and tools that are needed to analyze and inspect wire level data
+
+    Visibility into application traffic has traditionally been important for infrastructure operations to maintain security, resolve problems, and perform resource planning. Now, however, as a result of technological advances and the ubiquity of the Internet, organizations increasingly are seeking not just visibility but real-time feedback about their business systems to more effectively engage their customers. Essentially, traffic monitoring is evolving from a tool to manage network operations to a tool for achieving smart business agility that can materially affect the revenue of the business. In addition to out-of-band traffic monitoring, migration to 40 Gbps in aggregation and core network infrastructure is presenting new challenges for inline traffic monitoring at the perimeter of the network
+
+    Using Cisco Nexus Data Broker and Cisco Nexus switches, Cisco provides a new software-defined approach for monitoring both out-of-band and inline network traffic
+
+    Cisco Nexus Data Broker is a simple, scalable, and cost-effective solution for enterprise customers who need to monitor higher-volume and business-critical traffic. It replaces traditional purpose-built matrix switches with one or more Cisco Nexus 3000 or 9000 Series Switches that you can interconnect to build a scalable network test access port and Cisco Switched Port Analyzer aggregation infrastructure that supports 1, 10, 40, and 100 Gbps. And you can dedicate ports both for TAP and SPAN and for traditional Ethernet connectivity. You can use one or more switches in a monitoring fabric, and you will manage them as a one single fabric using the NDB Controller
+
+    use case:
+        Cisco Nexus Data Broker data broker lets you interconnect the Cisco Nexus switches to build a scalable TAP and SPAN aggregation infrastructure. As shown in the figure, you can connect your TAPs and SPAN ports directly to the NDB infrastructure, allowing you to gain more efficiencies using your tool infrastructure. No longer do you need distributed tools as you can centralize tools as you can build a distributed network infrastructure specifically for matrix switching. In addition to the Nexus switches, a core component of the NDB solution is the NDB Controller. It is a GUI-based controller that talks to the Nexus and programs the switches using NX-API or OpenFlow
+
+        The final pieces are tools. Once the traffic is captured and sent to NDB, it has to be consumed by something or someone. It is the role of Cisco or 3rd party tools such as sniffers, IPSs, voice analytics tools, or whatever else your uses to analyze wire level data.All these pieces are particularly useful if you think about how troubleshooting is done today. If an issue occurs, you want to capture and analyze traffic, likely from multiple sources on the network. Using NDB all information becomes much more simple to gather
+
+Cisco network service orchestrator (NSO):
+    Orchestration platform for Service Provider environments
+    Decouples services from components
+    Accelerate network operations
+
+    Cisco Network Service Orchestrator (NSO) features include the following:
+       Logically centralized: NSO provides a single and logically centralized network-wide interface to all network devices and all network applications and services, as well as a common modeling language and datastore for both services and devices. A transaction engine handles transactions from the operations at the service layer to the actual deployment of configuration changes in the network
+
+    Service aware: NSO provides a specification of how a network service shall be applied to the network infrastructure. It greatly facilitates the mapping of service configuration changes to device configuration commands. The entire service lifecycle is supported including creating, modifying, and deleting service instances
+
+    Model-driven: Services and device configurations are specified in declarative YANG data models
+
+    Open architecture: All interfaces are auto-rendered from declarative YANG data models, including northbound user interfaces like CLI and Web UI, programmatic interface like REST, NETCONF, Java, Python, Erlang, and southbound device interfaces including CLI, NETCONF, REST, SNMP, and others
+
+    Fail-safe: NSO applies all service changes towards the network as an atomic change-set, using distributed transactions. It ensures that the network is always in a consistent state and can automatically recover from failed configuration changes
+
+    Real-time: NSO maintains an accurate and synchronized copy of the network configuration state. Orchestration and management systems can be kept in sync with the network in real-time using the publish-subscribe APIs of NSO
+
+    Multiprotocol: Designed to be a generic solution, NSO supports the implementation of network applications and service on a wide variety of networking devices from several vendors, both traditional hardware-based devices, virtual software appliances and SDN Controllers as well as on a wide variety of protocols. In a Service Provider network, you can have various devices and vendors. With NSO, you can forget about the device nature and think only about intent. This intent is then translated into a device model which will configure the devices using southbound interfaces. As a result of choosing a solution like NSO is to get rid of any assumption about Network services, architecture and devices. It is all about describing what goal you want to reach without specifying how you are going to reach it. For example, you can simply define a VPN service and a firewall between two sites, without specifying what devices you are using, what kind of technology is involved and how to configure it
+
+    Let’s take a look at a use-case for NSO. You have a backbone network running IS-IS and MPLS. As you can see, you also have a WAE (that you also cover in this lesson), a product that can perform smart calculation of how to route traffic through the network. Here WAE receives live information from the network using BGP-LS (BGP Link State, a way to use a BGP connection to transport Link State information, in this case regarding the IS-IS process) and recalculate the best path based on many parameters. Then, it sends this information to NSO which will instantiate this intent into the network
+
+Wan automation engine (WAE):
+    Model driven path visibility and path computation engine
+    Open and programmable
+    Enable application for traffic engineering via a programmatic interface
+
+    Cisco WAN Automation Engine is model-driven path visibility and path computation engine that can simulate, optimize, and activate paths in the network supporting a multi-vendor and multi-layer environment. It is a powerful and flexible SDN component that automates the engineering and operations of multivendor physical and virtual infrastructure. It abstracts and simplifies the WAN environment while making it fully open and programmable, providing a consistent operational experience for optimizing and deploying innovative new services such as global load balancing, bandwidth calendaring, bandwidth on demand, and premium network routing. The Cisco Evolved Services Platform uses SDN, predictive modeling and analytics with path optimization, and advanced orchestration capabilities to forge a flexible and modular platform
+
+    WAE architecture includes:
+        Collector - The Collector Module collects information on your WAN topology and traffic. The collector provides multi-vendor support by leveraging key industry standards such as BGP-LS. The Collector APIs provide access to raw data on your WAN topology and traffic
+
+        Plan - The Plan Module holds the current state and the simulated state of your WAN. It also keeps archive copies of these plans. You access the Plan data via the Topology APIs
+
+        Optimization and Prediction - The Optimization and Prediction Module provides a series of algorithms that allow you to optimize and plan your WAN. You access the Optimization and Prediction functions via the OPM API's that include Traffic Engineering, Optimization, and Predictive Analysis APIs
+
+        Calendaring - The Calendaring Module gives you the ability to schedule WAN activities in the future. These include Bandwidth Calendaring or Configuration scheduling. You access the Calendaring Module functions via the Calendaring APIs that allow you to reserve bandwidth and to schedule configuration changes
+
+        Deployer - The Deployer Module gives you the ability to programming the network devices that make up your WAN. You access the Deployer Module via the Deployer APIs that include path creation, path deletion, and path changes
+
+        Analysis - The Analysis Module gives you the ability to get a near-real-time view of the traffic trend, health, or ad-hoc reports on the WAN. You access the Analysis Module via the Analysis APIs that includes the ability to get historical trending data
+
+    Use case: evaluate onboarding of a new customer:
+        A key use case is to simulate the impact of adding new traffic to the network. In the GUI, you can select the source and destination node, adding a certain amount of bandwidth for the new customer and watch how it impacts the current network state. Then you can take a look at different ways to optimize the network that is provided by the WAE. Once a decision is made, WAE can execute the changes directly or through a system like Cisco Network Service Orchestrator (NSO)
+
+        Another example is wanting to deploy a L3VPN that has a maximum accepted latency of 50 ms. NSO can query WAE asking for a path between the two sites with a latency value below 50 ms. WAE will compute the path, give it back to NSO which will then deploy it into the network
+
+Cisco UCS manager:
+    The Cisco compute option is represented by the Cisco Unified Computing System. From the hardware perspective, Cisco has Fabric Interconnect, which are top of rack switches not only providing network connectivity but also management within the rack. Doing so, there is no need of external tools to manage the compute infrastructure. As you deploy more UCS systems, you can use UCS Manager to centrally manage your UCS systems
+
+    Key feature of the Cisco UCS Manager features include:
+
+        Service Profiles: Service profiles are essential to the automation functions in Cisco UCS Manager. They provision and manage Cisco UCS systems and their I/O properties within a Cisco UCS domain. Infrastructure policies are created by server, network, and storage administrators and are stored in the Cisco UCS Fabric Interconnects. The infrastructure policies that are needed to deploy applications are encapsulated in the service profiles templates, which are collections of policies needed for the specific applications. The service profile templates are then used to create one or more service profiles, which provide the complete definition of the server. The policies coordinate and automate element management at every layer of the hardware stack, including RAID levels, BIOS settings, firmware revisions and settings, server identities, adapter settings, VLAN and VSAN network settings, network quality of service, and data center connectivity
+
+        Service Profile Templates: Service profile templates are used to simplify the creation of new service profiles, helping ensure consistent policies within the system for a given service or application. Whereas a service profile is a description of a logical server and there is a one-to-one relationship between the profile and the physical server, a service profile template can be used to define multiple servers. The template approach enables you to configure hundreds of servers with thousands of virtual machines as easily as you can configure one server. This automation reduces the number of manual steps that are needed, helping reduce the opportunities for human error, improve consistency, and further reducing server and network deployment times
+
+        Management Interface Options: Cisco UCS Manager has an HTML5 and Java GUI as well as a CLI for use by server, network, storage, and virtualization administrators. UCS Manager also provides a powerful XML API for integration with existing data center systems management tools. Deploying UCS systems along with UCS Manager significantly improves operational efficiencies. By managing your systems from a single location using features such as service profiles and templates, you can leverage VM-like properties to deploy bare-metal systems faster. You can not only decrease provisioning time, but also lower day to day operational costs
+
+Cisco UCS director:
+    Business applications typically work together in a tiered fashion and require computing, networking, and storage resources as foundational support. Often, virtual machines are put online in minutes, yet the supporting infrastructure is provisioned manually and this process can take many weeks. Cisco UCS Director solves this problem. It delivers application-ready infrastructure resources that have been preconfigured for your specific applications, reducing the need for manual processes
+
+    Policy Driven Infrastructure Automation and Management: UCS Director provides the capability to get infrastructure automation and management inside your datacenter. It takes the infrastructure stack, compute, storage, network, virtualization, and starts offering policy driven automation for deploying an infrastructure in a consistent way. You want to get rid of the old way of performing infrastructure changes, consisting in a lot of copying and pasting of configuration, doing time-consuming and error-prone tasks. You want to define a policy for a change, make it consistent and finally UCS Director will deploy it on to of Cisco and non-Cisco environments.
+
+    Single-pane infrastructure management: Through a single interface, you can automate and orchestrate your IT infrastructure, including computing, networking, and storage infrastructure, with physical and virtual resources treated equally. This holistic management makes your processes consistent and reliable
+
+    Multivendor Solution: Because your data center comprises diverse technologies, Cisco UCS Director delivers heterogeneous infrastructure management. Extensive enhancements for VMware, VCE, and EMC solution components integration of third-party solutions into the Cisco UCS Director Management platform with a publicly available software development kit
+
+    Multihypervisor Solution: With support for VMware, Microsoft Hyper-V, and Red Hat KVM hypervisors, Cisco UCS Director’s task library supports creation, manipulation, and editing of virtual machines, hosts, and virtual networks. Broad OS guest support facilitates cloning of Windows and Linux virtual machines, and also monitors host and virtual machine memory and resource use. It offers: Support for NetApp Virtual Storage Console on Clustered Data ONTAP to deliver fast and efficient cloning of virtual machines with low storage use support for Microsoft System Center Virtual Machine Manager networking models and Hyper-V infrastructure management, Support for Cisco Nexus 1000V and Citrix network devices within Microsoft System Center Private Cloud. UCS Director is a solution that is built for all the datacenter stack and that bring together the whole Service Delivery Team. When you define a policy to deploy a consistent change, you basically build an object for that change that everybody can use and adapt on different teams and scenarios
