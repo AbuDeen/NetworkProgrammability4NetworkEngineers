@@ -1,0 +1,90 @@
+Development Methodologies:
+    Waterfall
+    Agile
+    Prototyping
+    Rapid App Development
+    Extreme Programming
+
+    Most engineers can open a text editor, write some code, and eventually compile and run a script or program of some sort. This kind of approach, if used by a team of developers, has no structure or process. Following this type of approach is error-prone, and the software that is created would likely not meet user expectations. A more structured approach is needed
+
+    The Software Development Life Cycle is a process that is used by those creating software to design, develop, and test high-quality software products and applications. In addition to creating high-quality software, the SDLC aims to meet and exceed customer expectations on budget and on time
+
+    There are several methodologies that exist to help implement SDLC. These include Waterfall, Agile, Prototyping, Rapid App Development, and Extreme Programming. Waterfall is one of the first development methodologies ever designed based on a linear process. Agile is one of the newer and most popular methodologies that are based on frequent and small incremental releases. Prototyping is designed with the idea to build an initial version of a product quickly in order to better understand requirements and scope. By using this prototype, the client can get an actual feel of the system in a relatively short time, even though this effort may complicate larger projects. Rapid App Development puts less emphasis on planning and more emphasis on process. It is a type of incremental model in which all components are developed in parallel
+
+Waterfall:
+    since 1950. based on sequential design approach:
+        reqs/analysis > design > coding > testing > maintenance
+
+    The Waterfall development process is one of the first examples of a Software Development Lifecycle that is based on a linear and sequential process. It has been around since the 1950s and is rooted in the manufacturing and construction industries. Because no formal software development methodologies existed at the time, this model was simply adapted for software development
+
+    The Waterfall model provides a very structured approach, which works for some industries, but is proving to be a less desirable choice for software development in 2016. The Waterfall model makes the assumption that once you move to a certain phase of the lifecycle, you can go only “downhill” to the next phase. There is a possibility to remain stuck if something unexpected arises. The Waterfall method makes the assumption that all requirements can be gathered up front during the Requirements phase. Once this stage is complete, the process runs “downhill” (i.e. waterfall)
+
+    During the Design phase, all the information obtained that is in the Requirements/Analysis stage is used to build a new, high-level design. When this phase is complete, the systems analyst begins transforming the design that is based on the specifications of specific hardware and software technologies. This effort leads to the Implementation (or coding) process
+
+    Following the development of software, the Testing (and verification) phase is used to ensure that the project is meeting customer expectations
+
+    During the Maintenance phase, the customer is using the product, and changes are made to the system based on customer feedback
+
+    Waterfall is a good choice when all requirements are very well known before a project begins; therefore, it works well for small well-defined projects
+
+    Since Waterfall is a linear process, each phase needs to be completed before moving to the next one. At the end of each phase, a project review is done to determine if the work done meets all expectations. If not, the current project is discarded and the process restart all over. It’s important to note that testing starts only after the whole work is complete
+
+    Pros:
+        Good design
+        Good documentation
+        Good progress measurement
+
+    Cons:
+        Difficult requirement gathering
+        Inflexible design
+        Long process
+
+    One advantage when working with Waterfall is that design errors are highlighted before any code is written, saving time during the implementation phase. Good documentation is mandatory for this kind of methodology. This effort is useful for engineers in the later stages of the process. Since the process is rigid and structured, it is easy to measure progress and set milestones
+
+    It can be difficult to gather all possible requirements in the very early stages of the project. Clients will only fully appreciate what is needed when the application is delivered. It then becomes very difficult (and expensive) to re-engineer the application, making this approach very inflexible. Since the product will only be shipped at the very end of the chain, without any middle phases to test. Therefore, it can be a very lengthy process
+
+Lean:
+   You must understand what the Lean management philosophy is before focusing on Agile methodologies. Lean takes its origin from the automotive industry in Japan and its goal to represent a new way to build products. This philosophy provides the most efficient way possible with the ultimate task to eliminate everything that is useless. If you don’t need it, get rid of it
+
+   The Toyota Production System shifted the focus from individual machines and their utilization, to the flow of the product through the total process. The main conclusion from Toyota was that “…right-sizing machines for the actual volume that is needed. Introducing self-monitoring machines to ensure quality, lining up the machines in process sequence, and pioneering quick setups. In this way, each machine could make small volumes of many part numbers. Each process step notifies the previous step of its current needs for materials. It would be possible to obtain low cost, high variety, high quality, and very rapid throughput times to respond to changing customer desires…” http://www.lean.org/WhatsLean/History.cfm
+
+   Keep in mind that sub-optimal allocation of resources is waste and that waste reduction increases profitability. Therefore, implementing a lean process is meant to minimize constraints (resources). At the same time, producing consistent flow and profitability. According to Lean pioneers, an Enterprise must focus on three major key points to ensure it is possible to fully embrace the lean philosophy: Purpose, Process, and People:
+       Purpose: Which customer problems will the project solve? Ask Why continuously? Ask Why to fully understand the purpose. These questions are often referred to as the Five Why’s
+
+       Process: How will the organization assess each major value stream to make sure that each step is valuable, capable, available, adequate, and flexible? How will these organizations ensure that all the steps are linked by flow, pull, and leveling? There must be a process and metrics in place to determine this process
+
+       People: The root of it all is people. The right people need to take responsibility and produce outcomes. The people need to continuously evaluate the value streams in terms of business process and lean process. How can everyone who plays a part in the value stream be actively engaged in operating it correctly and always improving it?
+
+Agile:
+    As you have seen in the previous topic, Waterfall implements a linear process. However, when it comes to larger development projects, it becomes increasingly difficult to use a linear development methodology. This difficulty stems from the fact that feedback is needed each step along the way. This process limits the possibility to freely move between projects phases, like Analysis, Design, Code, and Test. You are forced to complete a phase before moving forward, with no possibilities to return backward. In addition to this process, you often have to deal with a very strict timeline. When using the Waterfall methodology, what would happen if there was an issue in the middle of a particular phase? You would have completed 50% of the work, for example, but this effort would be completely unusable since you can’t move on until the phase is completed
+
+    If anything changes during the Design stage or any subsequent stage, you will have to go back to the Analysis phase to begin again. This work effort is not only inflexible but expensive and time consuming as well. Due to the nature of these methodologies, another issue is that the Test phase is skipped due to time constraints. The result is that a lower quality product is delivered to the customer. You can imagine the software that is produced if testing was not done properly. It is because of these concerns that Agile methodology has proliferated
+
+Note: Lean is merely a concept. Without a way to implement it, it’s of no value to the systems that need optimizing. This need for optimization is where Agile is required
+
+    Agile is a means of implementing the Lean philosophy in the software development industry. It is primarily based on the concept of short sprints seeking to do as much as possible in a relatively short time, and without losing a focus on value. Agile software development includes customers in the software development lifecycle by delivering software in very early stages in order to gain valuable feedback from the actual consumers of the software. This procedure is a popular way to test software and learn about issues that can be addressed in future releases
+
+    In contrast to the time consuming and inflexible approach of Waterfall, Agile provides continuous and incremental value to the software development process. When it comes to the fast-paced world of software development, user requirements change frequently. As the market environment becomes more competitive, software development companies are utilizing Agile methodologies to meet their customers’ requirements as quickly and effectively as possible
+
+Scrum:
+    Scrum is an Agile project management methodology, though it is helpful to consider it more of a framework for managing processes. It is designed with the idea that requirements are not always fully understood. These requirements may not be listed on the early stages of the process, and quick development of small features is what really matters. Therefore, the Scrum framework places value on iteration and incremental software development. The methodology lists all the requirements on a Product Backlog. These requirements are built around users’ stories, or small features of the final application such as create an account, perform login, and the like. This large Backlog is split into smaller, manageable pieces and put into Sprint Backlogs that have to be completed in a short time. It’s common to have sprints that span two weeks
+
+    Scrum also recommends a “daily Scrum” in which developers address what they did the day before and what they are going to do that day. They discuss challenges that they are facing and evaluate potential challenges in upcoming work. This discussion ensures that teams are on the same page, and it provides a means for a more collaborative work environment. Working together, at the end of a Sprint will be a shippable product increment that can be delivered to the customer. Scrum practitioners believe that this emphasis of development over requirements leads to less wasted time and greater productivity
+
+Developing with agile:
+    The Waterfall methodology is split into several sequential and linear phases, namely Analysis, Design, Code, and Test. Agile has the same phases, but they are managed in a different way. In fact, thanks to the concept of sprints, all phases of the lifecycle are completed within each single sprint. That means that effectively, a developer (or team) can accomplish an entire process in a two-week sprint. This process is a very flexible way to work providing a means to add, fix, or make changes very quickly. Also, even in the middle of a software development roadmap, you will have completely usable code. This feature adds tremendous value to your work and to your customers
+
+    Pros:
+        Rapid, continuous delivery of useful software
+        People before process and tools
+        Really flexible approach
+        Even late changes in requirements are welcomed
+
+    Cons:
+        Lack of emphasis on documentation
+        Scope Creep
+        Higher chance for bugs
+
+    Agile represents an improvement and a much more advanced way to work compared to older methodologies like Waterfall, but it still its own pros and cons as well. Of course, it still matters what type of software is getting developed, too. It is just that Agile is better suited for faster paced environments and when all requirements are not known upfront. The rapid and continuous delivery of software releases helps customers to better understand what the final piece will look like. This capability also provides a fully working code improved week after week, leading to customer satisfaction. Thanks to SCRUM, people interaction is emphasized
+
+    Late project changes are more welcome. This kind of approach lacks of emphasis on good documentation, since the main goal is to release new code quickly and frequently. Since there is not a complete requirement-gathering phase at the beginning of the process, customer expectations may be unclear, and there is a good chance for scope creep. Since there is rapid development, there is an increased chance for bugs even though automated tests should be used during the development process    
