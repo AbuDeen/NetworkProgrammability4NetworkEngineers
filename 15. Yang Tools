@@ -1,0 +1,53 @@
+Let's learn how to use tooling to validate YANG models and generate Python bindings for a given model. Along with these concepts, you will explore the use of pyang Python library and how to validate the YANG model
+
+Tools:
+    YANG Validator: A web-based tool that is used to validate YANG models. This tool uses pyang as its validation engine
+
+    pyang: A Python program that is used to validate and visualize YANG models. It can also be used to display YANG models in various formats including a tree notation and XML representation, both of which you will see in this course. https://github.com/mbj4668/pyang
+
+Note: pyang And also available via PyPi:
+
+    ydk: A collection of two open source projects (ydk-py & ydk-gen), both of which when used together can auto-generate Python bindings (classes that yield a Python package) directly from YANG models. https://github.com/CiscoDevNet/ydk-py and https://github.com/CiscoDevNet/ydk-gen
+
+    YANG Explorer: Web-based tool that allows you to view YANG models in a graphic format and it can be used to auto-generate NETCONF and RESTCONF request objects for a given model. https://github.com/CiscoDevNet/yang-explorer
+
+Yang validator:
+    The YANG validator is similar to common validators you will find online that validate JSON and XML objects. The only difference is that the YANG Validator, as expected, validates YANG models for syntax. You can upload one or more YANG models to verify them together (if the modules use includes and imports)
+
+Note: yang validator output is in tree format
+
+pyang:
+    pyang has numerous capabilities, but first it helps visualize data models in a tree format that is intuitive and easy to read. You can see if the attributes are configurable (rw) or is the attributes are operational data (ro). Also, you can see the associated type of each object and leaf
+        $ pyang -f tree -p /path/to/models <yang-file>
+        $ pyang -f tree -p yang/standard/ietf/RFC yang/standard/ietf/RFC/ietf-interfaces.yang
+        module: ietf-interfaces
+           +--rw interfaces
+           |  +--rw interface* [name]
+           |     +--rw name                        string
+           |     +--rw description?                string
+           |     +--rw type                        identityref
+           |     +--rw enabled?                    boolean
+           |     +--rw link-up-down-trap-enable?   enumeration {if-mib}?
+           +--ro interfaces-state
+              +--ro interface* [name]
+                 +--ro name               string
+                 +--ro type               identityref
+                 +--ro admin-status       enumeration {if-mib}?
+                 +--ro oper-status        enumeration
+
+    Pyang supports several formats. The supported formats are: hypertree, dsdl, depend, name, omni, yin, tree, jtox, capability, yang, sample-xml-skeleton, uml, jstree, jsonxsl, and xmi. You can verify them using the pyang help menu as shown below. This figure shows the XML skeleton object of a VLAN yang model:
+          $ pyang -f sample-xml-skeleton -p /path/to/models <yang-file>
+          cisco@cisco:~$ pyang  -p tools/ tools/oc-models/release/models/vlan/openconfig-vlan.yang -f sample-xml-skeleton
+          <?xml version='1.0' encoding='UTF-8'?>
+          <data xmlns="urn:ietf:params:xml:ns:netconf:base:1.0"><vlans xmlns="http://openconfig.net/yang/vlan"><vlan><vlan-id /><config><vlan-id /><name /></config><state><vlan-id /><name /></state><members><member><interface-ref><state><interface /><subinterface /></state></interface-ref></member></members></vlan></vlans></data>
+    pyang syntax: pyang [options] [<filename>...]
+
+Note: you can issue pyang --help from the terminal to see pyang syntax options
+
+    By default, pyang does not produce pretty output when using the XML skeleton format, you can use any XML formatter to better understand the XML hierarchy being produced. Another format in addition to the tree and XML formats is the jstree format. It allows you to produce a collapsible tree, but in an HTML format. Simply execute pyang and pipe the output to an HTML and open the file in a browser
+
+    In addition to viewing YANG modules, you can also use pyang to validate modules just like you did already with YANG validator. Remember that YANG validator is actually using pyang as its validation engine. You can perform validations by using the ‘--lint’ flag option:
+        $ pyang -p /path/to/models <yang-file> --lint
+        cisco@cisco:~$ pyang  -p tools/ tools/oc-models/release/models/lldp/openconfig-lldp.yang  --lint
+
+Yang development kit:
