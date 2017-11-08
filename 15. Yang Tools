@@ -51,3 +51,200 @@ Note: you can issue pyang --help from the terminal to see pyang syntax options
         cisco@cisco:~$ pyang  -p tools/ tools/oc-models/release/models/lldp/openconfig-lldp.yang  --lint
 
 Yang development kit:
+    YDK is comprised of two separate open source projects. They are ydk-py and ydk-gen and both are available on Cisco’s DevNet GitHub community at https://github.com/devnet/. Ydk-py is a set of pre-generated Python modules that adhere to common YANG models. For example, you can use ydk-py to use Python to configure a device that adheres to a given model such as OpenConfig’s BGP model. For more advanced users who are developing custom data models, you can auto-generate your own python bindings using ydk-gen
+
+Model driven APIs:
+    Take a minute to review again the importance of model-driven APIs. When models are used, they are the “root” or simply put, they are the source of truth. APIs (bindings, SDK, URLs, objects) can be automatically generated from data models, hence the term “model-driven”. As you can also see in the figure, the bindings generated map directly back to the YANG model. When models are used, they are the “root” or simply put, they are the source of truth. APIs (bindings, SDK, URLs, objects) can be automatically generated from data models, hence the term “model-driven”. As you can also see in the figure, the bindings generated map directly back to the YANG model
+
+    Think of model-driven api as a one to one mapping of every yang object into python/c/some programming language classes, objects, etc.
+
+Generate model-driven APIs using ydk:
+    the idea here is to put your yang data model in the blender (i.e. ydk-gen) and generate ydk-py code that can be consumed by python
+
+    Here you see a good visual of the overall workflow when using the YDK. It starts with the YANG data models. As already said, they are the source of the truth. Ydk-gen ingests and reads the models and its output is actual Python objects that can be used to interface with devices that support that given model
+
+Client side validation:
+    One of the huge benefits of model-driven APIs is that you get client-side validation. It means your application that is written using ydk-py bindings already understand the constraints that are embedded in the YANG model. Thus, if you go to push a change to a device, an error is raised in Python (or given language) before an API call is even made to the device
+
+Example: YDK-Py using OC-BGP:
+    from ydk.services import CRUDService
+    from ydk.providers import NetconfServiceProvider
+    from ydk.models.openconfig import bgp
+
+    if __name__ == "__main__":
+        provider = NetconfServiceProvider(address='xrv',
+                                          port=830,
+                                          username="cisco",
+                                          password="cisco",
+                                          protocol="ssh")
+        crud = CRUDService()
+        bgp = bgp.Bgp()
+        bgp.global_.config.as_ = 65000
+        crud.create(provider, bgp)
+        provider.close()
+    module: openconfig-bgp
+       +--rw bgp!
+          +--rw global
+          |  +--rw config
+          |  |  +--rw as
+          |  |  +--rw router-id?
+          |  +--ro state
+          |  |  +--ro as
+          |  |  +--ro router-id?
+          |  |  +--ro total-paths?
+          |  |  +--ro total-prefixes?
+
+    The previous example shows a common use case for using ydk-py. When making a configuration change, there are at least objects that are required to be imported. Of the three, you should recognize the NetConfServiceProvider objects. You should be able to tell, it is just a lightweight wrapper around the Python ncclient. Ydk also breaks out the services that are performed as their own objects—here, a CRUD service is used. Finally, you import the corresponding objects of the models you want to work with. You can also see how the Python objects map directly back to the actual YANG module
+
+Note: if you change as value to let's say -1 in above code and rerun the script, python/ydk will flag that as an invalid entry and will not run this code against the device you're trying to configure via netconf in this example:
+    file "/usr/local/lib/python2.7/dist-packages/ydk/providers/_encoder.py", line 89, in encode_to_xml
+        self.encode_to_xml(value, elem, optype)
+      File "/usr/local/lib/python2.7/dist-packages/ydk/providers/_encoder.py", line 48, in encode_to_xml
+        validate_entity(entity, optype)
+      File "/usr/local/lib/python2.7/dist-packages/ydk/providers/_validator.py", line 39, in validate_entity
+        raise YPYModelError(errmsg)
+    ydk.errors.YPYModelError:
+      Bgp.Global.Config.as_: (INVALID_VALUE, Value is invalid: -1 not in range (0, 4294967295))
+
+Ydk-py api structure:
+    There are three core components of ydk-py as you have already seen in the actual code (model, service, provider). Each object represented here maps back to associated Python objects. The key point to realize is that the models are auto-generated. They are auto-generated using ydk-gen
+
+Ydk-gen:
+    In order to generate Python bindings for a given set of modules, the first requirement is create the module. This figure represents a custom module that is built for this course:
+    module npdesi-course {
+        namespace "http://npdesi.cisco.com/training";
+        prefix "npdesi";
+
+        organization "Cisco Inc.";
+        contact "chuck@npdesi.cisco.com";
+        description
+    	"This a module that is used for basic switch configuration";
+
+        revision 2016-08-24 {
+            description "Initial revision.";
+        }
+        container system {
+                leaf hostname {
+                    type string;
+                    description "Hostname for this device";
+                }
+
+                leaf-list domain-names {
+                    type string;
+                    description "List of domain names to search";
+                }
+            }
+    Here is an XML equivalent of the given module in the figure:
+        $ pyang -f sample-xml-skeleton npdesi-course.yang
+        <?xml version='1.0' encoding='UTF-8'?>
+        <data xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+            <system xmlns="http://npdesi.cisco.com/training">
+                <hostname/>
+                <domain-names/>
+            </system>
+        </data>
+
+    second requirement now is to create a profile:
+        A profile is simply meta data on the project, but more importantly, it states where to find the modules. The figure uses the file parameter in order to specify modules, but you can also use the GIT or directories key as well. You can use the git key to auto-clone git repos or use the directories key if you have multiple modules in a given directory or directories on your local machine. e.g:
+              Filname: npdesi.json
+
+              {
+                  "name": "npdesi",
+                  "version": "0.1.0",
+                  "Author": "Cisco",
+                  "Copyright": "Cisco",
+                  "Description": "Generate bindings for NPDESI Course",
+                  "models": {
+                      "file": [
+              	    "custom_models/npdesi-course.yang"
+              	 ]
+                   }
+              }
+
+    The last step is to create the bindings. You can do it by using the following command:
+        $ python generate.py --python --bundle profiles/npdesi.json
+
+Note: Store your profile in the profiles sub-directory of the ydk-gen directory. Once you generate the bindings, they are stored in ./ydk-gen/gen-api
+
+    Here is an example output after the bindings are generated of the gen-api sub-directory:
+    cisco@cisco~/tools/ydk-gen$ tree gen-api/
+    gen-api/
+    └── python
+        ├── npdesi-bundle
+            ├── dist
+            │   └── ydk-models-npdesi-0.1.0.tar.gz
+            ├── docsgen
+            │   ├── 03349d6776ed6940e1fcdaa2f530b447588b378d.rst
+            │   ├── 54db48e8409ab0bef7e537e78f56dc9358cb7ebe.rst
+            │   ├── 766b1444de471f44c8eb56f55f610a491e3abd33.rst
+            │   ├── 973f32beadb79e41222c19555337bbbb44cb9497.rst
+            │   ├── conf.py
+            │   ├── index.rst
+            │   ├── make.bat
+            │   ├── Makefile
+            │   └── ydk.models.rst
+            ├── MANIFEST.in
+            ├── README.md
+            ├── setup.cfg
+            ├── setup.py
+            ├── ydk
+            │   ├── __init__.py
+            │   ├── __init__.pyc
+            │   ├── models
+            │   │   ├── _deviate
+            │   │   │   ├── __init__.py
+            │   │   │   └── __init__.pyc
+            │   │   ├── __init__.py
+            │   │   ├── __init__.pyc
+            │   │   └── npdesi
+            │   │       ├── _aug
+            │   │       ├── __init__.py
+            │   │       ├── __init__.pyc
+            │   │       ├── _meta
+            │   │       │   ├── __init__.py
+            │   │       │   └── _npdesi_course.py
+            │   │       ├── npdesi_course.py
+            │   │       ├── npdesi_course.pyc
+            │   │       └── _yang_ns.py
+            │   └── tests
+            │       ├── import_tests.py
+            │       └── npdesi
+            └── ydk_models_npdesi.egg-info
+                ├── dependency_links.txt
+                ├── namespace_packages.txt
+                ├── PKG-INFO
+                ├── requires.txt
+                ├── SOURCES.txt
+                └── top_level.txt
+Note: Every object in the module is a Python object as you saw with ydk-py
+
+    Once the bindings are generated, you can start to use them in Python immediately. Without using model-driven APIs, each of these SDKs and Python modules would need to be manually created. It would be a long and arduous process adding in error handling and client-side checks. Since these APIs are auto-generated from models, all of that happens automatically. Of course, now the smarts need to be in ydk-gen
+
+        >>> from ydk.models.npdesi import npdesi_course
+        >>>
+        >>> system = npdesi_course.System()
+        >>> system.hostname = 'router1‘
+        >>>
+        >>> system.domain_names = ['8.8.8.8', '4.4.4.4']
+        >>>
+        >>> system.__dict__{'hostname': 'router1', 'domain_names': ['8.8.8.8', '4.4.4.4']}
+        >>>
+
+Yang explorer:
+    yang Explorer is a web-based tool that allows you to view YANG models in a graphical web interface. Also, it can be used to auto-generate NETCONF and RESTCONF request objects for a given model.
+
+    There are three main sections of the YANG Explorer:
+        Left Pane—Where you see all the models that you have added to YANG Explorer. You can add more models through the “Manage Models” tab in the center pane
+
+        Center Pane—Deals with model management and NETCONF/RESTCONF (NC/RC) objects. For example, in the center pane, you can add more model to YANG Explorer, but you can also generate NC/RC objects as well. Yang Explorer also lets you configure credentials and information such that you can make API calls directly from the tool (all configured in the center pane)
+
+        Right pane—See details on specific attributes on a given model. When you select an attribute in the left pane, you will see its description, constraints, and so on, in the right pane
+
+        Yang Explorer is also open source and available on GitHub: https://github.com/CiscoDevNet/yang-explorer
+
+        You can also populate values in a given model. Here you simply specify GigE1 as the interface, “WAN” as the description of the interface, and then set enabled to false meaning this interface should be administratively down. Once you do that, you can navigate to the center pane. Click the NETCONF button and after the RPC button. Here you can visually see now what NETCONF object is required to send to the device to configure an interface using the ietf-interface YANG model. Building on what you just saw with NETCONF, you can do the same thing for RESTCONF. Now click the RESTCONF button and after the RPC button. Here you can visually see now what RESTCONF object is required to send to the device to configure an interface using the ietf-interface YANG model. Note how you can see the actual URL plus JSON payload
+
+Yang references:
+    https://github.com/mbj4668/pyang
+    https://github.com/CiscoDevNet/ydk-py
+    https://github.com/CiscoDevNet/yang-explorer
