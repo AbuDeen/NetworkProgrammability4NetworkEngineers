@@ -1,0 +1,94 @@
+Overview:
+    DevOps is a change in culture and process that emphasizes increased collaboration between teams such as between software and developers and IT operations. Though DevOps has primarily focused on Dev and [Sys], the principles solve real-world problems that network operators struggle with daily too. Software developers need to write, test, deploy, and improve upon their product as quickly and efficiently as possible, but traditionally actually deploying these new services comes to a bottleneck as the infrastructure requires configuration changes to accommodate the new service. Sometimes the configuration changes are very minor, though, and it is operations risk mitigation measures that slow deployment to a crawl. DevOps merges the most effective principles of successful software development with the effective principles of effective operations while having increased communication between all team involved. This new model breaks down silos among teams, reduces waste, and increases business agility and product reliability
+
+Dev and Ops - the problem:
+    First, developers care about writing software. They care about writing software of high quality and that meets customers’ expectations. They care about APIs, libraries, and code. Success is determined by whether the software does the job and meets expectations, and, of course, if it was done on time. However, developers traditionally do not pay as much attention to what happens after the software application goes into a production data center. This issue creates the problem between development and operations
+
+    On the other hand, Operations cares about software standards and about stability. The Operations department has rigid change management windows that are used for rolling out new software that is written by developers. Success for Operations is a stable environment. The drivers and the definition of success is clearly different between developers and operations. Furthermore, as the business continues to drive the development of new applications, developers continue to write the software under their strict deadlines, but the operations department often finds that it is very difficult to rollout new software because of the backlog of change requests
+
+    One of the key goals of DevOps is to break down silos and enhance communication between teams. This goal is extremely important for organizations seeking to deploy software and services faster and more frequently
+
+    The problem lies in the fact that development and operations are often in completely different isolated parts of an organization. Another way to visualize this issue, is by looking at the work calendars for each team. If they are using Agile, development teams are completing milestones likely every two weeks. By contrast, the Operations calendar in this figure depicts the infrequent openings for changes. Also, due to various factors such as risk mitigation, actual change windows may be scheduled weeks or months away from a desired rollout
+
+    Development is trying to serve the business through features and software, and Operations is trying to serve the business through stability. The problem is having both work together successfully. When development and operations teams don’t work together, they become isolated from each other and sometimes the rest of the organization. This practice creates an unproductive environment for the actual implementation of new applications
+
+    These silos, sometimes created by methodologies such as Waterfall and the difficult sharing of company resources, has been known to create rifts among teams and sometimes a culture of hostility and blame. Also, teams tend to become more specialized as they focus on their small slice of a particular development process
+
+    DevOps seek to break down these silos and restore communication and collaboration among teams. The hope is that this practice will result in increasing output and quality and making useful information available to all teams rather than the compartmentalization that legacy methodologies produce. In practical terms, then, DevOps embraces the Lean philosophy, applies the Agile methodologies, and brings together Development and Operations
+
+What is DevOps?
+    Thus far, the procedural and cultural underpinnings of software development have been examined by looking at Waterfall, Agile, Lean, and DevOps. However, defining DevOps is actually very difficult because of the somewhat ambiguous nature of its philosophies, goals, and role in the software development lifecycle. One way to demystify the DevOps paradigm is to investigate the characteristics of organizations that have adopted the DevOps model. Examining how these organizations are structured, how they produce new applications and how they provide continual improvement is very helpful in narrowing down a clear definition
+
+    Some key characteristics of these organizations are:
+        Embracing new technology
+        Embracing a collaborative culture
+        Maintaining a well-defined common goal among teams
+
+    It is also important to note what DevOps is not. DevOps is not hardware that can be purchased or a piece of software that can be installed. Though there are software tools that are often used within a DevOps culture, organizations that embrace DevOps are embracing just that: a new culture
+
+    DevOps utilizes Lean and Agile techniques to merge development and operations in order to deliver services faster, more frequently, and on time. Many web 2.0 companies such as Google, NetFlix, Facebook, and Amazon have embraced a DevOps culture allowing them to push tens or even hundreds of changes in a single day. This practice allows these organizations to deliver new products and features to their customers almost on demand
+
+    Guiding principles of these organizations can be encapsulated in the acronym CALMS:
+        Culture: Making sure that the organization is ready to make this type of change
+        Automation: The technology enabling faster testing and feature deployment
+        Lean: A management philosophy with a goal to reduce all waste
+        Measurement: Sharing information about what is going on in real time
+        Sharing: Working together and being vocal about when things go right or wrong
+
+   Culture: is arguably the most crucial aspect of an organization that is interested in implementing an Agile and DevOps approach to software development. A DevOps culture relies and thrives on traits such as mutual trust and respect among colleagues, support, collaboration, and a sense that no one will be blamed when something does not go quite right. These traits, along with shared common goals, give people working for DevOps organizations freedom and motivation to innovate, experiment, and collaborate. This type of culture, however, requires a very different flow of information as compared to more traditional organizational structures. For example, managers must embrace a collaborative information-sharing atmosphere and abandon a top-down approach to organizational management
+
+   Automation: Within organizations that have embraced the DevOps approach, Operations teams are getting more involved. The knowledge and tools that are traditionally used only within the software development or systems administration silos are being shared with teams across the organization. Automation tools such as Puppet, Chef, and Ansible are not new. However, the breaking down of silos and the sharing of this knowledge is. Today, Operations teams are actually working with development to utilize automation techniques to push changes frequently and often and help the organization succeed
+
+   Lean: As discussed already, Lean comes from Lean Manufacturing originally developed by Toyota, and is a set of principles for achieving quality, speed & customer alignment. Lean purposes to relentlessly eliminate anything that isn’t adding value and work only on what is absolutely necessary. Eliminating waste means eliminating useless meetings, tasks, and documentation, but it also means that eliminating the time spent building what is known or needed in the future. Lean software development is also about learning. You need to structure work to ensure that you are continuously learning while providing value in the present. Next, Lean is concerned with people. Typical Lean ideas include putting your team first, responding promptly, listening, and hearing everyone’s opinion. This practice means making sure that people know it is okay to fail, though there is an expectation that people learn from their mistakes.Lastly, Lean places a strong emphasis on what it calls “the system” – that is, the way that the team operates as a whole
+
+   John Willis, a veteran of the DevOps industry, once said,“If you can’t measure, you can’t improve. A successful DevOps implementation will measure everything that it is able and as often as it is possible…performance metrics, process metrics, and even people-metrics.” Measurements help to know what is going on in real time but also over time. Many metrics that can be gathered and measured include:
+       Number and frequency of software releases
+       Volume of defects
+       Time/cost per release
+       Mean Time To Recovery (MTTR)
+       Number and frequency of outages / performance issues
+       Revenue/profit impact of outages / performance issues
+       Number and cost of resources
+       Extraneous lines of code
+       Gathering and Managing Requirements
+       Agile development
+       Release and deployment
+       Unit testing
+       User Acceptance Testing
+       Quality Assurance
+       Application Performance Monitoring
+
+  There are other factors that can be more difficult to measure quantitatively but are nevertheless very important to examine. Some of these measurements include:
+       Attitude to continuous improvement
+       Obsession with metrics
+       Technological experimentation
+       Team autonomy
+       Rewards and feelings of success
+       Hierarchical and political obstacles and annoyances
+       Inspiring and fostering creativity
+       Organizing teams around projects rather than skill-sets
+       Constantly dancing on the edge of failure (in a good way)
+       Position around business demand
+
+    Sharing: In the DevOps paradigm, sharing is about working together and making sure that everybody is on the same page. From code to problems, everything should be shared. One example that helps make this effort possible, is from Hubot. From an automated change perspective, Hubot is a chat bot that is developed and open sourced by GitHub. Using a chat bot like Hubot, you can ensure that everyone sees everything. It is possible to integrate Hubot into collaboration platforms like Slack and Jabber. Common workflows can be automated now such that from a group a chat you can query network devices, make changes, and the like. Because everyone in the group sees what is happening, not only does this help improve communication, but it is a great opportunity to train new engineers and new hires
+
+DevOps benefits:
+    The 2015 State of DevOps Report run by Puppet Labs can provide a good idea of what kind of benefits DevOps can bring to an organization. Based on the report, utilizing the DevOps paradigm in IT organizations leads to 30 times more frequent code deployment and 200 times code deployment lead time, resulting in a much faster improvement of software development and deployment. DevOps also leads to 60 times the change success rate and 168 times faster MTTR, making sure that every change is reliable and deployed very quickly. When considering how often changes are being pushed into a production environment, you may intuitively believe that there would be an increase of failure. Perhaps counter-intuitively, DevOps methodologies reduce failures and enable very fast and sometimes automatic recovery if needed. This procedure gives an organization the ability to more quickly and more accurately align with business needs. Moving faster than your competitors is crucial, and DevOps helps to accomplish this goal
+
+DevOps tools
+    There are many more tools than just “automation” including tools for source code management, code review, automated testing, collaboration, and release/configuration management. Sometimes DevOps can be perceived to be concerned only with automation, but from both culture and technology perspective this belief is not the case whatsoever. DevOps is also concerned with peer review, an essential element to any professional discipline. The collaborative nature of DevOps lends itself to colleagues sharing and reviewing one another’s code and ideas in such a way that issues, plans, and processes are known right away and throughout a software development lifecycle. Deployment, continuous integration, source control, and configuration management will be examined in this course. One must take the time to find new articles regarding what is happening in the DevOps world, in order to stay current with how collaboration is affecting all the areas of software development
+
+    XebiaLabs, a company that is focused on DevOps, has done something interesting grouping all the ‘elements of DevOps’ into categories cleverly presenting them as the Periodic Table of DevOps Tools. Categories include Database, Continuous Integration, Deployment, Cloud, Monitoring, Software Change Management and much more. These categories are important because it clearly shows how DevOps is not only about Automation and Configuration Management, but is also concerned with a wide variety of elements of software development and now even technology management in general
+
+    When taking a deeper look at some of the tools being used organizations utilizing DevOps practices, several important areas are identified. Starting from the bottom up in the figure:
+       Platforms — Cloud resources that can be easily consumed via APIs to build on-demand and elastic environments
+
+       Source/Image Control — Where source code, more broadly software artifacts, is stored and pushed
+
+       Working Environment — Systems that quickly allow repeatable environments to be created such as Vagrant/Packer and Docker are used to simplify and speed up development efforts
+
+       Collaboration — Systems like Slack, Hipchat, and Jabber are used to enhance collaboration during the development process
+
+       Configuration Management — Tools like Puppet, Chef, SaltStack, and Ansible are often used for configuration management ensuring any time that an application is deployed follows the approved and template-defined configuration
+
+       Continuous Integration — Tools such as Travis-CI and Jenkins which help orchestrate the overall development pipeline and offer more efficient ways for testing
