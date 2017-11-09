@@ -1,0 +1,118 @@
+Continuous integration refers to a practice in software development that requires developers to contribute code to a shared repository at least once a day. This process of continuous addition to code is automatically verified and tested resulting in fewer bugs, thorough testing, and faster product release times. Using tools and resources such as git, GitHub, Travis CI, Jenkins, and the like, continuous integration has become the norm for new software development
+
+Introduction to continuous integration:
+    This topic introduces the concept of automated tests and builds. Two examples, such as Jenkins & Travis, will help explain the value is not in the tool itself, but the tests that are being run. Continuous Integration is a software development practice that requires developers to integrate their code into a shared repository one or more times per day. Each time code is contributed, an automated process is used for verifying and testing the software
+
+    You have seen the value of source code management and test writing (unit, integration, and the like). Continuous Integration is a practice that provides a way for automated integration and testing to occur whenever new code is contributed to a source code repository. Using a continuous integration pipeline, you are forced to write up a test suite. Or at least, this practice is the recommended approach. These tests are then run at specified times. It could be daily, but it could also be whenever a Pull Request is opened on GitHub. Or, it could be when a new code is merged into a branch. You define when the tests are run
+
+Development without CI:
+    Increased number of bugs
+    Insufficient testing
+    Lack of integration testing
+    Slow release process
+    Project Delays
+
+    Integration is difficult and is even more difficult without CI. Integration with third-party systems and end-user experience testing is something that does not happen frequently. This situation may occur when there is not a CI workflow or pipeline being used. Without CI, there is also an increased number of bugs found due to a lack of testing. This oversight ultimately produces less stable software and increases the amount of time it takes to successfully complete a project
+
+Development with CI
+    Frequent commits
+    Automated builds, tests, documentation, and reports
+    Early and often
+    Dedicated Build and Test Servers
+    Fewer bugs
+
+    When Continuous Integration is adopted within an organization, it can drastically change and improve the pace at which stable software is written and produced. Since automated tests will be run before to merging each code contribution, you can more easily identify bugs and fix them immediately. This practice can occur before the code is accepted and merged in the source code management system. In this model, there is not a dedicated team that tests after code is contributed. Each developer is responsible for ensuring any code that they submit can pass appropriate tests. If you are the architect that owns a certain feature, it is up to you to run the tests. These tests for the feature will need to occur if others want to contribute code. They will need to ensure all tests pass as they will run automatically
+
+    Multiple Releases per Day:
+        More features
+        Stability
+        Improved customer response
+        Employee moral goes up
+        Disruptor
+
+    Multiple Releases per Year:
+        Fewer features
+        Instability
+        Negative customer response
+        Employee moral goes down
+        Disrupted
+
+    Many modern software companies employ some form of a continuous integration pipeline. This procedure allows them to introduce features at a more rapid place that is compared to what has been done 10-15 years ago. The organizations use traditional approaches to software development such as Waterfall. Remember, when using CI, testing happens early and often and developers are responsible for ensuring all tests pass. Companies such as NetFlix and Facebook are doing hundreds of deployments per day into production. This practice is only possible with using CI and CD pipelines. Every code contribution must pass automated tests that include integration testing. Once the code deploys to staging, UAT, and the like, are successful. The software can then easily be deployed to production by simply adding one new target deployment. This procedure is known as Continuous Deployment (CD). It’s common to see references to Continuous Integration & Deployment as CI/CD
+
+CI pipeline:
+    A CI pipeline is the workflow of how continuous integration is achieved by using a few different types of tools:
+        Version control systems- for open source projects, GitHub is a popular choice for a VCS
+        Build Servers — they are a key ingredient for the pipeline as a build server is what runs your tests. When using GitHub, you can configure something that is known as a web-hook. You can also use a native plug-in if available. This practice will have GitHub make an API call to a build server when Pull Requests are opened and code is committed
+        Enterprise organizations usually have different development environments for testing such as test, integration, staging, DR, and production. Using an automated testing process, you can successfully test and build your application in each environment without human interaction. Once the application passes all tests, you can automatically deploy to production. If tests do not pass, you will see exactly which tests and environments had issues. In this case, you can fix the required software before merging your code into the master or mainline branch
+
+Source code repository:
+       Source code management systems are not only for source code, but also for:
+          Tests
+          Build Scripts
+          Build Tools
+          Configuration scripts
+          Documentation
+
+       The start of a CI pipeline begins with a source code repository. As mentioned in a previous lesson, a popular choice for source code management for open source projects is GitHub. If you are looking to deploy a robust CI pipeline, you will use the the source code management system. For example, all tests (system, integration, unit) will also be stored in the source code repository. The practice to build configuration scripts should also be stored in the repo. These types of scripts can automate the process of building the underlying machine and install dependencies as required for the application to run
+
+Automated build process:
+    An often overlooked but critical component for any application is being able to reproduce a proper and consistent development environment. This procedure becomes easier if it is automated and part of the CI pipeline. If new code requires a particular Linux configuration or package to be installed, those requirements can get included in a build script. This process allows the next person to write code or test the application, and automatically have the new and correct environment
+
+    Common tools that are used for application portability and development environments include VirtualBox, Vagrant, Packer, and Docker:
+
+        VirtualBox — A free and open-source hypervisor that allows you to run virtual machines on your laptop
+
+        Vagrant — An open source software application that creates and configures virtual development environments. You can think of Vagrant as a wrapper around virtualization software such as VirtualBox, VMware, and KVM. Vagrant uses a concept of boxes. You can automatically use an Ubuntu box (virtual machine) and write a VagrantFile to auto configures the Ubuntu box as needed for a reproducible development environment
+
+        Packer — An open source tool for creating identical machine images for multiple platforms from a single source configuration. It’s common to use Packer to create Vagrant Boxes, EC2 images, VMware images, and the like. Several other virtual machine formats are also supported
+
+        Docker - An open source platform for developers and admins to build, ship, and run applications in a consistent fashion using containers. Similar to Vagrant in that it has a configuration file (Vagrantfile and Dockerfile), you get to describe what should be installed and configured in the container
+
+    Many of these tools require the use of software artifacts such as Vagrantfiles and Dockerfiles – these files should be stored in the project repository. This practice ensures developers who want to contribute to the project are using a proper development environment
+
+Automated test suite:
+    Within the different types of tests, it is those tests that are the foundation of a solid CI pipeline. The tests are often the most important piece of a CI pipeline. Without automated testing, you can still perform automated deployments, but the real value is continuous integration and testing. You need to write the required tests that fully test each feature (associated code) of your application. While you have been focused on CI, and discussing testing from an application perspective, you need to think of the network as the application.
+
+    When doing an upgrade or a change on the network, you must ask yourself the following:
+        Which tests need to pass in order to determine the network is functional and working as expected?
+        If you’re adding new VLANs and SVIs, can tests validate the routes are being propagated?
+        Can tests ensure connectivity and reachability?
+
+    Here you can see the immediate value of using a CI pipeline specifically for network changes
+
+Build servers:
+    Tests are undoubtedly the most important piece of a CI pipeline, but there needs to be a way to automatically run these tests. All code and tests should be stored in a code repository such as GitHub, private git server, or its equivalent. The build server is what executes the builds and tests by integrating directly into the source code management system. You can define when the tests are run. For open source GitHub projects, it’s quite common to have the tests run for every new Pull Request that is opened. You can then monitor the status of the tests being run. If any should fail, you can quickly fix your code and update your Pull Request until all tests pass.
+
+    Two common build systems are Jenkins and Travis CI:
+
+        Jenkins — An open source on-premise CI server. You need to download, install, and configure Jenkins to meet your application needs
+
+        Travis CI — A cloud-based solution, just like GitHub, and is a CI platform for GitHub-based projects. It’s a great solution for getting started as there is no downloads or installs required
+
+CI benefits:
+    Continuous Integration can dramatically change the way software (and networks) are deployed and tested. By adopting a CI pipeline, you can achieve improved code quality. This procedure allows all tests to run early (from the start of the project) and often (when there are code contributions). These benefits directly impact the pace at which software can be deployed, sold, and delivered. This process minimizes common issues of delay and budget for software development projects. Finally, since the process includes comprehensive automated testing, there is the ability to have higher levels of customer satisfaction
+
+Travis CI:
+    https://travis-ci.org/
+
+    Travis CI is a hosted continuous integration service that makes it extremely easy to test your GitHub projects. Travis CI is completely free to use for open source projects that are hosted on GitHub. This effort means that if you run tests on any code, you can leverage Travis CI to automatically kick off those tests. This outcome happens when a Pull Request is opened or a commit to a specified branch occurs
+
+    To get started, you can simply log in and create a Travis CI account using your GitHub credentials. Then, synch accounts and Travis will have access to your GitHub repositories. You can toggle on/off if you want Travis integration per repository
+
+    For the repositories you want to run tests on, place a Travis config file in the root of that repository or directory. Then, push it to GitHub. The file must be a YAML file and called .travis.yml
+
+    There are many options for configuring Travis. In the example, you specify which programming language is being used and which version of Python to test with. This effort would automatically run the tests using multiple versions of Python if more than one version was specified. Below the Python version, an ordered list of terminal commands exist in order to prepare a virtualized (or container) host that Travis spins up on-demand. Travis executed these commands sequentially to build your system from scratch. Once the system is built, tests are run ensure everything being contributed to the GitHub repository does not break the existing code base (or project)
+
+          ---
+
+          language: python
+          python:
+            - "2.7"
+          install:
+            - git clone https://github.com/datacenter/acitoolkit
+            - cd acitoolkit
+            - python setup.py install
+            - pip install ansible==1.9.2
+          script:
+            - python tests.py
+            - python check_neighbors.py
