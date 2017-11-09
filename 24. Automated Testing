@@ -31,6 +31,76 @@ VIRL:
 
    VIRL is built on top of Openstack and is used to orchestrate the virtual machines, building the topology and managing images. Openstack is normally known as a free and open-source platform for cloud computing, but in very recent days it has been leveraged for providing a virtual infrastructure for various hardware recourses including compute, networking and storage. Openstack uses a web-based dashboard and REST APIs which make Openstack programmable and customizable. This feature is the core of what enables the VIRL network simulation. Openstack provides the foundation for VIRL to be more than a basic network simulation program; instead, it provides the basis for full network virtualization and orchestration
 
-   The VIRL topology service director is used to create the virtual machine, and then the virtual machines are linked (and therefore communicate) with one another using Openstack. In fact, Openstack allows communication not only among virtual machines, but among several of computers running VIRL in a cluster. This communication can be done in a cloud-based hosted platform or locally using Vmware ESXi or on bare-metal servers.
+   The VIRL topology service director is used to create the virtual machine, and then the virtual machines are linked (and therefore communicate) with one another using Openstack. In fact, Openstack allows communication not only among virtual machines, but among several of computers running VIRL in a cluster. This communication can be done in a cloud-based hosted platform or locally using Vmware ESXi or on bare-metal servers
 
-           
+   The components of VIRL are VM Maestro, which serves as VIRL’s front end, and the back-end where you actually run your virtual machines. VIRL’s back-end is simply Ubuntu Linux utilizing Openstack and KVM/Qemu. Though there is also a web user interface, VM Maestro controls the actual virtual machines. Cisco utilizes the very same source code they use to run their network devices in order to create virtual machine equivalents to run on standard x86 hardware. This process means that you can design and configure familiar network topologies using the same familiar network operating systems but on any reasonable computer including a laptop or desktop. This system is an incredibly powerful tool to create network simulations to mimic production environments for testing, proofs of concept. You can use your favorite terminal emulator to connect to the network devices in your simulation. With proper configuration, the virtual environment can connect to your physical environment as well
+
+   VIRL allows you to perform almost any function that the physical platforms perform. This feature means that you can configure and test layer 2 and layer 3 connectivity. This option is a very powerful advantage to deploying large amounts of physical hardware. However, because the virtual platforms are almost identical to their physical counterparts, you can perform latency and packet loss tests. Try various access control scenarios, and experiment with new technologies such as containers
+
+   AutoNetkit enables Cisco VIRL to provide you with a very intuitive graphical user interface to create new topologies on demand and point-and-click to drop new virtual devices into a topology. When you drop a new IOSv device into a topology, on the back-end VIRL is working with actual device images and Openstack connectivity. Therefore, AutoNetkit is much more than a simple web front end; it is a powerful automation engine to coordinate predefined variables and incorporate them into your topology. AutoNetkit allows you to very easily build baseline configurations saving you tremendous time. When testing the deployment of a new routing protocol, it is time consuming and wasteful to have to take an hour or more to create the topology and connections. Instead, AutoNetkit generates the topology for you allowing you to immediately get to work. Also, you can simply disable AutoNetkit in order to actually create topologies yourself. Therefore, VIRL gives you tremendous flexibility to test without wasting time or take the time that you want to experiment with devices
+
+   Cisco VIRL topologies are stored as XML files. This process means that topology files are human-readable, editable, and shareable. Especially using VIRL’s GitHub integration, sharing files among peers is extremely easy. Files are saved with the .VIRL extension, and each element in the topology has an XML representation. This representation means that each node, connection, device property, and configuration is self-contained within the topology
+
+   Also, VIRL is front-ended by REST APIs. There are two types of APIs that allow direct access to work with VIRL:
+
+      First, there are the OpenStack APIs. OpenStack is the Cloud Management Platform that coordinates and orchestrates spinning up all required device images into the desired topology. As OpenStack is used, you can access these APIs just as you could in a general OpenStack deployment
+
+      There are also APIs exposed for VIRL-specific operations. For example, common API calls can be issued to start and stop topologies. Python standard requests library can be used just as you have used in previous labs already. With a simple HTTP POST, you can pass the VIRL topology as XML and start the topology. This type of integration can be very attractive for organizations looking to deploy Continuous Integration pipelines
+
+DevNet:
+    The Cisco DevNet team continues to grow ever year empowering network engineers to learn more about network automation and device programmability. DevNet is the Developer Program from Cisco and provides tools that help you produce applications to sell to Cisco customers, and use Cisco APIs to enhance or manage your existing Cisco network. DevNet is much more than a simple website, but rather a fully integrated developer program consisting of a website, an interactive developer community, coordinated developer tools, integrated discussion forums, and sandboxes. You will even find a dedicated DevNet zone at Cisco Live. The DevNet developer program includes support for much more than networking – it includes content on automation is it pertains to Cisco networking, collaboration, compatibility Testing, IoT, Cloud, Security, and Datacenter. There is a plethora of content that is geared towards hands-on labs. Just a sampling of what’s available includes support for APIC-EM, RESTCONF,NETCONF, YANG, Various APIs, Cisco Open SDN Controller, Jabber, Webex, and InterCloud Fabric
+
+    DevNet sandbox: The DevNet team offers sandbox environments that lower the barrier to entry for getting hands-on access to equipment for testing new platforms and APIs. Various sandbox types exist across all technologies. Certain sandboxes exist that are always-on while other sandboxes need to be reserved. accessed at https://developer.cisco.com
+
+    In addition to sandbox environments, DevNet offers Learning Labs. These labs offer step by step directions on how to use newer technologies as well. You will walk through Sandboxes and Learning Labs in upcoming Discovery Lab to easily compare and contrast them. available at https://learninglabs.cisco.com
+
+    DevNet also has a GitHub community. You will find code samples (including samples that are used in Learning Labs), scripts, libraries, YANG models, and various open source projects hosted on the DevNet GitHub site. You should get familiar with the current projects and be sure to follow this community to be aware of when new GitHub repositories are created. https://github.com/ciscoDevNet
+
+Network testing:
+    Using platforms such as VIRL, DevNet, and virtual machines lower the barrier to entry for network testing, but after testing, you need to take action in your production network. While automation can be scary, a great way to start with automation is with automated testing
+
+    Network testing is diverse. How do you validate a change was successful on the network today? Do you gather the output of show commands manually and compare the output manually? If you’re adding a new branch site with three subnets, you know that this site should be able to reach all other 10 sites. All existing sites should be able to reach each the three new subnets. If done properly, you can write tests that should fail before the deployment. When you run the tests after the deployment, they should all pass
+
+    Do you think these tests and checks could be done more efficiently?
+
+        Configuration and compliance tests: How do you verify that particular features are configured properly? How do you verify that all devices have the proper AAA or passwords configured?
+
+        Ephemeral data tests: Referring to the dynamic state of network devices. As an example: neighbors, adjacencies, routes, mac addresses, ARP cache, and the like. How do you verify that the real-time state is correct? All neighbors being seen? Do you see a drop in OSPF routes?
+
+        Reachability tests: How do you verify all sites and subnets, in all VRFs, has access to the systems they should have access to?
+
+        Performance tests: For those organizations that do have spare hardware in the lab or DR site. How do you verify that a change on a device does not significantly affect the performance? As an example: Turning on QOS, multicast, BGP, and IPSec all at the same time
+
+    For these examples, you are better off automating. The test can then tell you where there are diffs (or deviations) from what you think should be there
+
+    When it comes to testing, there are a few different approaches you can take. The first approach is to test the network manually using utilities like ping and traceroute device by device. Another option is to build custom a custom scripts and tools from scratch, or leveraging an existing platform such as Ansible
+
+    The right side of the figure, illustrates how Ansible can be used to perform validation of OS version across one or more devices. With changing only an inventory file, that one task can verify that the correct version of NX-OS is installed on all your Nexus switches. To do this procedure the old way, would be a tedious and manual endeavor that could take hours or days depending on the size of the network
+        - name: show version
+            nxos_command:
+              commands:
+                - show version
+              username: cisco
+              password: cisco
+              host: "{{ inventory_hostname }}"
+            register: output
+          - assert:
+              that:
+                - "'7.3(1)D1(1)' in output['response'][0]"
+
+    The single most important point is to realize that the role automation can have on an organization is much larger than managing and deploying configuration more quickly. Not every team needs to be deploying VLANs faster per se, but every team can use automation (in some fashion) to make more predictable changes. This process minimizes change errors and increases the ability to perform tests. In fact, the amount of work necessary to test network configurations manually is significant and tedious enough that testing is disregarded altogether
+
+Unit tests:
+    Unit tests are an advanced concept in programming and primarily for full-time software engineers, but you need to review this concept at least from a high level. Unit tests are how software engineers can test specific functions and features of a given application, library, or script
+
+    When working with Python, a common test framework is unittest. There are several components of a test framework, which include the following:
+
+        A test fixture represents the preparation that is needed to perform one or more tests, and any associate cleanup actions. This preparation may involve, for example, creating the instance of a network device
+
+        A test case is the smallest unit of testing. It checks for a specific response to a particular set of inputs. unittest provides a base class, TestCase, which may be used to create new test cases
+
+        A test suite is a collection of test cases, test suites, or both. It is used to aggregate tests that should be executed together
+
+        A test runner is a component that orchestrates the execution of tests and provides the outcome to the user. The runner may use a graphical interface, a textual interface, or return a special value to indicate the results of executing the tests
+
+    As you can see, unit tests are another way that you can run checks on your network before and after you make changes. Writing test cases ensure that you know what the expected output will be. The key with writing tests is to ensure that you run them before and after the change in order to determine the change was deployed correctly    
