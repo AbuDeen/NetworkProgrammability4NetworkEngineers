@@ -1,0 +1,210 @@
+Bash supports scripting in a form of a series of linux commands to automate a task
+Bash shell is available on NX9K
+
+Enabling bash shell on NX9K:
+switch(config)# feature bash-shell
+Accessing the BASH shell from enable mode
+switch# run bash
+bash-4.2$
+
+#Bash Scripting:
+Bash scripting is a simple yet powerful tool to automate Linux environments. A Bash script is interpreted line-by-line by the Bash shell. Bash files must have execute permissions and should have a .sh extension. Bash scripts run a list of standard commands but often require connecting multiple commands to parse text and make changes
+
+#Bash Variables, Conditions, and Loops:
+Similar to Python, Bash supports variables, conditions, and flow control. To create a Bash variable, assign a string to a variable name. Bash variables are typed as strings but can be treated as a number. Spaces in variable declaration are not allowed. The following output declares the variable “v”, assigns the value “hello world.”
+e.g:
+v="hello world"
+echo $v
+hello world
+
+The output leverages the BASH command “echo” to print the output of v. The $ symbol requests the value of v. By default, Bash has a number of built-in variables. The built-in variables are automatically set when the shell starts and are very useful in writing Bash scripts. With the exception of the $PATH, built-in variables are not commonly changed. Common built-in Bash variables are:
+$PATH: WORKING PATH
+&PWD: CURRENT DIRECTORY
+$HOME: USERS HOME DIRECTORY
+$RANDOM: GENERATE A RANDOM NUMBER
+
+Note: terminal command "set" can be used to show all bash variables
+
+#sample bash script:
+bash-4.2$ touch simplebash.sh
+bash-4.2$ chmod +x simplebash.sh
+bash-4.2$ echo '#!/bin/bash' > simplebash.sh
+bash-4.2$ echo echo The first input is \$1 and the second is \$2 >> simplebash.sh
+bash-4.2$./simplebash.sh Hello Cisco
+The first input is Hello and the second is Cisco
+
+The previous example first creates a file called simplebash.sh, and then uses chmod to set execute permissions. Lines three and four use “>” and “>>” echo commands as text into the file, where “>” replaces everything in the file with the text and and “>>” appends the file. The backslashes in line four escape the $ character to insert a $1 into the file instead of the value of the variable 1. Finally, the command is run using “./”. Dot/slash specifies to run the script from the current directory
+
+#Bash Arithmetic:
+Bash variables are strings; however, they can be declared as integers. The following commands set the variables V1 and V2 with numbers, but they are stored as strings. The command “echo $V1+$V2” does not add the values and instead prints the string, including the literal symbol “+”
+
+bash-4.2$ V1=10
+
+bash-4.2$ V2=5
+
+bash-4.2$ echo $V1+$V2
+
+10+5
+
+The BASH command “declare –” can initialize or convert a variable to an integer. The following output declares the variable “result” as an integer and calculates a number
+
+bash-4.2$ int1=12
+
+bash-4.2$ int2=5
+
+bash-4.2$ declare -i result
+
+bash-4.2$ result=int1*int2
+
+bash-4.2$ echo $result
+
+60
+
+As an alternative to the “declare” command, double parentheses signal Bash to treat the variables as integers. The following output adds the values using double parentheses.
+
+bash-4.2$ V1=10
+
+bash-4.2$ V2=5
+
+bash-4.2$ echo $(($V1+$V2))
+
+15
+
+Bash supports common arithmetic operations including addition, subtraction, multiplication, and division
+
+#Bash Conditions and Flow Control:
+Bash conditions and flow control introduce logic and looping to Bash scripts. Bash if/then/else statements compare two or more values and executes a command. The following example shows a simple BASH if statement:
+bash-4.2$ if [ "Cisco" = "Cisco" ];
+
+> then
+
+> echo True
+
+> else
+
+> echo false
+
+> fi
+
+True
+
+The condition in the previous example compares if the string “Cisco” is equal to another string of “Cisco,” and if true, prints the word “True.” The fi command signals Bash that the conditional block has ended. The example leverages a Bash condition in the interactive shell. “If” statements saved in a script are on a single line and require the use of a semicolon as shown in the following example:
+
+if [ "Cisco" = "Cisco" ];  then echo True; else echo false; fi
+
+Bash if statements evaluate the expression using the test command. The test command requires brackets and supports both string and integer operators
+
+Bash if statements support else-if with “elif” and can be nested
+
+Case is another Bash conditional and is good at evaluating multiple options. Case statements are a cleaner alternative than nested ifs. The following example leverages the case statement to evaluate a variable against multiple options
+bash-4.2$ cat simplecase.sh
+
+#!/bin/bash
+case "$1" in
+1) echo one ;;
+2) echo two ;;
+3) echo three ;;
+esac
+bash-4.2$./simplecase.sh 2
+
+two
+
+The case statement in the previous example compares the first input argument against the string values 1, 2, and 3. Case statements can match multiple patterns with a |, as shown in the following example:
+bash-3.2$ cat simplecase.sh
+
+#!/bin/bash
+case "$1" in
+1 | [Oo][Nn][Ee] ) echo 1 ;;
+2 | [Tt][wW][Oo] ) echo 2 ;;
+3 | [Tt][Hh][Rr][Ee][Ee] ) echo 3 ;;
+esac
+bash-3.2$ ./simplecase.sh oNe
+
+1
+
+bash-3.2$ ./simplecase.sh THRee
+3
+
+bash-3.2$
+
+The previous example utilizes the case statement to match on the number, that is, 1, 2, or 3, of the word one, two, or three in any case
+
+Bash flow control tools include for and while loops. By default, BASH for loops iterate a string using a blank space as a separator, as shown in the following example:
+#!/bin/bash
+for i in $1;
+    do
+    echo $i
+done
+
+bash-3.2$ ./simplefor.sh 'This is FUN'
+
+This
+
+is
+
+fun
+
+The previous example inputs a string, in this case “This is fun,” and loops for every word the string.
+
+In some cases, we need a loop for to perform something a number of times. The Linux seq command can be used in a for loop, as shown in the following example:
+bash-3.2$ cat simplefor2.sh
+
+#!/bin/bash
+
+for i in 'seq 5';
+
+    do
+
+    echo i equals $i
+
+done
+
+bash-3.2$ ./simplefor2.sh
+
+i equals 1
+
+i equals 2
+
+i equals 3
+
+i equals 4
+
+i equals 5
+
+Bash while loops run code 0 or more times. Initiating and using a counter variable is a common use of while loops, as shown in the following example:
+bash-3.2$ cat simplewhile.sh
+
+#!/bin/bash
+
+         counter=0
+
+         while [  $counter -lt 5 ]; do
+
+             echo The counter is $counter
+
+             let counter=counter+1
+
+         done
+
+
+
+bash-3.2$ ./simplewhile.sh
+
+The counter is 0
+
+The counter is 1
+
+The counter is 2
+
+The counter is 3
+
+The counter is 4
+
+#Bash Redirection and Pipes:
+A Linux program normally will take input from the keyboard and will output any results or errors to the screen. This is referred to as standard input (stdin), standard output (stdout), and standard error (stderr), respectively. Bash redirection allows the user to change or redirect the in and outs of the application.
+
+A user complains that an application stops working from time to time. Ping is used to troubleshoot the issue; however, it is not very efficient to sit and watch it for 7–10 days. We can redirect the output of ping by using the redirection command >
+
+ping www.yahoo.com > somefile.txt
+
+The Bash shell will create the file “somefile.txt” and store the results in the file
