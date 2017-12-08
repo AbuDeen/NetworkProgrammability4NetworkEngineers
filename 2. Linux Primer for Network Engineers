@@ -1,32 +1,35 @@
-Navigating the Linux file system:
-    Root file system refer to by / aka root directory
-    Sudo = super do, executes a command with root privileges
+# Navigating the Linux file system:
+Root file system refer to by / aka root directory
+sudo = super do, executes a command with root privileges
 
-Sudo:
-    Debian/Ubuntu doesn’t allow logging in as root
-    Redhat/fedora allow a user to log in as root by default
-    You can configure who can run sudo in the sudoers file
-    If you are at user@machinesname:~$ running ‘sudo su’ puts you in root shell root@machinename:/# (Ctrl + D to return)
+# sudo:
+Debian/Ubuntu doesn’t allow logging in as root
+Redhat/fedora allow a user to log in as root by default
+You can configure who can run sudo in the sudoers file
+If you are at user@machinesname:~$ running ‘sudo su’ puts you in root shell root@machinename:/# (Ctrl + D to return)
 
-# remember in Linux terminal $ is an indication that current user has no root privileges, while # indicates you’re root
+Remember in Linux terminal $ is an indication that current user has no root privileges, while # indicates you’re root
 
-Path and Directories:
-    pwd = prints current working directory
-    ls = lists content of current directory
-    man <command> = shows manual of a command
-    A path is a file or directory's location on a filesystem. There are two types of paths in Linux:
-        Relative path: relative to the current working directory
-        Absolute path: relative to the root directory, starts with / e.g: /home/username/Desktop
+# Path and Directories:
+pwd = prints current working directory
+ls = lists content of current directory
+man <command> = shows manual of a command
+
+A path is a file or directory's location on a filesystem. There are two types of paths in Linux:
+Relative path: relative to the current working directory
+Absolute path: relative to the root directory, starts with / e.g: /home/username/Desktop
+
 Note: Linux terminal is case sensitive. So home is not the same as Home
-    Cd command:
-        'cd ..' changes to parent directory of current directory
-        'cd' or 'cd ~' back to home directory (home = /home/username)
-        'cd .. / ..' back two directories. You can add dots and /s as you wish
-        'cd -' changes to parent directory of current directory and prints parent directory
 
-Linux distributions and package managers:
-    Linux operating systems are distributed as complete collections of software built-around the Linux kernel and some form of package management system. These collections are called distributions (distros), and though there are almost 300 various distributions available today, most are derived from one of two main operating systems: Red Hat and Debian
-    Distributions are commonly developed to meet specific end-user requirements. For example, Kali Linux is focused on penetration and security testing while OpenWrt is generally focused on home router functionality. CentOS is built for stability, whereas Fedora is considered less stable because it is a testing ground for new features
+cd command:
+'cd ..' changes to parent directory of current directory
+'cd' or 'cd ~' back to home directory (home = /home/username)
+'cd .. / ..' back two directories. You can add dots and /s as you wish
+'cd -' changes to parent directory of current directory and prints parent directory
+
+# Linux distributions and package managers:
+Linux operating systems are distributed as complete collections of software built-around the Linux kernel and some form of package management system. These collections are called distributions (distros), and though there are almost 300 various distributions available today, most are derived from one of two main operating systems: Red Hat and Debian
+Distributions are commonly developed to meet specific end-user requirements. For example, Kali Linux is focused on penetration and security testing while OpenWrt is generally focused on home router functionality. CentOS is built for stability, whereas Fedora is considered less stable because it is a testing ground for new features
     The two main Linux OS are:
         Red Hat Enterprise Linux RHEL = Commercial OS. Derivatives are Fedora and CentOS
         Debian = Free and open source, developed under the Debian project. Most popular derivatives are Ubuntu, which has derivatives as well such as Linux Mint and Gnome
@@ -118,5 +121,3 @@ Bonus command:
             ├── swcfg
             ├── switchconfig.py
             └── Untitled Document 1.py
-
-      

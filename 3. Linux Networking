@@ -5,7 +5,7 @@ Networking commands:
         e.g:
             ifconfig
             ifconfig interfacename up|down = shuts / unshuts an interface
-    iplink = similar to ifconfig, more powerful. ifconfig will be decommed soon, repalced by ip link. shows each interface w/o inet address assigned to it
+    ip link = similar to ifconfig, more powerful. ifconfig will be decommed soon, repalced by ip link. shows each interface w/o inet address assigned to it
     ip addr list = shows list of interfaces with inet ip addresses assigned to it
     ip addr = assigns an ip to an interface. this assigment is not persistent, meaning it will be gone after a reboot
         e.g: sudo ip addr { add | del } a.b.c.d/yz dev <interface>
@@ -55,4 +55,3 @@ Persistent network configuration:
     restarting network service:
         must be done after changing an ip, mask, GW or adding additional interfaces
         run sudo service networking restart
-        

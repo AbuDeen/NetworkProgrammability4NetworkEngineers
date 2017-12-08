@@ -1,127 +1,127 @@
 Overview:
-    The Cisco ASA REST API provides a programmatic model-based interface for configuring classic ASAs beginning with the 9.3.2 release. The term “classic ASAs” refers to appliances which do not include the CX or SourceFire Sensor or the integrated functionality of NGFW services. The REST API can be used to configure ASAs with existing management interfaces and applications— command-line interface, Adaptive Security Device Manager, and Cisco Security Manager
+The Cisco ASA REST API provides a programmatic model-based interface for configuring classic ASAs beginning with the 9.3.2 release. The term “classic ASAs” refers to appliances which do not include the CX or SourceFire Sensor or the integrated functionality of NGFW services. The REST API can be used to configure ASAs with existing management interfaces and applications— command-line interface, Adaptive Security Device Manager, and Cisco Security Manager
 
-    Cisco has added an industry standard REST API to interact with the ASA operating system using standard RESTful practices. The ASA REST API can be used to push configuration, pull configuration, and monitor the device, in addition to the standard management mechanisms such as CLI and ASDM. Any management system with HTTPS access and correct credentials can manage the firewalls
+Cisco has added an industry standard REST API to interact with the ASA operating system using standard RESTful practices. The ASA REST API can be used to push configuration, pull configuration, and monitor the device, in addition to the standard management mechanisms such as CLI and ASDM. Any management system with HTTPS access and correct credentials can manage the firewalls
 
-    The Rest Agent is not native to the OS; instead, it is a module that is added on
+The Rest Agent is not native to the OS; instead, it is a module that is added on
 
 Note: There is not a specified version of API per OS version, meaning that a network administrator can be on version 9.5(2)207 of ASA and 1.3.1 of Rest API Agent
 
-    All Data is returned as structured data encoded as JSON for ease of use in working with the data. Note: it does not support XML
+All Data is returned as structured data encoded as JSON for ease of use in working with the data. Note: it does not support XML
 
-    The Agent relies on standard HTTP responses, and includes relevant data in the header and body of those responses when there are errors
+The Agent relies on standard HTTP responses, and includes relevant data in the header and body of those responses when there are errors
 
 Rest api agent prerequisites:
-    Running ASA running 9.3(2) or 9.4(1) and above. running https
+Running ASA running 9.3(2) or 9.4(1) and above. running https
 
-    By default, the Agent is not innately on the device. Use the following steps in order to install the agent API and enable it:
-        Turn on https via "http server enable"
-        Download the REST agent package
-        Upload it to the device
-        Install the package with “rest-api image disk0:<image-name>” command
-        Enable the REST API agent with the “rest-api agent” command
-    Once it is complete, the ASA HTTP daemon knows to redirect any connection using the URI ‘/api’ to the REST agent
+By default, the Agent is not innately on the device. Use the following steps in order to install the agent API and enable it:
+  Turn on https via "http server enable"
+  Download the REST agent package
+  Upload it to the device
+  Install the package with “rest-api image disk0:<image-name>” command
+  Enable the REST API agent with the “rest-api agent” command
+  Once it is complete, the ASA HTTP daemon knows to redirect any connection using the URI ‘/api’ to the REST agent
 
 Access to rest api based on user credentials:
-    Just as with standard privileges via the CLI, the REST API requires specific privileges in order to manage the device. A network administrator can use Basic Auth or Tokens which are both associated with a single user.
+Just as with standard privileges via the CLI, the REST API requires specific privileges in order to manage the device. A network administrator can use Basic Auth or Tokens which are both associated with a single user.
 
-    There are there main privilege levels when using the API:
-        Privilege level 3: Required to invoke monitoring requests such as/api/monitoring GET requests
-        Privilege level 5: Required for invoking all GET requests
-        Privilege level 15: Required for invoking PUT/POST/DELETE operations
+There are there main privilege levels when using the API:
+  Privilege level 3: Required to invoke monitoring requests such as /api/monitoring GET requests
+  Privilege level 5: Required for invoking all GET requests
+  Privilege level 15: Required for invoking PUT/POST/DELETE operations
 
-    Each level inherits lower-level attributes. For example, Level 15 inherits the GET Requests of a Level 5 user
+Note: Each level inherits lower-level attributes. For example, Level 15 inherits the GET Requests of a Level 5 user
 
 Cisco asa rest api documentation and console:
-    documentation and console located at https://deviceip/doc/
+documentation and console located at https://deviceip/doc/
 
-    The documentation pack is crucial to understanding various components of the Cisco ASA REST API such as the URIs required to make changes, sample examples, and various methods. There is also a native API console, which is a REST client, similar to Postman (covered later in the lesson)
+The documentation pack is crucial to understanding various components of the Cisco ASA REST API such as the URIs required to make changes, sample examples, and various methods. There is also a native API console, which is a REST client, similar to Postman (covered later in the lesson)
 
-    The API Console is used to understand how the device interacts with the API without having to deal with authentication or worrying how to build a JSON request. The on-box console is similar to using Postman in that a network administrator can send requests to the ASA API directly from the console itself
+The API Console is used to understand how the device interacts with the API without having to deal with authentication or worrying how to build a JSON request. The on-box console is similar to using Postman in that a network administrator can send requests to the ASA API directly from the console itself
 
-    The console also provides examples to test particular APIs that can be executed with the click of a button. The examples are pre-defined and include all details of the JSON request including how the entire http request needs to be crafted. The examples also include what information needs to be sent as a header and what will be in the body
+The console also provides examples to test particular APIs that can be executed with the click of a button. The examples are pre-defined and include all details of the JSON request including how the entire http request needs to be crafted. The examples also include what information needs to be sent as a header and what will be in the body
 
-    Setting up authentication methods is not needed in order to use the documentation pack. It eliminates authentication issues as a problem since it uses the same credentials that are used to log in to the ASA
+Setting up authentication methods is not needed in order to use the documentation pack. It eliminates authentication issues as a problem since it uses the same credentials that are used to log in to the ASA
 
-    Once logged in to the Cisco ASA REST API Documentation and Console, there are three sections that are displayed from which a network administrator can navigate
+Once logged in to the Cisco ASA REST API Documentation and Console, there are three sections that are displayed from which a network administrator can navigate
 
-    The column on the left displays a list of API options. Each link represents a different URI path and functional grouping of APIs
+The column on the left displays a list of API options. Each link represents a different URI path and functional grouping of APIs
 
-    The center section shows the individual APIs, the associated documentation with each of them and which methods a given API supports. Within an API are examples and any parameters or expected responses
+The center section shows the individual APIs, the associated documentation with each of them and which methods a given API supports. Within an API are examples and any parameters or expected responses
 
-    The column on the right is the API Console. It is where APIs are tested in real time. Note that you can make changes to an example request and view the actual response
+The column on the right is the API Console. It is where APIs are tested in real time. Note that you can make changes to an example request and view the actual response
 
-    As you navigate within the center pane in the API Documentation & Console, notice the examples that help construct http requests
+As you navigate within the center pane in the API Documentation & Console, notice the examples that help construct http requests
 
-    The examples will help build your queries and request objects and then show associated response data and response codes. You can see examples by clicking on any of the methods, (GET, PUT, POST) and then clicking on “Examples.”
+The examples will help build your queries and request objects and then show associated response data and response codes. You can see examples by clicking on any of the methods, (GET, PUT, POST) and then clicking on “Examples.”
 
-    When working with the examples, you should note that the GET examples only show the response object and POST examples show the request object. It can be seen in the figure above
+When working with the examples, you should note that the GET examples only show the response object and POST examples show the request object
 
-    While still navigating within the API Documentation & Console, notice the rightmost pane – the API Console In the API Console, by simply pressing “GET” you are able to see the response information in real time. Also, you can add query parameters and adjust any variable setting directly from the console.
+While still navigating within the API Documentation & Console, notice the rightmost pane – the API Console In the API Console, by simply pressing “GET” you are able to see the response information in real time. Also, you can add query parameters and adjust any variable setting directly from the console.
 
-    You view and test the console by clicking on any of the methods from within the center pane; for example, GET, PUSH, and POST
+You view and test the console by clicking on any of the methods from within the center pane; for example, GET, PUSH, and POST
 
 The methods that are supported by the ASA REST API are a subset of the HTTP Methods available. The ASA API supports the following:
-    GET—Retrieves data from the specified object.
-    PUT—Adds the supplied information
-    POST—Creates the object with the supplied information.
-    DELETE—Deletes the specified object.
-    PATCH—Applies partial modifications to the specified object
+  GET—Retrieves data from the specified object.
+  PUT—Adds the supplied information
+  POST—Creates the object with the supplied information.
+  DELETE—Deletes the specified object.
+  PATCH—Applies partial modifications to the specified object
 
 Note: these types of methods are unique per URI, but note that not all methods are supported for every API call
 
 There are two ways to authenticate using the API:
-    basic authentication and a token
-    The Basic Authorization code is a standard base64 encoded string that is a hash of the “username:password”. The base64 encoded string can then be put into the header and used as a mechanism to authenticate within the confines of REST’s stateless nature. The actual Key for the HTTP Headers is called Authorization, which is a standard method and is the same as using Basic Auth on Postman
+  basic authentication and a token
+  The Basic Authorization code is a standard base64 encoded string that is a hash of the “username:password”. The base64 encoded string can then be put into the header and used as a mechanism to authenticate within the confines of REST’s stateless nature. The actual Key for the HTTP Headers is called Authorization, which is a standard method and is the same as using Basic Auth on Postman
 
 Note: When using postman, Python requests, or equivalent, the encoded string is often created for you and you just need to enter the username and password in clear text
 
 The Alternate method is generating a token:
-   the method to generate it is an API call to /api/tokenservices. The token can be seen in the HTTP response code after calling this API, and once the generated token is known, you can use it in subsequent requests to the ASA using the header Key called “X-Auth-Token” with the value being the generated token.
+the method to generate it is an API call to /api/tokenservices. The token can be seen in the HTTP response code after calling this API, and once the generated token is known, you can use it in subsequent requests to the ASA using the header Key called “X-Auth-Token” with the value being the generated token
 
-   a new token is generated each time /api/tokenservices is run; however, the old one does not immediately become invalid. The old token is merely added to the list of acceptable tokens just as if it was a different authenticated user. Also, the token is unique per device which is important to keep in mind while using multiple devices
+Note: token will be returned in headers response
+
+a new token is generated each time /api/tokenservices is run; however, the old one does not immediately become invalid. The old token is merely added to the list of acceptable tokens just as if it was a different authenticated user. Also, the token is unique per device which is important to keep in mind while using multiple devices
 
 Note: Tokens expire after a few minutes
 
 Cisco asa rest api examples (using postman and python requests):
-    show version using postman:
-       This example shows how Postman can be used to issue an API request to the ASA. The API performs a GET request to obtain version information from the ASA which would be the equivalent of the show version command.
-       Within postman you can:
-          Set the URI: /api/monitoring/components/version
-          Select the GET method
-          Click Send
+# show version using postman:
+This example shows how Postman can be used to issue an API request to the ASA. The API performs a GET request to obtain version information from the ASA which would be the equivalent of the show version command. Within postman you can:
+  Set the URI: /api/monitoring/components/version
+  Select the GET method
+  Click Send
 
-   The expected HTTP response is 200, and the body of the message shows a properly JSON formatted response with key value pairs representing version information from the ASA
+The expected HTTP response is 200, and the body of the message shows a properly JSON formatted response with key value pairs representing version information from the ASA
 
-   show version using python requests library:
-       this script is performing the equivalent of a show version, which is the same example you saw using Postman
+# show version using python requests library:
+this script is performing the equivalent of a show version, which is the same example you saw using Postman
 
-      import requests
-      import json
-      from requests.auth import HTTPBasicAuth
-      requests.packages.urllib3.disable_warnings() #disables ssl cert warning
+import requests
+import json
+from requests.auth import HTTPBasicAuth
+requests.packages.urllib3.disable_warnings() #disables ssl cert warning
+url = 'https://192.168.1.12/api/monitoring/device/components/version'
+auth = HTTPBasicAuth('cisco', 'cisco') #replace cisco,cisco with proper username and password
 
-      url = 'https://192.168.1.12/api/monitoring/device/components/version'
-      auth = HTTPBasicAuth('cisco', 'cisco') #replace cisco,cisco with proper username and password
+response = requests.get( url,  verify=False, auth=auth)
 
-      response = requests.get( url,  verify=False, auth=auth)
+if response.status_code == 200:
+print 'Status Code: ' + str(response.status_code)
+parse = json.loads(response.text)
+print json.dumps(parse, indent=4)
+else:
+  print 'ERROR Code: ' + str(response.status_code)
 
-      if response.status_code == 200:
-          print 'Status Code: ' + str(response.status_code)
-          parse = json.loads(response.text)
-          print json.dumps(parse, indent=4)
-      else:
-          print 'ERROR Code: ' + str(response.status_code)
+another example:
+import requests
+import json
+from requests.auth import HTTPBasicAuth
+requests.packages.urllib3.disable_warnings()
+url = 'https://192.168.1.12/api/objects/networkobjects'
+auth = HTTPBasicAuth('cisco', 'cisco')
 
-  another example:
-      import requests
-      import json
-      from requests.auth import HTTPBasicAuth
-      requests.packages.urllib3.disable_warnings()
-      url = 'https://192.168.1.12/api/objects/networkobjects'
-      auth = HTTPBasicAuth('cisco', 'cisco')
-
-      payload = {
+payload = {
           "host": {
               "kind": "IPv4Address",
               "value": "10.10.10.118"
@@ -130,8 +130,8 @@ Cisco asa rest api examples (using postman and python requests):
           "name": "web_server08",
           "objectId": "web_server08"
       }
-      headers = { 'content-type': "application/json" }
-      response = requests.post( url, data=json.dumps(payload), headers=headers, verify=False, auth=auth)
+headers = { 'content-type': "application/json" }
+response = requests.post( url, data=json.dumps(payload), headers=headers, verify=False, auth=auth)
       if response.status_code == 201:
           print 'Status Code: ' + str(response.status_code)
           print response.headers
@@ -140,27 +140,29 @@ Cisco asa rest api examples (using postman and python requests):
           print response.headers
 
 Cisco asa rest cli api:
-    The Generic CLI Command Executor is simply a wrapper for sending any command that you would send via the CLI. It has an advantage of being most familiar to users, but the response is plain text, not in structured data (JSON) so should only be used when other options are not available
+The Generic CLI Command Executor is simply a wrapper for sending any command that you would send via the CLI. It has an advantage of being most familiar to users, but the response is plain text, not in structured data (JSON) so should only be used when other options are not available
 
-    The Bulk CLI allows multiple commands to be sent at once but still returns structured JSON data. Its response is a list of dictionaries
-        https://asa/api/cli
+The Bulk CLI allows multiple commands to be sent at once but still returns structured JSON data. Its response is a list of dictionaries
+  https://asa/api/cli
 
 Debugging asa rest api:
-    If you are having problems configuring or connecting to the ASA REST API, use the following CLI command to enable display of debugging messages on your console
+If you are having problems configuring or connecting to the ASA REST API, use the following CLI command to enable display of debugging messages on your console
 
-    debug rest-api [agent | cli | client | daemon | process | token-auth] [error | event]
+debug rest-api [agent | cli | client | daemon | process | token-auth] [error | event]
 
-    disable debug:
-        no debug rest-api
+disable debug:
+  no debug rest-api
 
-    If you do not provide a specific component keyword (that is, if you simply issue the command debug rest-api), debug messages are displayed for all component types. If you do not provide either an event or error keyword, both event and error messages are displayed for a specified component
+If you do not provide a specific component keyword (that is, if you simply issue the command debug rest-api), debug messages are displayed for all component types. If you do not provide either an event or error keyword, both event and error messages are displayed for a specified component
 
-    For example, debug rest-api daemon event will show only event debug messages for API Daemon-to-Agent communications
+For example, debug rest-api daemon event will show only event debug messages for API Daemon-to-Agent communications
 
-    Also leverage syslog messages for rest api agent messages
-          342002
-          Error Message %ASA-3-342002: REST API Agent failed, reason: reasonExplanation The REST API Agent could fail to start or crash for various reasons, and the reason is specified.
-          reason —The cause for the REST API failure
+Also leverage syslog messages for rest api agent messages
+  342002
+  Error Message %ASA-3-342002: REST API Agent failed, reason: reasonExplanation The REST API Agent could fail to start or crash for various reasons, and the reason is specified.
+  reason —The cause for the REST API failure
 
-    Resolving agent issues:
-        The actions that are taken to resolve the issue vary depending on the reason logged. For example, the REST API Agent crashes when the Java process runs out of memory. If it occurs, you need to restart the REST API Agent. If the restart is not successful, contact the Cisco TAC to identify the root cause fix
+Resolving agent issues:
+The actions that are taken to resolve the issue vary depending on the reason logged. For example, the REST API Agent crashes when the Java process runs out of memory. If it occurs, you need to restart the REST API Agent. If the restart is not successful, contact the Cisco TAC to identify the root cause fix
+
+to restart, issue no rest-api agent and then rest-api agent
