@@ -18,18 +18,12 @@ Nexus programmability overview:
     Configuration Management:
         NX-OS incorporates a set of tools, features, and capabilities that enable automation. Modern configuration management tools like Puppet, Chef, and Ansible drive programmability
 
-NX-API cli - part1:
-    On Cisco Nexus devices, command-line interfaces are run only on the device and used far too often to manage data center networks
+# NX-API cli - part1:
+On Cisco Nexus devices, command-line interfaces are run only on the device and used far too often to manage data center networks. NX-API improves the accessibility of these CLIs by making them available outside of the switch by using HTTP/HTTPS. You can use the NX-API as an extension to the existing Cisco Nexus CLI. The NX-API CLI API is a great for network engineers getting started with the API as it still makes use of commands. It sends commands to the device, wrapped in http/https, but receives structured data back
 
-    NX-API improves the accessibility of these CLIs by making them available outside of the switch by using HTTP/HTTPS. You can use the NX-API as an extension to the existing Cisco Nexus CLI. The NX-API CLI API is a great for network engineers getting started with the API as it still makes use of commands. It sends commands to the device, wrapped in http/https, but receives structured data back
+You have the ability to send show commands, configuration commands, and Linux commands directly to the switches using NX-API CLI. The NX-API back-end uses the Nginx HTTP server running on nexus switch. The Nginx process, and all its children processes, are under Linux cgroup protection where the CPU and memory usage is capped. If the Nginx resource usage exceeds the cgroup limitations, the Nginx process is restarted and restored. The NX-API backend uses a lightweight onbox webserver to listen for HTTP requests which are converted to CLI and used to retrieve data or push configurations. The request/response format is encoded with JSON-RPC, JSON, or XML
 
-    You have the ability to send show commands, configuration commands, and Linux commands directly to the switches using NX-API CLI
-
-    The NX-API backend uses the Nginx HTTP server running on nexus switch. The Nginx process, and all its children processes, are under Linux cgroup protection where the CPU and memory usage is capped. If the Nginx resource usage exceeds the cgroup limitations, the Nginx process is restarted and restored
-
-    The NX-API backend uses a lightweight onbox webserver to listen for HTTP requests which are converted to CLI and used to retrieve data or push configurations. The request/response format is encoded with JSON-RPC, JSON, or XML
-
-    NX-API supports XML, JSON, and JSON-RPC, and commands are sent to a single http request within a CLI wrapper. The following examples show the same request and response for “show hostname” for all 3 data encoding formats:
+NX-API supports XML, JSON, and JSON-RPC, and commands are sent to a single http request within a CLI wrapper. The following examples show the same request and response for “show hostname” for all 3 data encoding formats:
             [
               {
                 "jsonrpc": "2.0",
@@ -54,49 +48,47 @@ NX-API cli - part1:
               "id": 1
             }
 
-        NX-API supports HTTPS, therefore all communication to the Nexus device can be encrypted. By default, NX-API is integrated into the authentication system on the device. You access the device through the NX-API using user accounts containing a username and password which are contained in the HTTP header
+NX-API supports HTTPS, therefore all communication to the Nexus device can be encrypted. By default, NX-API is integrated into the authentication system on the device. You access the device through the NX-API using user accounts containing a username and password which are contained in the HTTP header
 
-        NX-API is disabled by default and can be enabled by using the feature manager CLI command. NX-API provides a session-based cookie, nxapi_auth, when users first successfully authenticate. The session cookie expires in 600 seconds which is a fixed value that cannot be modified
+NX-API is disabled by default and can be enabled by using the feature manager CLI command. NX-API provides a session-based cookie, nxapi_auth, when users first successfully authenticate. The session cookie expires in 600 seconds which is a fixed value that cannot be modified. With the session cookie, the username and password are included in all subsequent NX-API requests that are sent to the device. If the session cookie is not included with subsequent requests, another session cookie is required and is provided by the authentication process
 
-        With the session cookie, the username and password are included in all subsequent NX-API requests that are sent to the device. If the session cookie is not included with subsequent requests, another session cookie is required and is provided by the authentication process
-
-Enabling nx-api cli:
-    The nxapi feature must be enabled via the CLI
-    Enable the feature via the command line
-    Identify the alternate port being used (if any)
-    Identify an HTTPS certificate file to use
-    Enable the nxapi sandbox
+# Enabling nx-api cli:
+The nxapi feature must be enabled via the CLI
+Enable the feature via the command line
+Identify the alternate port being used (if any)
+Identify an HTTPS certificate file to use
+Enable the nxapi sandbox
 nxosv# conf t
 nxosv(config)# feature nxapi
 nxosv(config)# nxapi https port 8443
 nxosv(config)# nxapi sandbox
 
 Note: In particular versions of NX-OS, you can also choose which VRF NX-API should be enabled for:
-    nxos(config)# nxapi ?
-     certificate  Https certificate configuration
-     http         Http configuration
-     https        Https configuration
-     use-vrf      Vrf to be used for nxapi communication
+nxos(config)# nxapi ?
+certificate  Https certificate configuration
+http         Http configuration
+https        Https configuration
+use-vrf      Vrf to be used for nxapi communication
 
 NX-API sandbox:
-    The NX-API sandbox is available on the switch itself (accessible via http://switchname) and accessed via a web browser. There are helpful buttons available with commonly used built-in scripts. It is a great way to become familiar with the API because you get to visualize the JSON/XML objects coming back without having to write actual code
+The NX-API sandbox is available on the switch itself (accessible via http://switchname) and accessed via a web browser. There are helpful buttons available with commonly used built-in scripts. It is a great way to become familiar with the API because you get to visualize the JSON/XML objects coming back without having to write actual code
 
-    On the right are buttons that are used to select JSON-RPC, JSON, or XML encodings. Commands are entered in the Command Box and executed with the Post button. The Request being sent to the device is displayed in the Request box in the lower left, and the Response output from the device is displayed in the lower right
+On the right are buttons that are used to select JSON-RPC, JSON, or XML encodings. Commands are entered in the Command Box and executed with the Post button. The Request being sent to the device is displayed in the Request box in the lower left, and the Response output from the device is displayed in the lower right. When using JSON-RPC, you are always sending a list of JSON objects (dictionaries) even if it’s a list of one (single command). Here is an example of sending show version with the associated Request and Response.The Response is similar in that it’s always a list of dictionaries for JSON-RPC
 
-    When using JSON-RPC, you are always sending a list of JSON objects (dictionaries) even if it’s a list of one (single command). Here is an example of sending show version with the associated Request and Response.The Response is similar in that it’s always a list of dictionaries for JSON-RPC
+Note: nxapi rest cli uses only POST verb
 
 Note: When using JSON encoding, you only receive a list in the response when you send more than one command as compared to JSON-RPC which always does. JSON sends a dictionary when sending one command but sends a list of dictionaries when sending more than one command
 
-    The NX-API sandbox can convert CLI into Python automatically to help get you started. In the Request box, click the Python button. It uses a built-in Python requests module to convert the commands to a Python script that can be copied into a .py file
+The NX-API sandbox can convert CLI into Python automatically to help get you started. In the Request box, click the Python button. It uses a built-in Python requests module to convert the commands to a Python script that can be copied into a .py file
 
 Note: keep in mind that api wrapper always use POST for sending cli commands in rest api calls
 
 Note: cli-conf doesn't support structured data, so JSON/XML response will look just like you see it on the cli
 
-NX-API cli - part 2:
-    By using the NX-API Sandbox, you can auto-generate Python code to give you a jump a start on writing scripts. There is only a subtle difference with the script in the previous figure that is compared to this one, and it is around using a specific and preferred Python object to simplify authentication. You can see that everything else is nearly identical that is produced by the NX-API sandbox. Of course, it excludes any parsing that you would want to perform
+Rest api cli url is always set to http://switchip/ins
 
-    Take note that even though you are getting information back from the device, it is still an HTTP POST and it is shown using the post method and clicking the POST button within the NX-API sandbox. All requests using NX-API CLI use HTTP POSTs—it is one reason why NX-API CLI is REST-like
+# NX-API cli - part 2:
+By using the NX-API Sandbox, you can auto-generate Python code to give you a jump a start on writing scripts. There is only a subtle difference with the script in the previous figure that is compared to this one, and it is around using a specific and preferred Python object to simplify authentication. You can see that everything else is nearly identical that is produced by the NX-API sandbox. Of course, it excludes any parsing that you would want to perform. Take note that even though you are getting information back from the device, it is still an HTTP POST and it is shown using the post method and clicking the POST button within the NX-API sandbox. All requests using NX-API CLI use HTTP POSTs—it is one reason why NX-API CLI is REST-like
 
   #!/usr/bin/env python
 
@@ -131,8 +123,8 @@ NX-API cli - part 2:
 
 Note: the url used: http://nxosv/ins
 
-NETCONF:
-    NETCONF on the Nexus platform is based off XML Schema Definitions data models and maps to CLI commands. Only supported on nexus 7k&5k, includes rollback on error, stop on error, continue on error, default operations, and candidate config (Cisco-only)
+# NETCONF:
+NETCONF on the Nexus platform is based off XML Schema Definitions data models and maps to CLI commands. Only supported on nexus 7k&5k, includes rollback on error, stop on error, continue on error, default operations, and candidate config (Cisco-only)
 
     Nexus supports the interface uses the XML-based Network Configuration Protocol which allows you to manage devices and communicate over the interface with an XML management tool or program. A sample tool that you will use throughout the course is the Python-based NETCONF client called ncclient as well as the on box NETCONF server that allows you to test XML documents
 
