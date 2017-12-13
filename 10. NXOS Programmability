@@ -1,8 +1,8 @@
 NXOS supports two versions of NX-API including NX-API CLI and NX-API REST, NETCONF, on-box Linux and Python scripting capabilities, and several traditional means already familiar to network administrators including the Scheduler feature, Embedded Event Manager, Power on Provisioning
 
-Nexus programmability overview:
-     Day-0 Provisioning:
-         Zero-Touch device provisioning is commonly associated with compute devices, but network devices have had this capability for years. Power on Auto Provisioning was designed to provide advanced Day-0 provisioning capabilities using an extensible framework. POAP includes the ability to execute Python scripts as part of its workflow. Today, POAP can download and install additional management agents and apply specific configurations that are based on information such as location in a network topology.
+# Nexus programmability overview:
+Day-0 Provisioning:
+Zero-Touch device provisioning is commonly associated with compute devices, but network devices have had this capability for years. Power on Auto Provisioning was designed to provide advanced Day-0 provisioning capabilities using an extensible framework. POAP includes the ability to execute Python scripts as part of its workflow. Today, POAP can download and install additional management agents and apply specific configurations that are based on information such as location in a network topology.
 
          A similar approach is achieved by using Pre-boot Execution Environment. PXE has extended its presence into the network as infrastructure devices are increasingly managed more like servers. NX-OS uses iPXE which utilizes an open source network firmware that is based on gPXE/Etherboot
 
@@ -126,40 +126,39 @@ Note: the url used: http://nxosv/ins
 # NETCONF:
 NETCONF on the Nexus platform is based off XML Schema Definitions data models and maps to CLI commands. Only supported on nexus 7k&5k, includes rollback on error, stop on error, continue on error, default operations, and candidate config (Cisco-only)
 
-    Nexus supports the interface uses the XML-based Network Configuration Protocol which allows you to manage devices and communicate over the interface with an XML management tool or program. A sample tool that you will use throughout the course is the Python-based NETCONF client called ncclient as well as the on box NETCONF server that allows you to test XML documents
+Nexus supports the interface uses the XML-based Network Configuration Protocol which allows you to manage devices and communicate over the interface with an XML management tool or program. A sample tool that you will use throughout the course is the Python-based NETCONF client called ncclient as well as the on box NETCONF server that allows you to test XML documents
 
-    The Cisco NX-OS implementation of NETCONF requires you to use an SSH session for communication with the device. NETCONF on the Nexus platform is currently implemented leveraging XML Schemas. From within an RPC message, you select one of the NETCONF operations that matches the type of command that you want the device to execute
+The Cisco NX-OS implementation of NETCONF requires you to use an SSH session for communication with the device. NETCONF on the Nexus platform is currently implemented leveraging XML Schemas. From within an RPC message, you select one of the NETCONF operations that matches the type of command that you want the device to execute
 
-    NETCONF requirements:
-    In order to get started with NETCONF on the Nexus series switches, you must first prepare the client and the server. The client must support NETCONF over SSH as Nexus supports NETCONF as an SSH subsystem. On a Linux system, the default SSH configuration works just fine
+# NETCONF requirements:
+In order to get started with NETCONF on the Nexus series switches, you must first prepare the client and the server. The client must support NETCONF over SSH as Nexus supports NETCONF as an SSH subsystem. On a Linux system, the default SSH configuration works just fine
 
-    The server, for example, the Nexus switch, must have SSH enabled in order to use the NETCONF XML Management Interface
+The server, for example, the Nexus switch, must have SSH enabled in order to use the NETCONF XML Management Interface. No other licensing is required on the Nexus switch in order to use NETCONF
 
-    No other licensing is required on the Nexus switch in order to use NETCONF
+NETCONF uses default SSH port (22)
 
-    NETCONF uses default SSH port (22)
+# Accessing netconf on a nexus switch:
+The easiest way to directly access the NETCONF subsystem in order to test it is to access the xmlagent service on the Nexus switch. There are two ways to do it:
 
-    Accessing netconf on a nexus switch:
-        The easiest way to directly access the NETCONF subsystem in order to test it is to access the xmlagent service on the Nexus switch. There are two ways to do it:
+You can SSH directly to the xmlagent service by using “-s” flag which tells the server to connect you to the xmlagent subsystem:     
+ssh cisco@nxosv -s {netconf | xmlagent}
 
-            You can SSH directly to the xmlagent service by using “-s” flag which tells the server to connect you to the xmlagent subsystem. Note: netconf works, too, as shown in the figure:     ssh cisco@nxosv -s {netconf | xmlagent}
+SSH directly to the switch. Enter the configuration mode and then enter the command xmlagent
 
-            SSH directly to the switch. Enter the configuration mode and then enter the command xmlagent
+Once you use either of the two above methods, you can then start testing different XML documents that adhere to the XML schemas that Nexus supports
 
-        Once you use either of the two above methods, you can then start testing different XML documents that adhere to the XML schemas that Nexus supports
+# Netconf utilities and tools:
+There are five (5) unique commands and tools to be aware of when using NETCONF on Nexus series switches:
+xmlagent = The SSH service acting as the NETCONF server on the Nexus platform. When you enter the xmlagent command in configuration mode, you can test XML objects and filters directly on the device without being in code. It is similar to sandbox environments such as the NX-API Sandbox that shows you the objects that are required for the request and shows you object in the response. It is very helpful for testing.
 
-    netconf utilities and tools:
-        There are five (5) unique commands and tools to be aware of when using NETCONF on Nexus series switches:
-            xmlagent = The SSH service acting as the NETCONF server on the Nexus platform. When you enter the xmlagent command in configuration mode, you can test XML objects and filters directly on the device without being in code. It is similar to sandbox environments such as the NX-API Sandbox that shows you the objects that are required for the request and shows you object in the response. It is very helpful for testing.
+xmlin = an interactive utility to obtain XML Request documents of a particular show command or configuration object. When you enter xmlin configuration mode, you can enter any command as you would in exec or configuration mode. Once the command is entered, the switch displays the associated XML document to perform that action.
 
-            xmlin = an interactive utility to obtain XML Request documents of a particular show command or configuration object. When you enter xmlin configuration mode, you can enter any command as you would in exec or configuration mode. Once the command is entered, the switch displays the associated XML document to perform that action.
+“| xmlin” & “| xmlout” = The pipe options allow you to see the XML Documents for show commands. It includes seeing the XML Request documents (xmlin), but also it shows the XML Response documents (xmlout). Using the pipe options build on what can be in the xmlin tool because it does show you what the response is too.
 
-            “| xmlin” & “| xmlout” = The pipe options allow you to see the XML Documents for show commands. It includes seeing the XML Request documents (xmlin), but also it shows the XML Response documents (xmlout). Using the pipe options build on what can be in the xmlin tool because it does show you what the response is too.
+ncclient = ncclient is an open source Python NETCONF client. It aims to offer an intuitive API that sensibly maps the XML-encoded nature of NETCONF to Python objects and constructs
 
-            ncclient = ncclient is an open source Python NETCONF client. It aims to offer an intuitive API that sensibly maps the XML-encoded nature of NETCONF to Python objects and constructs
-
-Connecting to netconf:
-    When you connect to the device, authenticate, and access the Nexus NETCONF SSH subsystem, the device (NETCONF server) responds with its NETCONF capabilities. These capabilities can be based on open, vendor-neutral, or platform/vendor-specific capabilities.
+# Connecting to netconf:
+When you connect to the device, authenticate, and access the Nexus NETCONF SSH subsystem, the device (NETCONF server) responds with its NETCONF capabilities. These capabilities can be based on open, vendor-neutral, or platform/vendor-specific capabilities.
 
     NETCONF over SSH is initiated by the exchange of a hello message between the client and the XML server. After the initial exchange, the client sends XML requests which the server responds to with XML responses. The client and server terminate requests and responses with the character sequence ]]>]]>.
 
@@ -265,22 +264,23 @@ Generating XML documents using the xmlin interactive shell:
         </nf:rpc>
         ]]>]]>
 
-    The Nexus platform supports advanced operations such as being able to roll back the previous configuration when an error is found. It highlights the value of transactions and applying complete objects to Nexus switches such that if there is an error in any command, nothing gets applied to the device. It is in stark contrast to sending CLI commands. For example, if there was an error in command 4, commands 1 through 3 would still be applied, and you would end up with a partial configuration.
+The Nexus platform supports advanced operations such as being able to roll back the previous configuration when an error is found. It highlights the value of transactions and applying complete objects to Nexus switches such that if there is an error in any command, nothing gets applied to the device. It is in stark contrast to sending CLI commands. For example, if there was an error in command 4, commands 1 through 3 would still be applied, and you would end up with a partial configuration.
 
-    In order to use the error on rollback option, you add the following option in the contents of the edit config operation:
-         <nf:error-option>rollback-on-error</nf:error-option>
+In order to use the error on rollback option, you add the following option in the contents of the edit config operation:
+<nf:error-option>rollback-on-error</nf:error-option>
 
 Generating xml documents for show commands:
     nxosv# show hostname | xmlout
     nxosv# show hostname | xmlin
 
-Using ncclient (python netconf client):
-    The ncclient is the common NETCONF client for Python. It only takes a few Python statements to establish a connection to the device, send XML documents, and receive a response
+# Using ncclient (python netconf client):
+The ncclient is the common NETCONF client for Python. It only takes a few Python statements to establish a connection to the device, send XML documents, and receive a response
 
-    There are many defaults being used here, but the important parameters to update as you connect to devices are host, port, username, password, and device_params
-        device = manager.connect(host=host, port=port, username=user, password=pwd,hostkey_verify=False, device_params={'name': 'nexus'},allow_agent=False, look_for_keys=False)
+There are many defaults being used here, but the important parameters to update as you connect to devices are host, port, username, password, and device_params
 
-    You can also see that you need to still need to define a filter the same way that is generated from using the “| xmlin” tool or “xmlin” interactive tool. It is shown in the script as the get_filter variable
+device = manager.connect(host=host, port=port, username=user, password=pwd,hostkey_verify=False, device_params={'name': 'nexus'},allow_agent=False, look_for_keys=False)
+
+You can also see that you need to still need to define a filter the same way that is generated from using the “| xmlin” tool or “xmlin” interactive tool. It is shown in the script as the get_filter variable
         get_filter = """
                 <show>
                 <hostname>
@@ -288,23 +288,23 @@ Using ncclient (python netconf client):
                 </show>
                 """
 
-  In the next statement, the actual XML document is sent to the device. If you wanted to retrieve the full configuration, you would not need a filter, but because you want the hostname, you also include the “subtree” keyword, when using the get operation.
-            nc_get_reply = device.get(('subtree', get_filter))
+In the next statement, the actual XML document is sent to the device. If you wanted to retrieve the full configuration, you would not need a filter, but because you want the hostname, you also include the “subtree” keyword, when using the get operation.
+nc_get_reply = device.get(('subtree', get_filter))
 
-  As you continue to go through the script, notice that there is an attribute that is called “xml” in the NETCONF reply. In this example, the NETCONF reply is saved as “nc_get_reply” which means this object has an attribute that is called xml. This attribute stores the XML string equivalent of the actual XML object. In this figure, the string was split into two individual text boxes to improve readability
+As you continue to go through the script, notice that there is an attribute that is called “xml” in the NETCONF reply. In this example, the NETCONF reply is saved as “nc_get_reply” which means this object has an attribute that is called xml. This attribute stores the XML string equivalent of the actual XML object. In this figure, the string was split into two individual text boxes to improve readability
 
-  Knowing about the “xml” attribute is helpful for troubleshooting because it shows the text/string representation of the NETCONF response from the device. It also allows you to compare the response to what you see when using the “| xmlout” option while on the NX-OS CLI
+Knowing about the “xml” attribute is helpful for troubleshooting because it shows the text/string representation of the NETCONF response from the device. It also allows you to compare the response to what you see when using the “| xmlout” option while on the NX-OS CLI
 
-  The same response object as an attribute called “data_ele” which is the equivalent of an XML object in Python
+The same response object as an attribute called “data_ele” which is the equivalent of an XML object in Python
 
-  The final parts of the script introduce methods to search XML objects using the find method of XML objects in order to look for the element that has the value you are looking for
+The final parts of the script introduce methods to search XML objects using the find method of XML objects in order to look for the element that has the value you are looking for
 
-  In this case, it is <mod:hostname>nxosv</mod:hostname>
+In this case, it is <mod:hostname>nxosv</mod:hostname>
 
-  Filters can be XML strings or XML objects. One may be preferred over the other based on the network application being built:
-          device = manager.connect(host=host, port=port, username=user, password=pwd,
-                                  hostkey_verify=False, device_params={'name': 'nexus'},
-                                  allow_agent=False, look_for_keys=False)
+Filters can be XML strings or XML objects. One may be preferred over the other based on the network application being built:
+
+device = manager.connect(host=host, port=port, username=user, password=pwd, hostkey_verify=False, device_params={'name': 'nexus'},
+                      allow_agent=False, look_for_keys=False)
             get_filter = """
                           <show>
                             <hostname>
@@ -331,8 +331,9 @@ Using ncclient (python netconf client):
          from lxml import etree
          from lxml.builder import ElementMaker
 
-    script used above:
-            device = manager.connect(host=host, port=port, username=user, password=pwd,
+script used above:
+
+device = manager.connect(host=host, port=port, username=user, password=pwd,
                                   hostkey_verify=False, device_params={'name': 'nexus'},
                                   allow_agent=False, look_for_keys=False)
             get_filter = """
@@ -386,19 +387,19 @@ Note: NETCONF Nexus-only exec-command sends raw CLI commands vs. XML strings.Lev
             nc_config_reply = device.exec_command(commands)
 
 NX-API rest:
-    NX-API REST is supported on Nexus 9000 and 3000 series switches starting with 7.0(3)I2(2). NX-API REST is the next-generation API for the Nexus platform in that it supports sending and receiving objects in the API payload. If you recall, NX-API CLI supports sending commands to the device while receiving structured data back (JSON, XML). With NX-API REST, it is completely based on structured data meaning that JSON/XML payloads are sent to the device in the http request and received from the device in the response
+NX-API REST is supported on Nexus 9000 and 3000 series switches starting with 7.0(3)I2(2). NX-API REST is the next-generation API for the Nexus platform in that it supports sending and receiving objects in the API payload. If you recall, NX-API CLI supports sending commands to the device while receiving structured data back (JSON, XML). With NX-API REST, it is completely based on structured data meaning that JSON/XML payloads are sent to the device in the http request and received from the device in the response
 
-    The implementation of NX-API REST is similar to the model used by Cisco’s ACI. All information about the switch, including configuration and state data, is stored in a hierarchical tree that is called the Management Information Tree, and every object in the tree can be directly access via the REST API
+The implementation of NX-API REST is similar to the model used by Cisco’s ACI. All information about the switch, including configuration and state data, is stored in a hierarchical tree that is called the Management Information Tree, and every object in the tree can be directly access via the REST API
 
-    Every object in the Management Information Tree is referred to as a Managed Object.Each Managed Object is also of a certain type of class. For example, Ethernet interfaces are of type l1PhysIf and SVI interfaces are of type sviIf, but all interfaces are of type intf. These types are called classes
+Every object in the Management Information Tree is referred to as a Managed Object.Each Managed Object is also of a certain type of class. For example, Ethernet interfaces are of type l1PhysIf and SVI interfaces are of type sviIf, but all interfaces are of type intf. These types are called classes
 
-    It is important to understand the relationship, between DNs and classes because you can make an API to the Nexus switch using NX-API REST using a DN-based query or Class-based query. Example: query a single interface (DN) or query all interfaces of a given type (Class)
+It is important to understand the relationship, between DNs and classes because you can make an API to the Nexus switch using NX-API REST using a DN-based query or Class-based query. Example: query a single interface (DN) or query all interfaces of a given type (Class)
 
     The NX-API-REST API operates in forgiving mode, which means that missing attributes are substituted with default values (if applicable) that are maintained in the internal data management engine (aka DME). The DME validates and rejects incorrect attributes. The API is also atomic. If multiple MOs are being configured, and any of the MOs cannot be configured, the API stops its operation. It returns the configuration to its prior state, stops the API operation that listens for API requests, and returns an error code
 
     URLs and URIs map directly to distinguished names identifying objects on the tree, and any data on the MIT can be described as a self-contained structured text tree document encoded in XML or JavaScript Object Notation (JSON)
 
-NX-API REST SUPPORTED HTTP VERBS:
+# NX-API REST SUPPORTED HTTP VERBS:
     Each API implementation that supports REST supports a specific amount of HTTP verbs and methods. The NX-API REST API supports three methods: POST, GET, and DELETE
 
         GET: Used to retrieve and read information from the Management Information Tree
@@ -407,7 +408,7 @@ NX-API REST SUPPORTED HTTP VERBS:
 
         POST: Used to create or update an object within the Management Information Tree. In the NX-API REST API, POSTs to the API are idempotent meaning that the change is made just once no matter how many times the API is called
 
-NX-API REST API authorization, content-type, and accept-headers:
+# NX-API REST API authorization, content-type, and accept-headers:
     There is a dedicated API to handle authorization when using the API. The device returns a token that is then sent in subsequent API calls that perform CRUD operations
 
     Regarding Content-Type and Accept, they are ignored by the Nexus switches. It is the case because the payload format must be specified as a file extension. All API calls using NX-API REST will have either “.json” or “.xml” appended to them letting the switch know what the content-type is and how to response, for example, with which encoding format
@@ -416,12 +417,12 @@ NX-API REST API authorization, content-type, and accept-headers:
         http://n9k/api/mo/sys/intf/phys-[eth2/5].json
         http://n9k/api/mo/sys/bgp/inst.json
 
-Constructing nx-api rest calls:
-    Objects can be accessed at their well-defined address, their REST URLs, using standard HTTP commands for retrieval and manipulation of Cisco NX-API-REST object data
+# Constructing nx-api rest calls:
+Objects can be accessed at their well-defined address, their REST URLs, using standard HTTP commands for retrieval and manipulation of Cisco NX-API-REST object data
 
-    The URL format that is used can be represented as follows: /api/[mo|class]/[dn|class][:method].[xml|json]?{options}
+The URL format that is used can be represented as follows: /api/[mo|class]/[dn|class][:method].[xml|json]?{options}
 
-       The various building blocks of the preceding URL are as follows:
+The various building blocks of the preceding URL are as follows:
             System: System identifier; an IP address or DNS-resolvable host name
             mo | class: Indication of whether it is a managed object or tree or class-level query
             class: Managed-object class (as specified in the information model) of the objects queried; the class name is represented as
