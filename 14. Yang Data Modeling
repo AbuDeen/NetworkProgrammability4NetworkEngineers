@@ -6,6 +6,7 @@ YANG is a full-blown language. As an example, it is not used to express process 
 YANG is in fact protocol independent although it was originally designed specifically for NETCONF. As already discussed, it is also being used with REST interfaces creating such that YANG model driven interfaces using REST are now called RESTCONF
 
 YANG modules from standard organizations such as the IETF, open source, such as Open Daylight, or vendor-specific modules:
+<<<<<<< HEAD
         https://github.com/YangModels/yang
         https://github.com/openconfig/public
 
@@ -17,13 +18,30 @@ A YANG model consists of one or more YANG modules. A module has a specific struc
 # Yang module header:
 The first part of a module is to understand the header information. The revision statement is important to understand and is heavily used in YANG. It is also supposed to be reflected in the file name of a YANG model. In this case, you can see that this module is named acme-module and it is a revision 2007-06-09, thus this file is supposed to be called acme-module@2007-06-09.yang. It allows you to see the date of the last revision directly in the filename
 
+=======
+  https://github.com/YangModels/yang
+  https://github.com/openconfig/public
+
+All YANG modules are publicly available. You can see the largest collection of models now on GitHub at: https://github.com/YangModels/yang. This repository includes models from the IEEE and IETF and vendor-specific models. Also, there are two other repositories, to be aware of, viewing and contributing to models:
+  https://github.com/openconfig/public —the OpenConfig working group has also built out a repository for all public models the OC WG has produced
+
+# Yang module contents:
+A YANG model consists of one or more YANG modules. A module has a specific structure to it. There is actually a lot that is borrowed in terms of structure from MIBs
+
+There is header information that includes meta data like the author of the module, the version, the namespace, and prefix. Then imports and includes are declared for things like types. Clearly, you do not want to reinvent what an IPv4 address is over and over, so you can have your local type definition in one module, and then import it in other modules as needed. Within the module, there is the core of the module, which is the configuration or operational data sets or data declarations which is the structure syntax and semantics of what you can do with a device implementing this YANG module. Toward the end of the module, there are usually specifics on RPCs that are not mapped to features or configurations. These include things like pings, reboots, and notification declarations
+
+# Yang module header:
+The first part of a module is to understand the header information. The revision statement is important to understand and is heavily used in YANG. It is also supposed to also be reflected in the file name of a YANG model. In this case, you can see that this module is named acme-module and it is a revision 2007-06-09, thus this file is supposed to be called acme-module@2007-06-09.yang. It allows you to see the date of the last revision directly in the filename
+
+>>>>>>> 9febfc60c67b2e09a47f5f68ba3d4ad1bf40f30c
 Another thing that is important is that you make heavy use of namespaces, which is borrowed from the XML world. The acme-module namespace here is a string that is supposed to be globally unique to this module combined with its version so it should uniquely allow people to reference this module using a namespace
 
-    example of a header:
-            module acme-module  {
-            namespace "http://acme.example.com/module"; URI
-            prefix acme;
+example of a header:
+module acme-module  {
+namespace "http://acme.example.com/module"; URI
+prefix acme;
 
+<<<<<<< HEAD
             import "ietf-yang-types"  {
                 prefix yang;
             }
@@ -35,6 +53,19 @@ Another thing that is important is that you make heavy use of namespaces, which 
             revision 2007-06-09  {
                 description "Initial revision.";
             }
+=======
+import "ietf-yang-types"  {
+prefix yang;
+}
+include "acme-system";
+
+organization "ACME Inc.";
+contact joe@acme.example.com;
+description "Module describing the ACME products";
+revision 2007-06-09  {
+description "Initial revision.";
+}
+>>>>>>> 9febfc60c67b2e09a47f5f68ba3d4ad1bf40f30c
 
 # Yang leaf statement:
 Now you will start to dive into the finer details of creating YANG modules
@@ -43,8 +74,14 @@ The first statement that is reviewed is the leaf statement. It is arguable the m
 
 Nested under each leaf is additional parameters (attributes) that are used to describe and provide constraints of the leaf. You can declare things to be mandatory, for example. You will also see here that it has a ‘config true’ which means that it is configuration data so it will be sent back on a ‘get config’ while another leaf here, cpu-temperature, obviously it is not something that you would change using a client and something that is read-only. So that is config» false’
 
+<<<<<<< HEAD
 # Data Constraints (leaf attributes):
 config: Whether this leaf is a configurable value ("true"), or operational value ("false"). Inherited from parent container if not specified. Default is "true"
+=======
+Data Constraints (leaf attributes):
+config: Whether this leaf is a configurable value ("true"), or operational value ("false"). Inherited from parent container if not specified. Default is "true."
+
+>>>>>>> 9febfc60c67b2e09a47f5f68ba3d4ad1bf40f30c
 default: Specifies default value for this leaf. Implies that leaf is optional
 mandatory: Whether the leaf is mandatory ("true"), or optional ("false")
 must: Xpath constraint that will be enforced for this leaf
