@@ -1,26 +1,23 @@
-Yang overview:
-    By now, you should understand that data models are not new. YANG modules are for RESTCONF/NETCONF to what MIBs are for SNMP with readability being its number one priority. YANG data modeling is tree-structured. The original creators of YANG wanted YANG to be very close to the device instrumentation; a lot of time was spent with network operators and architects to ensure sure that any construct in YANG reflects what is running in both standard features (common protocols), but also proprietary features
+# Yang overview:
+By now, you should understand that data models are not new. YANG modules are for RESTCONF/NETCONF to what MIBs are for SNMP with readability being its number one priority. YANG data modeling is tree-structured. The original creators of YANG wanted YANG to be very close to the device instrumentation; a lot of time was spent with network operators and architects to ensure sure that any construct in YANG reflects what is running in both standard features (common protocols), but also proprietary features
 
-    YANG is a full-blown language. As an example, it is not used to express process or for actual transport. A data model describes how data is represented and accessed. In YANG, data models are represented by definition hierarchies called schema trees. Instances of schema trees are called data trees and are encoded in XML
+YANG is a full-blown language. As an example, it is not used to express process or for actual transport. A data model describes how data is represented and accessed. In YANG, data models are represented by definition hierarchies called schema trees. Instances of schema trees are called data trees and are encoded in XML
 
-    YANG is in fact protocol independent although it was originally designed specifically for NETCONF. As already discussed, it is also being used with REST interfaces creating such that YANG model driven interfaces using REST are now called RESTCONF
+YANG is in fact protocol independent although it was originally designed specifically for NETCONF. As already discussed, it is also being used with REST interfaces creating such that YANG model driven interfaces using REST are now called RESTCONF
 
-    YANG modules from standard organizations such as the IETF, open source, such as Open Daylight, or vendor-specific modules:
+YANG modules from standard organizations such as the IETF, open source, such as Open Daylight, or vendor-specific modules:
         https://github.com/YangModels/yang
         https://github.com/openconfig/public
 
-    All YANG modules are publicly available. You can see the largest collection of models now on GitHub at:     https://github.com/YangModels/yang. This repository includes models from the IEEE and IETF and vendor-specific models. Also, there are two other repositories to be aware of viewing and contributing to models:
-        https://github.com/openconfig/publi—the OpenConfig working group has also built out a repository for all public models the OC WG has produced
+All YANG modules are publicly available. You can see the largest collection of models now on GitHub at: https://github.com/YangModels/yang. This repository includes models from the IEEE and IETF and vendor-specific models. Also, there are two other repositories to be aware of viewing and contributing to models: https://github.com/openconfig/public — the OpenConfig working group has also built out a repository for all public models the OC WG has produced
 
-Yang module contents:
-    A YANG model consists of one or more YANG modules. A module has a specific structure to it. There is actually a lot that is borrowed in terms of structure from MIBs
+# Yang module contents:
+A YANG model consists of one or more YANG modules. A module has a specific structure to it. There is actually a lot that is borrowed in terms of structure from MIBs. There is header information that includes meta data like the author of the module, the version, the namespace, and prefix. Then imports and includes are declared for things like types. Clearly, you do not want to reinvent what an IPv4 address is over and over, so you can have your local type definition in one module, and then import it in other modules as needed. Within the module, there is the core of the module, which is the configuration or operational data sets or data declarations which is the structure syntax and semantics of what you can do with a device implementing this YANG module. Toward the end of the module, there are usually specifics on RPCs that are not mapped to features or configurations. These include things like pings, reboots, and notification declarations
 
-    There is header information that includes meta data like the author of the module, the version, the namespace, and prefix. Then imports and includes are declared for things like types. Clearly, you do not want to reinvent what an IPv4 address is over and over, so you can have your local type definition in one module, and then import it in other modules as needed. Within the module, there is the core of the module, which is the configuration or operational data sets or data declarations which is the structure syntax and semantics of what you can do with a device implementing this YANG module. Toward the end of the module, there are usually specifics on RPCs that are not mapped to features or configurations. These include things like pings, reboots, and notification declarations
+# Yang module header:
+The first part of a module is to understand the header information. The revision statement is important to understand and is heavily used in YANG. It is also supposed to be reflected in the file name of a YANG model. In this case, you can see that this module is named acme-module and it is a revision 2007-06-09, thus this file is supposed to be called acme-module@2007-06-09.yang. It allows you to see the date of the last revision directly in the filename
 
-Yang module header:
-    The first part of a module is to understand the header information. The revision statement is important to understand and is heavily used in YANG. It is also supposed to also be reflected in the file name of a YANG model. In this case, you can see that this module is named acme-module and it is a revision 2007-06-09, thus this file is supposed to be called acme-module@2007-06-09.yang. It allows you to see the date of the last revision directly in the filename
-
-    Another thing that is important is that you make heavy use of namespaces, which is borrowed from the XML world. The acme-module namespace here is a string that is supposed to be globally unique to this module combined with its version so it should uniquely allow people to reference this module using a namespace
+Another thing that is important is that you make heavy use of namespaces, which is borrowed from the XML world. The acme-module namespace here is a string that is supposed to be globally unique to this module combined with its version so it should uniquely allow people to reference this module using a namespace
 
     example of a header:
             module acme-module  {
@@ -39,33 +36,24 @@ Yang module header:
                 description "Initial revision.";
             }
 
-Yang leaf statement:
-    Now you will start to dive into the finer details of creating YANG modules
+# Yang leaf statement:
+Now you will start to dive into the finer details of creating YANG modules
 
-    The first statement that is reviewed is the leaf statement. It is arguable the most important statement to understand. It defines a single value of a particular type and it contains no children. It would be things like the IP address of an interface, the subnet mask of an interface, and so on
+The first statement that is reviewed is the leaf statement. It is arguable the most important statement to understand. It defines a single value of a particular type and it contains no children. It would be things like the IP address of an interface, the subnet mask of an interface, and so on
 
-    Nested under each leaf is additional parameters (attributes) that are used to describe and provide constraints of the leaf. You can declare things to be mandatory, for example. You will also see here that it has a ‘config true’ which means that it is configuration data so it will be sent back on a ‘get config’ while another leaf here, cpu-temperature, obviously it is not something that you would change using a client and something that is read-only. So that is config» false’
+Nested under each leaf is additional parameters (attributes) that are used to describe and provide constraints of the leaf. You can declare things to be mandatory, for example. You will also see here that it has a ‘config true’ which means that it is configuration data so it will be sent back on a ‘get config’ while another leaf here, cpu-temperature, obviously it is not something that you would change using a client and something that is read-only. So that is config» false’
 
-    Data Constraints (leaf attributes):
-       config: Whether this leaf is a configurable value ("true"), or operational value ("false"). Inherited from parent container if not specified. Default is "true."
-
-       default: Specifies default value for this leaf. Implies that leaf is optional
-
-       mandatory: Whether the leaf is mandatory ("true"), or optional ("false")
-
-       must: Xpath constraint that will be enforced for this leaf
-
-       type: The data type (range and so on) of this leaf
-
-       when: Conditional leaf, only present if Xpath expression is true
-
-       description: Human readable definition and help text for this leaf
-
-       reference: Human readable reference to some other element or specification
-
-       units: Human readable unit specification (for example, Hz, MB(s))
-
-       status: Whether this leaf is «current», «deprecated» or «obsolete»
+# Data Constraints (leaf attributes):
+config: Whether this leaf is a configurable value ("true"), or operational value ("false"). Inherited from parent container if not specified. Default is "true"
+default: Specifies default value for this leaf. Implies that leaf is optional
+mandatory: Whether the leaf is mandatory ("true"), or optional ("false")
+must: Xpath constraint that will be enforced for this leaf
+type: The data type (range and so on) of this leaf
+when: Conditional leaf, only present if Xpath expression is true
+description: Human readable definition and help text for this leaf
+reference: Human readable reference to some other element or specification
+units: Human readable unit specification (for example, Hz, MB(s))
+status: Whether this leaf is «current», «deprecated» or «obsolete»
 
 Note: more parameters are available
 
@@ -86,8 +74,8 @@ Note: more parameters are available
             NETCONF XML:
             <host-name>my.example.com</host-name>
 
-Yang leaf-list statement:
-    Now you will look at the leaf-list statement. It is just like a leaf, but it can contain multiple instances. It can hold multiple values of a particular type. Things like if you allow for many secondary IP addresses to the interface then you would have a leaf list of type IP address. In this case, domain-search of type string, there is ordering to it. Some leaf-lists need ordering and you can either use system order (it does not technically matter) or user order (they need to be in a particular order such as ACLs). It depends on the nature of the data itself. Of course, there are operations in ordered list to insert things first, last, before, or after particular members of the list
+# Yang leaf-list statement:
+Now you will look at the leaf-list statement. It is just like a leaf, but it can contain multiple instances. It can hold multiple values of a particular type. Things like if you allow for many secondary IP addresses to the interface then you would have a leaf list of type IP address. In this case, domain-search of type string, there is ordering to it. Some leaf-lists need ordering and you can either use system order (it does not technically matter) or user order (they need to be in a particular order such as ACLs). It depends on the nature of the data itself. Of course, there are operations in ordered list to insert things first, last, before, or after particular members of the list
 
     e.g:
         leaf-list domain-search {
@@ -100,7 +88,7 @@ Yang leaf-list statement:
         <domain-search>high.example.com</domain-search>
         <domain-search>low.example.com</domain-search>
 
-    Here is another example of each YANG statement that was reviewed so far: leaf and leaf-list statements. They differ in that a leaf node has at most one instance, while a leaf-list node may have multiple instances. The left YANG snippet specifies a flag called enabled that defaults to true. The right YANG example specifies a list of cipher names:
+Here is another example of each YANG statement that was reviewed so far: leaf and leaf-list statements. They differ in that a leaf node has at most one instance, while a leaf-list node may have multiple instances. The left YANG snippet specifies a flag called enabled that defaults to true. The right YANG example specifies a list of cipher names:
         leaf enabled {
             type boolean;
             default true;
@@ -117,14 +105,14 @@ Yang leaf-list statement:
         <cipher>blowfish-cbc</cipher>
         <cipher>3des-cbc</cipher>
 
-Yang container statement:
-    groups related leafs and containers
+# Yang container statement:
+groups related leafs and containers
 
-    There are two constructs in YANG for specifying non-leaf nodes: container and list statements
+There are two constructs in YANG for specifying non-leaf nodes: container and list statements
 
-    They differ mainly in that a container node has at most one instance, while a list node may have multiple instances (list entries are identified by keys that distinguish them from each other)
+They differ mainly in that a container node has at most one instance, while a list node may have multiple instances (list entries are identified by keys that distinguish them from each other)
 
-    Here you focus on the container construct. Containers contain things and that it does not carry any semantic value except for the fact that containers can have something that is called presence. The presence statement gives semantics to the existence of a container in the data tree. For example, if you have a container, like an SSH container, and it has a presence statement saying that, if you find the container in the configuration that means that the box actually has SSH enabled. It also means that if the SSH container does not exist, you can use a NETCONF for existence checks, it means that SSH for some reason is not available for the box. So, it is an optional container that carries some semantic meaning
+Here you focus on the container construct. Containers contain things and that it does not carry any semantic value except for the fact that containers can have something that is called presence. The presence statement gives semantics to the existence of a container in the data tree. For example, if you have a container, like an SSH container, and it has a presence statement saying that, if you find the container in the configuration that means that the box actually has SSH enabled. It also means that if the SSH container does not exist, you can use a NETCONF for existence checks, it means that SSH for some reason is not available for the box. So, it is an optional container that carries some semantic meaning
         container system {
              container services {
                  container ssh {
@@ -142,7 +130,7 @@ Yang container statement:
              </services>
         </system>
 
-    Normal containers have no meaning, just organization of data. Here is another example of a container:
+Normal containers have no meaning, just organization of data. Here is another example of a container:
         container timeout {
             leaf access-timeout {
                 type uint32;
@@ -158,8 +146,8 @@ Yang container statement:
             <retries>2</retries>
         </timeout>
 
-Yang list statement:
-    Remember, there are two constructs in YANG for specifying non-leaf nodes: container and list statements. Now you will look at list statements. Lists are a keyed set of data or data list. For configuration lists a key is actually required. If the list is not configuration, you do not have to have keys at all because you might not be able to key things into it so you might be required to dump the entire list for the entire table at the same time. In the example in the figure, you have a list of leaves and are using the key of login-name ensuring that every login name is used as the key (thus there can only be one of each login-name)
+# Yang list statement:
+Remember, there are two constructs in YANG for specifying non-leaf nodes: container and list statements. Now you will look at list statements. Lists are a keyed set of data or data list. For configuration lists a key is actually required. If the list is not configuration, you do not have to have keys at all because you might not be able to key things into it so you might be required to dump the entire list for the entire table at the same time. In the example in the figure, you have a list of leaves and are using the key of login-name ensuring that every login name is used as the key (thus there can only be one of each login-name)
             list user {
                key "login-name";
                leaf login-name {
@@ -179,71 +167,70 @@ Yang list statement:
                 <full-name>John Chambers</fullname>
             </user>
 
-    Attributes for list and leaf-list
-        max-elements: Max number of elements in list. If max-elements are not specified, there is no upper limit, i.e. “unbounded”
+# Attributes for list and leaf-list
+max-elements: Max number of elements in list. If max-elements are not specified, there is no upper limit, i.e. “unbounded”
 
-        min-elements: Min number of elements in list. If min-elements are not specified, there is no lower limit, for example, 0
+min-elements: Min number of elements in list. If min-elements are not specified, there is no lower limit, for example, 0
 
-        ordered-by: List entries are sorted by “system” or “user”. System means that elements are sorted in a natural order (numerically, alphabetically, and so on). User means the order the operator entered them in is preserved. “ordered-by user” is meaningful when the order among the elements has significance, for example, DNS server search order or firewall rules
+ordered-by: List entries are sorted by “system” or “user”. System means that elements are sorted in a natural order (numerically, alphabetically, and so on). User means the order the operator entered them in is preserved. “ordered-by user” is meaningful when the order among the elements has significance, for example, DNS server search order or firewall rules
 
-Yang module example:
-    Take a look at a sample module that brings a lot of these concepts together. It is a sample module that includes header definition and a single parent container called system. Within system, there are a few children, namely a leaf that is called host-name, leaf-list that is called domain-search, and then another container that is called login, that also has a leaf and list under it
+# Yang module example:
+Take a look at a sample module that brings a lot of these concepts together. It is a sample module that includes header definition and a single parent container called system. Within system, there are a few children, namely a leaf that is called host-name, leaf-list that is called domain-search, and then another container that is called login, that also has a leaf and list under it
 
-        module acme-system {
-            namespace "http://acme.example.com/system";
-            prefix "acme";
+module acme-system {
+  namespace "http://acme.example.com/system";
+  prefix "acme";
 
-            organization "ACME Inc.";
-            contact "joe@acme.example.com";
-            description
-        	"The module for entities implementing the.."
+  organization "ACME Inc.";
+  contact "joe@acme.example.com";
+  description "The module for entities implementing the.."
 
-            revision 2016-08-09 {
-                description "Initial revision.";
-            }
-         container system {
-                leaf host-name {
-                    type string;
-                    description "Hostname for this system";
-                }
+  revision 2016-08-09 {
+    description "Initial revision.";
+  }
+container system {
+    leaf host-name {
+         type string;
+         description "Hostname for this system";
+    }
 
-                leaf-list domain-search {
-                    type string;
-                    description "List of domain names to search";
-                }
-        container login {
-            leaf message {
-                type string;
-                description "Message given at start of login session";
-            }
+    leaf-list domain-search {
+         type string;
+         description "List of domain names to search";
+    }
+container login {
+    leaf message {
+    type string;
+       description "Message given at start of login session";
+    }
 
-            list user {
-                key "name";
-                leaf name {
-                    type string;
-                }
-        leaf full-name {
-                            type string;
-                        }
-                        leaf class {
-                            type string;
-                        }
-                    }
-                }
-            }
-        }
+    list user {
+       key "name";
+       leaf name {
+          type string;
+       }
+       leaf full-name {
+          type string;
+       }
+       leaf class {
+          type string;
+       }
+     }
+   }
+  }
+ }
 
-Yang types:
-    Just like programming languages have standard data types such as strings and integers, so does YANG. Base types are part of the YANG language itself. Derived types are something that the users would start with base types and then derive things out of. Of course, there several basic YANG types for networking, things like IPv4 address, like fully qualified domain name and an IPv6 address. The usual suspects are built in as well; types such as integers, decimals, strings, enumeration. You can also define your own type as well using the typedef statement, which you will see over the next few minutes
+# Yang types:
+Just like programming languages have standard data types such as strings and integers, so does YANG. Base types are part of the YANG language itself. Derived types are something that the users would start with base types and then derive things out of. Of course, there several basic YANG types for networking, things like IPv4 address, like fully qualified domain name and an IPv6 address. The usual suspects are built in as well; types such as integers, decimals, strings, enumeration. You can also define your own type as well using the typedef statement, which you will see over the next few minutes
 
-    base types examples: integers, decimals, strings, boolean, bits, binary
+Base types examples: integers, decimals, strings, boolean, bits, binary
 
-    The common YANG types were already mentioned. There is good coverage for most types you would expect, all the way from physical address to IP address. e.g: ip-version, ip-address, port-number
+The common YANG types were already mentioned. There is good coverage for most types you would expect, all the way from physical address to IP address. e.g: ip-version, ip-address, port-number
 
-Yang typedef statement:
-    The examples so far have only used built in YANG types. YANG also provides a mechanism through which additional types may be defined (they are called derived types).
+# Yang typedef statement:
+The examples so far have only used built in YANG types. YANG also provides a mechanism through which additional types may be defined (they are called derived types).
 
-    In this case, you wanted the percent type that is based on unsigned integer16 but you had a max range of 0-100, so 16 of course is a little bit wide for it. You described it as percentage and then you can use that type in the same namespace without any prefixes for it:
+In this case, you wanted the percent type that is based on unsigned integer16 but you had a max range of 0-100, so 16 of course is a little bit wide for it. You described it as percentage and then you can use that type in the same namespace without any prefixes for it:
             Define a new type
 
             typedef percent {
@@ -257,7 +244,7 @@ Yang typedef statement:
                 type percent;
             }
 
-    Here is another example of using typedef. Although here you also introduce the union statement. You now have a custom type that is called ip-address, that can be either an IPv4 address or IPv6 address:
+Here is another example of using typedef. Although here you also introduce the union statement. You now have a custom type that is called ip-address, that can be either an IPv4 address or IPv6 address:
             typedef ip-address {
                type union {
                  type ipv4-address;
@@ -265,8 +252,8 @@ Yang typedef statement:
                }
             }
 
-Yang choice statement:
-    A choice node in the schema tree defines a set of alternatives, only one of which may exist at any one time. A choice consists of several branches, which are defined with case sub-statements. The nodes from one of the choices branches (limited to one) exist in the data tree (the choice node itself does not exist in the data tree)
+# Yang choice statement:
+A choice node in the schema tree defines a set of alternatives, only one of which may exist at any one time. A choice consists of several branches, which are defined with case sub-statements. The nodes from one of the choices branches (limited to one) exist in the data tree (the choice node itself does not exist in the data tree)
         choice route-distinguisher {
             case ip-address-based {
                 leaf ip-address {
@@ -289,8 +276,8 @@ Yang choice statement:
         <asn32>12356789</asn32>
         <two-byte-number>2468</two-byte-number>
 
-Yang grouping statement:
-    A grouping defines a reusable collection of nodes. It ties into the reusability objects. Groups are used for lumping together data sets so that you can use them later. In this case, address and port is an obvious thing for grouping, and you can see in the figure how the container peer has a container destination that uses target and, of course, target is the name of the grouping on top
+# Yang grouping statement:
+A grouping defines a reusable collection of nodes. It ties into the reusability objects. Groups are used for lumping together data sets so that you can use them later. In this case, address and port is an obvious thing for grouping, and you can see in the figure how the container peer has a container destination that uses target and, of course, target is the name of the grouping on top
         grouping target {
             leaf address {
                 type inet:ip-address;
@@ -307,11 +294,11 @@ Yang grouping statement:
             }
         }
 
-    You can have several 'uses' statements on the same grouping. It’s more a matter of modularizing or refactoring your YANG model into something that can be consumed by people more easily
+You can have several 'uses' statements on the same grouping. It’s more a matter of modularizing or refactoring your YANG model into something that can be consumed by people more easily
 
-    Here is another example of using grouping, but introduces the refine statement. Refine is a way of saying, "I like that grouping, but in this particular context, I want to add/modify an attribute."
+Here is another example of using grouping, but introduces the refine statement. Refine is a way of saying, "I like that grouping, but in this particular context, I want to add/modify an attribute."
 
-    In this case, you have something that is called a target grouping with an address port pair, but a refine statement is used to configure a default (which is not used in the reflected XML example):
+In this case, you have something that is called a target grouping with an address port pair, but a refine statement is used to configure a default (which is not used in the reflected XML example):
             grouping endpoint {
                 leaf address {
                    type ip-address;
@@ -347,22 +334,22 @@ Yang grouping statement:
               </destination>
             </connection>
 
-Yang miscellaneous statements:
-    Here you look at a few additional statements that are used in YANG:
+# Yang miscellaneous statements:
+Here you look at a few additional statements that are used in YANG:
 
-        The leafref built-in type is used to reference a particular leaf instance in the data tree, as specified by a path. The path is specified using the XML Path Language (XPath), in a notation that is similar to the syntax for directory paths in Linux. It is shown in this example:
+The leafref built-in type is used to reference a particular leaf instance in the data tree, as specified by a path. The path is specified using the XML Path Language (XPath), in a notation that is similar to the syntax for directory paths in Linux. It is shown in this example:
                 leaf interface-name {
                    type leafref {
                       path "/interface/name";
                    }
                 }
 
-        Unique is used to ensure that fields can be declared unique. It is often done with the key of a list:
+Unique is used to ensure that fields can be declared unique. It is often done with the key of a list:
                 list user {
                   key uid;
                   unique name;
 
-       A must statement basically takes an Xpath statement and checks its validity on every commit or on every change. The must statement expresses constraints that must be satisfied by each data node in the structure where it is defined. The must constraints are expressed using XPath expressions. The following example models an IP address that does not belong to the 192.* or 127.* networks:
+A must statement basically takes an Xpath statement and checks its validity on every commit or on every change. The must statement expresses constraints that must be satisfied by each data node in the structure where it is defined. The must constraints are expressed using XPath expressions. The following example models an IP address that does not belong to the 192.* or 127.* networks:
             leaf mirrorIp {
                type ip-address;
                default 0.0.0.0;
@@ -376,9 +363,9 @@ Yang miscellaneous statements:
               }
             }
 
-    The way of YANG is defined is that as long as you can access the data set in the configuration, you do not have to check these things in instrumentation code, you can do that in your data model, thus must provide for a very efficient way of constraining objects. It can be used for pre-checking, before you issue API calls to the network element itself.
+The way of YANG is defined is that as long as you can access the data set in the configuration, you do not have to check these things in instrumentation code, you can do that in your data model, thus must provide for a very efficient way of constraining objects. It can be used for pre-checking, before you issue API calls to the network element itself.
 
-        There is also the when statement, which is used to check for particular conditions. So, in this case below, if the sys class of a particular user is wheel, then he can use his own shell, the shell is configured. If this system user does not have class wheel, then the leaf shell is not available, you cannot configure them at all:
+There is also the when statement, which is used to check for particular conditions. So, in this case below, if the sys class of a particular user is wheel, then he can use his own shell, the shell is configured. If this system user does not have class wheel, then the leaf shell is not available, you cannot configure them at all:
 
                 augment /sys:system/sys:user {
                     when "sys:class = ‘wheel’";
@@ -387,8 +374,8 @@ Yang miscellaneous statements:
                     }
                 }
 
-Yang RPC statement:
-    An RPC has a set of inputs and a set of outputs that are defined in YANG. It is like a call signature, it describes what you expect going in and it will tell you how it will respond. The input in this case is a very simple thing, it’s just an image. It is a single leaf but, of course, you can have more structured inputs depending on what it is doing. It is the same thing with the output. In this case, a simple status string, but you can also send back an entire data set if desired, maybe an ordered list of traceroute results for example. It is something that the client can consume and understand how to form an RPC from. Things like the reboot RPC would be something that the device would expose through the YANG models. e.g:
+# Yang RPC statement:
+An RPC has a set of inputs and a set of outputs that are defined in YANG. It is like a call signature, it describes what you expect going in and it will tell you how it will respond. The input in this case is a very simple thing, it’s just an image. It is a single leaf but, of course, you can have more structured inputs depending on what it is doing. It is the same thing with the output. In this case, a simple status string, but you can also send back an entire data set if desired, maybe an ordered list of traceroute results for example. It is something that the client can consume and understand how to form an RPC from. Things like the reboot RPC would be something that the device would expose through the YANG models. e.g:
         rpc activate-software-image {
             input {
                 leaf image {
@@ -402,11 +389,11 @@ Yang RPC statement:
             }
         }
 
-Yang imports and includes:
-    Finally, you will look at imports and includes and how they map back to namespaces. In your example, you have module with an X namespace. The big difference between imports and includes is that the import statements logically reference (imports) data sets from other namespaces. You would import by reference which also assumes that you have access to that namespace during your compile step or your build step. It would be common for importing common custom types, for example, a custom type of IP address. In contrast, include statements is more like include statement in the C language. It pulls objects directly into your current namespace. It is typically what you do to modularize your modules. You may want to factor things in separate files, but you want them to end up in the same namespace. In this case, once a module is included, it cannot be included any other module
+# Yang imports and includes:
+Finally, you will look at imports and includes and how they map back to namespaces. In your example, you have module with an X namespace. The big difference between imports and includes is that the import statements logically reference (imports) data sets from other namespaces. You would import by reference which also assumes that you have access to that namespace during your compile step or your build step. It would be common for importing common custom types, for example, a custom type of IP address. In contrast, include statements is more like include statement in the C language. It pulls objects directly into your current namespace. It is typically what you do to modularize your modules. You may want to factor things in separate files, but you want them to end up in the same namespace. In this case, once a module is included, it cannot be included any other module
 
-Yang modules and submodules:
-    As discussed, YANG organizes data models into modules and submodules. A module can import data from other modules, and include data from submodules. This example shows what the syntax is for using sub-modules and including them in its parent module. All submodules know which module they belong to so they actually point that out in their own declaration using the «belongs-to» statement because you cannot import submodules, you can only include sub-modules
+# Yang modules and submodules:
+As discussed, YANG organizes data models into modules and submodules. A module can import data from other modules, and include data from submodules. This example shows what the syntax is for using sub-modules and including them in its parent module. All submodules know which module they belong to so they actually point that out in their own declaration using the «belongs-to» statement because you cannot import submodules, you can only include sub-modules
 
             module acme-module {
                 namespace “…”;
@@ -438,7 +425,7 @@ Yang modules and submodules:
                 }
             }
 
-Yang model examples:
+# Yang model examples:
     container community-sets {
             description “Container for community sets";
             list community-set {
@@ -457,7 +444,7 @@ Yang model examples:
             }
           }
 
-    Now take a visual walk-through comparing a YANG module to its XML, JSON, and CLI representations:
+Now take a visual walk-through comparing a YANG module to its XML, JSON, and CLI representations:
 XML:
 <community-sets>
   <community-set>
