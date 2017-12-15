@@ -5,7 +5,7 @@ Tools:
 
     pyang: A Python program that is used to validate and visualize YANG models. It can also be used to display YANG models in various formats including a tree notation and XML representation, both of which you will see in this course. https://github.com/mbj4668/pyang
 
-Note: pyang And also available via PyPi:
+Note: pyang is also available via PyPi
 
     ydk: A collection of two open source projects (ydk-py & ydk-gen), both of which when used together can auto-generate Python bindings (classes that yield a Python package) directly from YANG models. https://github.com/CiscoDevNet/ydk-py and https://github.com/CiscoDevNet/ydk-gen
 
