@@ -2,13 +2,13 @@
 Root file system refer to by / aka root directory
 sudo = super do, executes a command with root privileges
 
-# sudo:
+# Sudo:
 Debian/Ubuntu doesn’t allow logging in as root
 Redhat/fedora allow a user to log in as root by default
 You can configure who can run sudo in the sudoers file
 If you are at user@machinesname:~$ running ‘sudo su’ puts you in root shell root@machinename:/# (Ctrl + D to return)
 
-Remember in Linux terminal $ is an indication that current user has no root privileges, while # indicates you’re root
+Remember: in Linux terminal $ is an indication that current user has no root privileges, while # indicates you’re root
 
 # Path and Directories:
 pwd = prints current working directory
@@ -21,7 +21,7 @@ Absolute path: relative to the root directory, starts with / e.g: /home/username
 
 Note: Linux terminal is case sensitive. So home is not the same as Home
 
-cd command:
+# cd command:
 'cd ..' changes to parent directory of current directory
 'cd' or 'cd ~' back to home directory (home = /home/username)
 'cd .. / ..' back two directories. You can add dots and /s as you wish
@@ -30,94 +30,96 @@ cd command:
 # Linux distributions and package managers:
 Linux operating systems are distributed as complete collections of software built-around the Linux kernel and some form of package management system. These collections are called distributions (distros), and though there are almost 300 various distributions available today, most are derived from one of two main operating systems: Red Hat and Debian
 Distributions are commonly developed to meet specific end-user requirements. For example, Kali Linux is focused on penetration and security testing while OpenWrt is generally focused on home router functionality. CentOS is built for stability, whereas Fedora is considered less stable because it is a testing ground for new features
-    The two main Linux OS are:
-        Red Hat Enterprise Linux RHEL = Commercial OS. Derivatives are Fedora and CentOS
-        Debian = Free and open source, developed under the Debian project. Most popular derivatives are Ubuntu, which has derivatives as well such as Linux Mint and Gnome
 
-Package management:
-    Packages are convenient methods to deliver software
-    Package tool maintains a database of installed applications and their file locations
-    Two main CLI tools required to install, update and remove software
-    Installing software package:
-        RHEL:
-            rpm = installs a local rpm package (package has a .rpm file extension)
-            yum = downloads and installs a package from repositories. Also updates and removes
-        Debian:
-            dpkg = installs a local rpm package (package has a .dpkg file extension)
-            apt & apt-get = downloads and installs a package from repositories. Also updates and removes
+The two main Linux OS are:
+Red Hat Enterprise Linux RHEL = Commercial OS. Derivatives are Fedora and CentOS
+Debian = Free and open source, developed under the Debian project. Most popular derivatives are Ubuntu, which has derivatives as well such as Linux Mint and Gnome
 
-Working with files and directories:
-    touch command:
-        updates time stamp and create empty file
-        updates time stamp of existing file w/o overwriting it
-        e.g:
-            touch newfile.txt OR touch ./newfile.txt (./ indicates file is created in current working directory)
-    Make directory command:
-        mkdir = creates a new directory e.g: mkdir newDirectory
-        mkdir -p = creates a new directory and its sub directories e.g: mkdir -p /newDirectory/newChildDirectory
-    Remove command:
-        rm = removes a file
-        rm -r = removes a directory that contains non-empty directories
-        rmdir = removes empty directory
-        rm -rf = removes a directory and contents including write-protected files
-    Copy and move commands:
-        cp = copies a file e.g: cp file1 file2
-        cp -r = copies an entire directory
-        mv = moves or renames a file:
-            mv nexus.txt Testing     (Testing is new directory to move to)
-            mv nexus.txt home/cisco/nexus home/cisco/Testing/
-            mv nexus.cfg nexus123.cfg  (renames a file. notice destination directory is same as current)
-    Viewing files commands:
-        more = allows you to view the contents of a file one page at a time and requires you to press the spacebar to advance to the next page of contents. But you can't use up arrow to scroll up
-        less = allows you to view the contents of the file but it allows the user the ability to scroll up and down and perform a keyword search
-        cat = (short for concatenate) is used to stream the entire contents of the file without pausing. It is useful for files with just a few lines. Also, cat is used to add contents to a file
-            e.g:
-                cat router1.txt
-                cat cisco/platforms/routers/router1.txt
-                cat router2.txt >> router1.txt  (merges two files in router1.txt and leaves router2.txt as is)
-        head = displays the first 10 lines in a file
-        tail = displays the last 10 lines in a file
-        diff = compares content of two files
+# Package management:
+Packages are convenient methods to deliver software
+Package tool maintains a database of installed applications and their file locations
+
+Two main CLI tools required to install, update and remove software. Installing software package:
+RHEL:
+rpm = installs a local rpm package (package has a .rpm file extension)
+yum = downloads and installs a package from repositories. Also updates and removes
+        
+Debian:
+dpkg = installs a local rpm package (package has a .dpkg file extension)
+apt & apt-get = downloads and installs a package from repositories. Also updates and removes
+
+# Working with files and directories:
+touch command:
+updates time stamp and create empty file
+updates time stamp of existing file w/o overwriting it
+e.g: touch newfile.txt OR touch ./newfile.txt (./ indicates file is created in current working directory)
+    
+make directory command:
+mkdir = creates a new directory e.g: mkdir newDirectory
+mkdir -p = creates a new directory and its sub directories e.g: mkdir -p /newDirectory/newChildDirectory
+
+Remove command:
+rm = removes a file
+rm -r = removes a directory that contains non-empty directories
+rmdir = removes empty directory
+rm -rf = removes a directory and contents including write-protected files
+    
+Copy and move commands:
+cp = copies a file e.g: cp file1 file2
+cp -r = copies an entire directory
+mv = moves or renames a file. eg: mv nexus.txt Testing     (Testing is new directory to move to).mv nexus.txt home/cisco/nexus home/cisco/Testing/
+mv nexus.cfg nexus123.cfg  (renames a file. notice destination directory is same as current)
+    
+Viewing files commands:
+more = allows you to view the contents of a file one page at a time and requires you to press the spacebar to advance to the next page of contents. But you can't use up arrow to scroll up
+less = allows you to view the contents of the file but it allows the user the ability to scroll up and down and perform a keyword search
+cat = (short for concatenate) is used to stream the entire contents of the file without pausing. It is useful for files with just a few lines. Also, cat is used to add contents to a file
+e.g: cat router1.txt
+     cat cisco/platforms/routers/router1.txt
+     cat router2.txt >> router1.txt  (merges two files in router1.txt and leaves router2.txt as is)
+     head = displays the first 10 lines in a file
+     tail = displays the last 10 lines in a file
+     diff = compares content of two files
 
 File permissions:
-    permissions are based on two factors:
-        specific user or group
-        specific action (read (r), write (w), execute (x))
-        e.g:
-           ls -l config.txt (shows permission of config.txt)
-               -rw-rw-r-- 1 deeplearning deeplearning 3547 Oct 22 12:04 config.txt
-                   that output is derived from drwxrwxrwx
-                       d = file type
-                       first rwx = owner's permission
-                       second rwx = owner's group permission
-                       3rd rwx = permission of others (others means not the owner nor members of group the owner is a member of)
-    commands to change permissions:
-        chmod u(+/-)(rwx),g(+/-)(rwx),o(+/-)(rwx) filename    = this command sets the permission ona given file for current user, group and others
-            e.g:
-               chmod u+rwx,go+rx  = owner may read, write, and execute the file. All others may read and execute the file
-               chmod rwx+ugo = no restricitons at all
-               chmod u+rw,u-x,go-rwx = The owner may read and write a file. All others have no rights
+permissions are based on two factors:
+specific user or group
+specific action (read (r), write (w), execute (x))
+e.g: ls -l config.txt (shows permission of config.txt)
+-rw-rw-r-- 1 deeplearning deeplearning 3547 Oct 22 12:04 config.txt
+that output is derived from drwxrwxrwx
+d = file type
+first rwx = owner's permission
+second rwx = owner's group permission
+3rd rwx = permission of others (others means not the owner nor members of group the owner is a member of)
+
+commands to change permissions:
+chmod u(+/-)(rwx),g(+/-)(rwx),o(+/-)(rwx) filename    = this command sets the permission ona given file for current user, group and others
+e.g: chmod u+rwx,go+rx  = owner may read, write, and execute the file. All others may read and execute the file
+chmod rwx+ugo = no restricitons at all
+chmod u+rw,u-x,go-rwx = The owner may read and write a file. All others have no rights
 
 Linux processes:
-    viewing running processes:
-        top = provides a real-time look at the local processor activity
-        htop = provides a real-time look at the local processor activity in easily readable format / graph. Also provides options to search and kill process
-        ps = lists running processes associated with current user and terminal session, but offers many more arugments such as seeing processes running as certain user
-        ps aux = provides an exhaustive list of running processes
-Note: arguments are additive which mean that they can be strung together to customize an output. For example, in order to display an exhaustive list of running processes that are sorted by processor and memory utilizations, the syntax would be:
-    ps aux --sort=-pcpu,+pmem
-    Terminating processes:
-        kill = ends a running process, used along with process id. e.g: kill 2442. kill sends a signal to application to terminate
-        kill -KILL pid = sends a signal to Linux kernel to terminate a process. last resort. e.g: kill -KILL 2442
-        killall = kills all processes associated with an application. e.g: killall firefox
-        pkill = end a process by name
+viewing running processes:
+top = provides a real-time look at the local processor activity
+htop = provides a real-time look at the local processor activity in easily readable format / graph. Also provides options to search and kill process
+ps = lists running processes associated with current user and terminal session, but offers many more arugments such as seeing processes running as certain user
+ps aux = provides an exhaustive list of running processes
+
+Note: arguments are additive which mean that they can be strung together to customize an output. For example, in order to display an exhaustive list of running processes that are sorted by processor and memory utilizations, the syntax would be: ps aux --sort=-pcpu,+pmem
+
+Terminating processes:
+kill = ends a running process, used along with process id. e.g: kill 2442. kill sends a signal to application to terminate
+kill -KILL pid = sends a signal to Linux kernel to terminate a process. last resort. e.g: kill -KILL 2442
+killall = kills all processes associated with an application. e.g: killall firefox
+pkill = end a process by name
 
 Bonus command:
-    tree: draws a tree of current directory structure.
-       e.g: tree /home/deeplearning/Desktop
-            /home/deeplearning/Desktop
-            ├── baseSwitchConfig.txt
-            ├── CoAC_PY.py
-            ├── swcfg
-            ├── switchconfig.py
-            └── Untitled Document 1.py
+tree: draws a tree of current directory structure.
+e.g: tree /home/deeplearning/Desktop
+/home/deeplearning/Desktop
+├── baseSwitchConfig.txt
+├── CoAC_PY.py
+├── swcfg
+├── switchconfig.py
+└── Untitled Document 1.py
