@@ -1,183 +1,190 @@
-python lists:
-    list is a data type containing a sequence of comma-separated objects (elements) within square brackets. Lists have several important characteristics to be aware of when just staring out:
-        Lists contain one or more objects in an ordered list
-        A given list can contain one or more data types. There is not a requirement that all elements in a list are the same data type
-        Items are indexed starting at zero (starting from left)and ends at the length of the list minus one
-        Lists are mutable which means individual elements can be modified, in contrast to strings, which is not
-                >>> a = ['1', '3', '5']
-                >>> a[0]
-                '1'
-                >>> a[-1]
-                '5'
-                >>> a[-2]
-                '3'
-                >>> a[-3
-                ...
-                ... ]
-                '1'
-                >>> a[1] = '0'
-                >>> print a
-                ['1', '0', '5']
+# python lists:
+list is a data type containing a sequence of comma-separated objects (elements) within square brackets. Lists have several important characteristics to be aware of when just staring out:
+Lists contain one or more objects in an ordered list
+A given list can contain one or more data types. There is not a requirement that all elements in a list are the same data type
+Items are indexed starting at zero (starting from left)and ends at the length of the list minus one
+Lists are mutable which means individual elements can be modified, in contrast to strings, which is not
+>>> a = ['1', '3', '5']
+>>> a[0]
+'1'
+>>> a[-1]
+'5'
+>>> a[-2]
+'3'
+>>> a[-3
+...
+... ]
+'1'
+>>> a[1] = '0'
+>>> print a
+['1', '0', '5']
 
 Working with lists built-in methods:
-        >>> devices = ['asa', 'nexus', 'asa']
-        >>> devices.append('aci')
-        >>> print devices
-        ['asa', 'nexus', 'asa', 'aci']
-        >>> devices.insert(0, 'asr')
-        >>> print devices
-        ['asr', 'asa', 'nexus', 'asa', 'aci']
-        >>> devices
-        ['asr', 'asa', 'nexus', 'asa', 'aci']
-        >>> devices.pop()
-        'aci'
-        >>> devices.pop()
-        'asa'
-        >>> devices.pop()
-        'nexus'
-        >>> devices
-        ['asr', 'asa']
-        >>> devices.count('asa')
-        1
-        >>> devices.sort()
-        >>> devices
-        ['asa', 'asr']
+>>> devices = ['asa', 'nexus', 'asa']
+>>> devices.append('aci')
+>>> print devices
+['asa', 'nexus', 'asa', 'aci']
+>>> devices.insert(0, 'asr')
+>>> print devices
+['asr', 'asa', 'nexus', 'asa', 'aci']
+>>> devices
+['asr', 'asa', 'nexus', 'asa', 'aci']
+>>> devices.pop()
+'aci'
+>>> devices.pop()
+'asa'
+>>> devices.pop()
+'nexus'
+>>> devices
+['asr', 'asa']
+>>> devices.count('asa')
+1
+>>> devices.sort()
+>>> devices
+['asa', 'asr']
 
 Note: Just as you saw with strings, you can use the dir() function to see the available methods and attributes of lists. You can do dir(list) or dir(var) where var is a list to try it out
+
 Note: the pop method is unique that is returns data and modifies the original object
 
-Dictionaries:
-    Contains one or more items and is an unordered list
-    Item is a key-value pair
-    Indexed by name/key
-    Mutable – individual elements can be modified
-    Uses curly braces {}
-    This data type allows you to store contextual information with keys you define as compared to lists, which are ordered and use an integer as an index
-        >>> facts = {'hostname': 'nxos1', 'os': '7.0.3'}
-        >>>
-        >>> print facts['hostname']
-        nxos1
-        >>>
-        >>> print facts['os']
-        7.0.3
-        >>>
-        >>> facts['os'] = '7.0.2'
-        >>>
-        >>> print facts
-        {'hostname': 'nxos1', 'os': '7.0.2'}
-        >>>
-        >>> device_facts = {}
+# Dictionaries:
+Contains one or more items and is an unordered list
+Item is a key-value pair
+Indexed by name/key
+Mutable – individual elements can be modified
+Uses curly braces {}
+This data type allows you to store contextual information with keys you define as compared to lists, which are ordered and use an integer as an index
+>>> facts = {'hostname': 'nxos1', 'os': '7.0.3'}
+>>>
+>>> print facts['hostname']
+nxos1
+>>>
+>>> print facts['os']
+7.0.3
+>>>
+>>> facts['os'] = '7.0.2'
+>>>
+>>> print facts
+{'hostname': 'nxos1', 'os': '7.0.2'}
+>>>
+>>> device_facts = {}
 
 Working with dictionaries built-in methods:
-    >>> facts = {'hostname': 'nxos1', 'os': '7.0.3'}
-    >>>
-    >>> facts.update({'vendor': 'cisco', 'platform': '9396'})
-    >>>
-    >>> facts
-    {'vendor': 'cisco', 'platform': '9396', 'hostname': 'nxos1', 'os': '7.0.3'}
-    >>>
-    >>> facts.pop('platform')
-    '9396'
-    >>>
-    >>> print facts.get('vendor')
-    cisco
-    >>>
-    >>> print facts.get('os_version')
-    None
-    >>> facts.keys()
-    ['vendor', 'hostname', 'os']
-    >>>
-    >>> facts.values()
-    ['cisco', 'nxos1', '7.0.3']
-    >>>
-    >>> facts.items()
-    [('vendor', 'cisco'), ('hostname', 'nxos1'), ('os', '7.0.3')]
+>>> facts = {'hostname': 'nxos1', 'os': '7.0.3'}
+>>>
+>>> facts.update({'vendor': 'cisco', 'platform': '9396'})
+>>>
+>>> facts
+{'vendor': 'cisco', 'platform': '9396', 'hostname': 'nxos1', 'os': '7.0.3'}
+>>>
+>>> facts.pop('platform')
+'9396'
+>>>
+>>> print facts.get('vendor')
+cisco
+>>>
+>>> print facts.get('os_version')
+None
+>>> facts.keys()
+['vendor', 'hostname', 'os']
+>>>
+>>> facts.values()
+['cisco', 'nxos1', '7.0.3']
+>>>
+>>> facts.items()
+[('vendor', 'cisco'), ('hostname', 'nxos1'), ('os', '7.0.3')]
 
-Note:
-    just as you saw with strings and lists, you can use the dir() function to see the available methods and attributes of dictionaries. You can do dir(dict) or dir(var) where var is a dictionary to try it out
-    all methods either return an object and/or modifies the original object. The pop method is unique in that it returns data and modifies the original object. It is very similar to the pop method for lists
-    get() function is special in that it provides a cleaner output instead of an error, in case your searching for a value that doesn't exist:
-        >>> facts = {'hostname': 'cisco', 'os': '7.0.2'}
-        >>>
-        >>> print facts['hostname']
-        cisco
-        >>> print facts['platform']
-        Traceback (most recent call last):
-          File "<stdin>", line 1, in <module>
-        KeyError: 'platform'
-        >>> print facts.get('hostname')
-        cisco
-        >>>
-        >>> platform = facts.get('platform')
-        >>> print platform
-        None
-        >>> platform = facts.get('platform', 'no platform key exists')
-        >>>
-        >>> print platform
-        no platform key exists
+Note: just as you saw with strings and lists, you can use the dir() function to see the available methods and attributes of dictionaries. You can do dir(dict) or dir(var) where var is a dictionary to try it out
 
-Python loops:
-    Loops allow you to execute a block of code more than once. There are two main types of loops that you will learn about: 'for' loop and 'while' loop
+all methods either return an object and/or modifies the original object. The pop method is unique in that it returns data and modifies the original object. It is very similar to the pop method for lists
 
-    for loop
-         in Python usually iterates over a given object such as any string, list, dictionary (or any other iterate object). You can easily iterate over a range of numbers
-              devices = ['asr', 'asa', 'nexus', 'catalyst']
-              for item in devices:
-              print ("Device type is {}".format(item))
-              Device type is asr
-              Device type is asa
-              Device type is nexus
-              Device type is catalyst
-        Remember: for loop must ends with a colon
+get() function is special in that it provides a cleaner output instead of an error, in case your searching for a value that doesn't exist:
+>>> facts = {'hostname': 'cisco', 'os': '7.0.2'}
+>>>
+>>> print facts['hostname']
+cisco
+>>> print facts['platform']
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+KeyError: 'platform'
+>>> print facts.get('hostname')
+cisco
+>>>
+>>> platform = facts.get('platform')
+>>> print platform
+None
+>>> platform = facts.get('platform', 'no platform key exists')
+>>>
+>>> print platform
+no platform key exists
 
-    while loop
-        iterate over an object until a given condition
-                >>> interface_id = 1
-                >>>
-                >>> while interface_id <= 4:
-                ...     print 'Ethernet1/{}'.format(interface_id)
-                ...     interface_id += 1
-                ...
-                Ethernet1/1
-                Ethernet1/2
-                Ethernet1/3
-                Ethernet1/4
+# Python loops:
+Loops allow you to execute a block of code more than once. There are two main types of loops that you will learn about: 'for' loop and 'while' loop
 
-Python functions
-    python comes with built-in functions or methods as we have been seeing. e.g. len(string) that's a function. but what's great is that you can also define your own functions and you can reuse it in your code as often as needed. this makes your code shorter and cleaner vs having to repeat the same lines of code over and over
-        def get_ip():
-            ip = '10.10.10.5'
-            return ip
+for loop:
+iterates over a given object such as any string, list, dictionary (or any other iteratable object). You can easily iterate over a range of numbers
+devices = ['asr', 'asa', 'nexus', 'catalyst']
+for item in devices:
+print ("Device type is {}".format(item))
+Device type is asr
+Device type is asa
+Device type is nexus
+Device type is catalyst
 
-        ip_address = get_ip()
-        print (ip_address)
-    a function is created by defining it and then calling it in a particular line of code. You can optionally pass parameters to a function, and optionally return data from a function.
+Remember: for loop must ends with a colon
+
+while loop:
+iterate over an object until a given condition
+>>> interface_id = 1
+>>>
+>>> while interface_id <= 4:
+...     print 'Ethernet1/{}'.format(interface_id)
+...     interface_id += 1
+...
+Ethernet1/1
+Ethernet1/2
+Ethernet1/3
+Ethernet1/4
+
+# Python functions
+python comes with built-in functions or methods as we have been seeing. e.g. len(string) that's a function. but what's great is that you can also define your own functions and you can reuse it in your code as often as needed. this makes your code shorter and cleaner vs having to repeat the same lines of code over and over
+def get_ip():
+    ip = '10.10.10.5'
+    return ip
+
+ip_address = get_ip()
+print (ip_address)
+
+a function is created by defining it and then calling it in a particular line of code. You can optionally pass parameters to a function, and optionally return data from a function.
 
 Note: functions do not always have to return data—it may be a function that only prints data or sends commands to a device, but does not return any value.
 
-    Syntax to functions is similar to loops and conditionals in that the function definition must end with a colon and all code within the function needs to be indented. As you can see, the statement def is used to define the function in the function definition
+Syntax used in functions is similar to loops and conditionals in that the function definition must end with a colon and all code within the function needs to be indented. As you can see, the statement def is used to define the function in the function definition
 
-Working with files in python:
-    your python script can read from and write to files
-            >>> config = open('vlans.cfg', 'r')
-            >>>
-            >>> vlans = config.read()
-            >>>
-            >>> vlans
-            'vlan 10\n  name USERS\nvlan 20\n  name VOICE\nvlan 30\n  name WLAN\nvlan 40\n  name APP\nvlan 50\n  name WEB\nvlan 60\n  name DB'
-            >>> >>> print vlans
-            vlan 10
-              name USERS
-            vlan 20
-              name VOICE
-                Note: this example uses 'r' which opens a file for read only. you can also do 'w' for read and write
-    you can find built-in file functions by issuing dir(config) config here is the name of the variable defined in previous code
-    lastly, you must close your file by issuing config.close() again config here is the variable you defined above
+# Working with files in python:
+your python script can read from and write to files
+>>> config = open('vlans.cfg', 'r')
+>>>
+>>> vlans = config.read()
+>>>
+>>> vlans
+'vlan 10\n  name USERS\nvlan 20\n  name VOICE\nvlan 30\n  name WLAN\nvlan 40\n  name APP\nvlan 50\n  name WEB\nvlan 60\n  name DB'
+>>> >>> print vlans
+vlan 10
+  name USERS
+vlan 20
+  name VOICE
+                
+Note: this example uses 'r' which opens a file for read only. you can also do 'w' for read and write
+
+you can find built-in file functions by issuing dir(config) config here is the name of the variable defined in previous code
+
+lastly, you must close your file by issuing config.close() again config here is the variable you defined above
 
 Note: there is another method to working with files. it uses 'with' statement. this method is cleaner, as it closes file for you as soon as you leave the 'with' code block
-        >>> with open('vlans.cfg', 'r') as config:
-        ...     vlans = config.readlines()
-        ...
-        >>> print vlans
-        ['vlan 10\n', '  name USERS\n', 'vlan 20\n', '  name VOICE\n', 'vlan 30\n', '  name WLAN\n', 'vlan 40\n', '  name APP\n', 'vlan 50\n', '  name WEB\n', 'vlan 60\n', '  name DB']
-        >>>
+>>> with open('vlans.cfg', 'r') as config:
+...     vlans = config.readlines()
+...
+>>> print vlans
+['vlan 10\n', '  name USERS\n', 'vlan 20\n', '  name VOICE\n', 'vlan 30\n', '  name WLAN\n', 'vlan 40\n', '  name APP\n', 'vlan 50\n', '  name WEB\n', 'vlan 60\n', '  name DB']
+>>>
