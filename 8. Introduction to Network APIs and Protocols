@@ -1,5 +1,5 @@
-Evolution of device management and programmability:
-    Managing networks began 25+ years ago when networks first started being deployed. When networks were deployed, they were deployed manually and via the command line, just as they mostly are today. The difference is there were far fewer devices to deploy and manage, along with far fewer features, as compared to what is deployed today, thus it was not necessarily obvious that SNMP or CLI management was ultimately the not the right choice for device management
+# Evolution of device management and programmability:
+Managing networks began 25+ years ago when networks first started being deployed. When networks were deployed, they were deployed manually and via the command line, just as they mostly are today. The difference is there were far fewer devices to deploy and manage, along with far fewer features, as compared to what is deployed today, thus it was not necessarily obvious that SNMP or CLI management was ultimately the not the right choice for device management
 
     In fact, those mechanisms served most environments just fine. SNMP still dominates the market for monitoring basic up/down status, and CLI is still the primary means of management. However, CLI was built for humans—it was not meant for machines, which is one of the biggest drivers to adopt and implement more advanced APIs that are meant for true automation
 
