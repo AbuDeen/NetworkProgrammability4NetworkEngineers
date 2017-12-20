@@ -1,214 +1,218 @@
-Why learn Python:
-    because it's awesome!!! :)
-    python exists on most Linux systems, including NX-OS
-    python has many many modules/ applications that's built for network engineering
-    easy to use, quick to learn, yet very powerful and offers so much to network engineers who's leveraging network programmability and automation
+# Why learn Python:
+because it's awesome!!! :)
+python exists on most Linux systems, including NX-OS
+python has many many modules/ applications that's built for network engineering
+easy to use, quick to learn, yet very powerful and offers so much to network engineers who's leveraging network programmability and automation
 
 Note: Python is an interpreted language, meaning that code is executed as you type it in the python console, no need to compile
 
-Python 2.x:
-    No longer under active development but supported by python community
-    Better library support
-    Default version running on Linux and MAC
-    Supported on NX-OS
+# Python 2.x:
+No longer under active development but supported by python community
+Better library support
+Default version running on Linux and MAC
+Supported on NX-OS
 
-Python 3.x:
-    Under active development
-    Designed to be easier to learn (even easier)
-    Fixed major issues in 2.x
-    Not backward compatible
+# Python 3.x:
+Under active development
+Designed to be easier to learn (even easier)
+Fixed major issues in 2.x
+Not backward compatible
 
 Note: since python 2.x still has a larger library, it is the version used
 
-Executing python code
-    Using python dynamic interpreter aka python console
-    Writing python scripts
+# Executing python code
+Using python dynamic interpreter aka python console /interpreter (shell)
+Enter shell by typing python at Linux terminal or on a NX cli
+Exit shell by pressing ctrl + D
 
-Using python interpreter (shell)
-    Enter shell by typing python at Linux terminal or on a NX cli
-    Exit shell by pressing ctrl + D
+# Writing python scripts
+it can be written in any text editor and saved in a .py file extension. you can then run this script by executing python filename.py
 
-Writing python scripts
-    it can be written in any text editor and saved in a .py file extension. you can then run this script by executing python filename.py
-    to define python as a language that Linux will use a script add the following line at top of script:
-          #!/usr/bin/env python
-    to define your script entry point (i.e. line in script to start executing code) add the following line (this is optional but highly recommended and keeps your code clean)
-              if __name__ == "__main__":
+to define python as a language that Linux will use a script add the following line at top of script:
+#!/usr/bin/env python
 
-Python help utilities and functions
-    help() = Returns the python built-in documentation about the object
-    dir() = Returns the attributes (and methods) of the object or module
-    type() = Returns the type of the object
+to define your script entry point (i.e. line in script to start executing code) add the following line (this is optional but highly recommended and keeps your code clean)
+if __name__ == "__main__":
 
-Writing idiomatic python
-    Idiomatic Python programming is concerned with readability and uniformity. There are many things to consider when writing idiomatic Python, often referred to as being Pythonic. Here are just a few of them:
-        single-line comments
-        multi-line comments
-        whitespace
-        indentation (spaces vs tabs)
-    PEP8 is python styling guide that lists python best practices and available for free on the web
+# Python help utilities and functions
+help() = Returns the python built-in documentation about the object
+dir() = Returns the attributes (and methods) of the object or module
+type() = Returns the type of the object
 
-Common python data types
-    strings
-    numbers
-    lists
-    dictionaries
-    booleans
-    files
+# Writing idiomatic python
+Idiomatic Python programming is concerned with readability and uniformity. There are many things to consider when writing idiomatic Python, often referred to as being Pythonic. Here are just a few of them:
+single-line comments
+multi-line comments
+whitespace
+indentation (spaces vs tabs)
+PEP8 is python styling guide that lists python best practices and available for free on the web
 
-Variable assignment
-    you can assign a variable in python using = sign
-        e.g: a = 10 (in this case a is a type integer/number variable)
-    and here is a cool thing about python, you can reassign variables at any point in the script
-        e.g. a = 15 (when you run script, a will now be equal to 15)
+# Common python data types
+strings
+numbers
+lists
+dictionaries
+booleans
+files
 
-Strings
-    sequence of characters that are surrounded by quotes
-    immutable – individual characters cannot be natively modified after it was originally created
-    can be an empty string
-        >>> a = '10.10.10.1'
-        >>> a[2]
-        '.'
-        >>> a[4]
-        '0'
-        >>> a[4] = '5'
-        Traceback (most recent call last):
-        File "<stdin>", line 1, in <module>
-        TypeError: 'str' object does not support item assignment
+# Variable assignment
+you can assign a variable in python using = sign
+e.g: a = 10 (in this case a is a type integer/number variable)
+
+and here is a cool thing about python, you can reassign variables at any point in the script
+e.g. a = 15 (when you run script, a will now be equal to 15)
+
+# Strings
+sequence of characters that are surrounded by quotes
+immutable – individual characters cannot be natively modified after it was originally created
+
+can be an empty string
+>>> a = '10.10.10.1'
+>>> a[2]
+'.'
+>>> a[4]
+'0'
+>>> a[4] = '5'
+Traceback (most recent call last):
+File "<stdin>", line 1, in <module>
+TypeError: 'str' object does not support item assignment
 
 Note: An empty string is simply a string containing no characters. Note that any empty (no null) variable evaluates to False in a conditional statement and that a variable that is assigned with any value evaluates to True in a conditional statement
-    printing stings
-        >>> a = ''
-        >>> print a
+    
+printing stings
+>>> a = ''
+>>> print a
 
-        >>> a = '/24'
-        >>> print a
-        /24
+>>> a = '/24'
+>>> print a
+/24
 
-        >>> a = '\n\n python is awesome \n\n'
-        >>> print a
-
-
-        python is awesome
+>>> a = '\n\n python is awesome \n\n'
+>>> print a
 
 
-        >>> a = 'python is awe\rsome'
-        >>> print a
-        someon is awe
+python is awesome
+
+
+>>> a = 'python is awe\rsome'
+>>> print a
+someon is awe
 
 Note the difference between \n and \r. \n is an escape character that adds empty lines
-    concatenating strings
-        You may often need to add one or more strings together. It is called concatenation and is accomplished using the + command
-        >>> a = 'hello'
-        >>> b = 'world'
-        >>> c = '!'
-        >>> d = a + ' ' + b + c
-        >>> print d
-        hello world!
+
+concatenating strings
+You may often need to add one or more strings together. It is called concatenation and is accomplished using the + command
+>>> a = 'hello'
+>>> b = 'world'
+>>> c = '!'
+>>> d = a + ' ' + b + c
+>>> print d
+hello world!
 
 Strings built-in methods:
-     run dir(string) from python console/shell to get familiar with python built-in functions
-      >>> hostname = 'nxos1'
-      >>> hostname.upper()
-      'NXOS1'
-      >>>
-      >>> macaddr = '00:11:22:33:44:55'
-      >>> macaddr.replace(':', '.')
-      '00.11.22.33.44.55'
-      >>>
-      >>> ipaddr = '10.1.1.1'
-      >>> ipaddr.startswith('10')
-      True
-      >>>
-      >>> ipaddr = '10.{}.1.1'
-      >>> ipaddr.format('200')
-      '10.200.1.1'
-      >>>
-      >>> ipaddr = '10.4.8.1'
-      >>> ipaddr.split('.')
-      ['10', '4', '8', '1']
+run dir(string) from python console/shell to get familiar with python built-in functions
+>>> hostname = 'nxos1'
+>>> hostname.upper()
+'NXOS1'
+>>>
+>>> macaddr = '00:11:22:33:44:55'
+>>> macaddr.replace(':', '.')
+'00.11.22.33.44.55'
+>>>
+>>> ipaddr = '10.1.1.1'
+>>> ipaddr.startswith('10')
+True
+>>>
+>>> ipaddr = '10.{}.1.1'
+>>> ipaddr.format('200')
+'10.200.1.1'
+>>>
+>>> ipaddr = '10.4.8.1'
+>>> ipaddr.split('.')
+['10', '4', '8', '1']
 
 Note: it's very valuable to note how certain functions/methods return/convert a data type into another. e.g: sting.split outputs a list
 
-Numbers:
-    python numbers are integers or floating numbers
-    Operators such as +, -, *, /, //, % are used right from the terminal
-    >>> 5 * 4
-    20
-    >>> 10 - 4
-    6
-    >>>
-    >>> 239234 + 4
-    239238
-    >>>
-    >>> 10 / 3
-    3
-    >>> 10.0 / 3
-    3.3333333333333335
-    >>>
-    >>> 10.0 // 3
-    3.0
+# Numbers:
+python numbers are integers or floating numbers
+Operators such as +, -, *, /, //, % are used right from the terminal
+>>> 5 * 4
+20
+>>> 10 - 4
+6
+>>>
+>>> 239234 + 4
+239238
+>>>
+>>> 10 / 3
+3
+>>> 10.0 / 3
+3.3333333333333335
+>>>
+>>> 10.0 // 3
+3.0
 
-Booleans:
-    booleans include and, or and not
-    output of a boolean operation is true or false
-    commonly used to specify a true/false condition and consequence
-    AND:
-        true and false = false
-        true and true = true
-        false and false = false
-    OR:
-        true or true = true
-        true or false = true
-        false or false = false
-    NOT:
-        not true = false
-        not false = true
-        true and not true = false
-        not false and not false = true
+# Booleans:
+booleans include and, or and not
+output of a boolean operation is True or False
+commonly used to specify a true/false condition and consequence
+AND:
+    true and false = false
+    true and true = true
+    false and false = false
+OR:
+    true or true = true
+    true or false = true
+    false or false = false
+NOT:
+    not true = false
+    not false = true
+    true and not true = false
+    not false and not false = true
 
 Note: python is case sensitive
-    >>> true and false
-    Traceback (most recent call last):
-    File "<stdin>", line 1, in <module>
-    NameError: name 'true' is not defined
-    >>> True and False
-    False
+>>> true and false
+Traceback (most recent call last):
+File "<stdin>", line 1, in <module>
+NameError: name 'true' is not defined
+>>> True and False
+False
 
-Conditionals:
-    conditions evaluates in either true or false and perform an action
-    uses the following operators:
-        comparison Operators
-            ==, !=, >, <, >=, <=
-        logical operators
-            and, or, not
-        identity operator
-            is, is not
-        membership operator
-            in, in not
-        >>> a = '10.10.10.1'
-        >>> '10' in a
-        True
-        >>> a is '10.10.10.2'
-        False
+# Conditionals:
+conditions evaluates in either true or false and perform an action
+uses the following operators:
+comparison Operators
+    ==, !=, >, <, >=, <=
+logical operators
+    and, or, not
+identity operator
+    is, is not
+membership operator
+    in, in not
+>>> a = '10.10.10.1'
+>>> '10' in a
+True
+>>> a is '10.10.10.2'
+False
 
 Note: Every object or expression in Python always evaluates to True or False, even variables, meaning it is possible to create a variable such as hostname = ‘Router1’ and then say if hostname: in a conditional. Assuming there is a value assigned that is not null (i.e. None), the conditional will evaluate to True, else it will be False
 
-        conditional statements end with a colon and must maintain consistent indentation to work properly. The three conditional statements are: if, elif, and else
-                >>> switch = 'catalyst 3850'
-                >>>
-                >>> if 'catalyst' in switch:
-                ...     switch_type = 'catalyst'
-                ... elif 'nexus' in switch:
-                ...     switch_type = 'nexus'
-                ... else:
-                ...     switch_type = 'unknown'
-                ...
-                >>>
-                >>> print switch_type
-                catalyst
-                >>>
-        The if statement states a condition to be evaluated
-        elif is an optional condition that can be used numerous times to check for multiple expressions of True
-        else is the statement that contains the code to execute some action
-        As soon as there is a match in an if/elif/else statement, the code block is exited
+conditional statements end with a colon and must maintain consistent indentation to work properly. The three conditional statements are: if, elif, and else
+>>> switch = 'catalyst 3850'
+>>>
+>>> if 'catalyst' in switch:
+...     switch_type = 'catalyst'
+... elif 'nexus' in switch:
+...     switch_type = 'nexus'
+... else:
+...     switch_type = 'unknown'
+...
+>>>
+>>> print switch_type
+catalyst
+>>>
+
+The if statement states a condition to be evaluated
+elif is an optional condition that can be used numerous times to check for multiple expressions of True
+else is the statement that contains the code to execute some action
+As soon as there is a match in an if/elif/else statement, the code block is exited
