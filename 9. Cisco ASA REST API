@@ -1,4 +1,4 @@
-Overview:
+# Overview:
 The Cisco ASA REST API provides a programmatic model-based interface for configuring classic ASAs beginning with the 9.3.2 release. The term “classic ASAs” refers to appliances which do not include the CX or SourceFire Sensor or the integrated functionality of NGFW services. The REST API can be used to configure ASAs with existing management interfaces and applications— command-line interface, Adaptive Security Device Manager, and Cisco Security Manager
 
 Cisco has added an industry standard REST API to interact with the ASA operating system using standard RESTful practices. The ASA REST API can be used to push configuration, pull configuration, and monitor the device, in addition to the standard management mechanisms such as CLI and ASDM. Any management system with HTTPS access and correct credentials can manage the firewalls
@@ -11,7 +11,7 @@ All Data is returned as structured data encoded as JSON for ease of use in worki
 
 The Agent relies on standard HTTP responses, and includes relevant data in the header and body of those responses when there are errors
 
-Rest api agent prerequisites:
+# Rest api agent prerequisites:
 Running ASA running 9.3(2) or 9.4(1) and above. running https
 
 By default, the Agent is not innately on the device. Use the following steps in order to install the agent API and enable it:
@@ -25,14 +25,14 @@ By default, the Agent is not innately on the device. Use the following steps in 
 Access to rest api based on user credentials:
 Just as with standard privileges via the CLI, the REST API requires specific privileges in order to manage the device. A network administrator can use Basic Auth or Tokens which are both associated with a single user.
 
-There are there main privilege levels when using the API:
-  Privilege level 3: Required to invoke monitoring requests such as /api/monitoring GET requests
-  Privilege level 5: Required for invoking all GET requests
-  Privilege level 15: Required for invoking PUT/POST/DELETE operations
+# There are there main privilege levels when using the API:
+Privilege level 3: Required to invoke monitoring requests such as /api/monitoring GET requests
+Privilege level 5: Required for invoking all GET requests
+Privilege level 15: Required for invoking PUT/POST/DELETE operations
 
 Note: Each level inherits lower-level attributes. For example, Level 15 inherits the GET Requests of a Level 5 user
 
-Cisco asa rest api documentation and console:
+# Cisco asa rest api documentation and console:
 documentation and console located at https://deviceip/doc/
 
 The documentation pack is crucial to understanding various components of the Cisco ASA REST API such as the URIs required to make changes, sample examples, and various methods. There is also a native API console, which is a REST client, similar to Postman (covered later in the lesson)
@@ -70,9 +70,9 @@ The methods that are supported by the ASA REST API are a subset of the HTTP Meth
 
 Note: these types of methods are unique per URI, but note that not all methods are supported for every API call
 
-There are two ways to authenticate using the API:
-  basic authentication and a token
-  The Basic Authorization code is a standard base64 encoded string that is a hash of the “username:password”. The base64 encoded string can then be put into the header and used as a mechanism to authenticate within the confines of REST’s stateless nature. The actual Key for the HTTP Headers is called Authorization, which is a standard method and is the same as using Basic Auth on Postman
+# There are two ways to authenticate using the API:
+basic authentication and a token
+The Basic Authorization code is a standard base64 encoded string that is a hash of the “username:password”. The base64 encoded string can then be put into the header and used as a mechanism to authenticate within the confines of REST’s stateless nature. The actual Key for the HTTP Headers is called Authorization, which is a standard method and is the same as using Basic Auth on Postman
 
 Note: When using postman, Python requests, or equivalent, the encoded string is often created for you and you just need to enter the username and password in clear text
 
@@ -85,8 +85,8 @@ a new token is generated each time /api/tokenservices is run; however, the old o
 
 Note: Tokens expire after a few minutes
 
-Cisco asa rest api examples (using postman and python requests):
-# show version using postman:
+#Cisco asa rest api examples (using postman and python requests):
+show version using postman:
 This example shows how Postman can be used to issue an API request to the ASA. The API performs a GET request to obtain version information from the ASA which would be the equivalent of the show version command. Within postman you can:
   Set the URI: /api/monitoring/components/version
   Select the GET method
@@ -139,13 +139,13 @@ response = requests.post( url, data=json.dumps(payload), headers=headers, verify
           print 'ERROR Code: ' + str(response.status_code)
           print response.headers
 
-Cisco asa rest cli api:
+# Cisco asa rest cli api:
 The Generic CLI Command Executor is simply a wrapper for sending any command that you would send via the CLI. It has an advantage of being most familiar to users, but the response is plain text, not in structured data (JSON) so should only be used when other options are not available
 
 The Bulk CLI allows multiple commands to be sent at once but still returns structured JSON data. Its response is a list of dictionaries
   https://asa/api/cli
 
-Debugging asa rest api:
+# Debugging asa rest api:
 If you are having problems configuring or connecting to the ASA REST API, use the following CLI command to enable display of debugging messages on your console
 
 debug rest-api [agent | cli | client | daemon | process | token-auth] [error | event]
