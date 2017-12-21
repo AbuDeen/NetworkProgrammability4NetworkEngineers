@@ -1,67 +1,65 @@
-Evolution of device management and programmability:
-    Managing networks began 25+ years ago when networks first started being deployed. When networks were deployed, they were deployed manually and via the command line, just as they mostly are today. The difference is there were far fewer devices to deploy and manage, along with far fewer features, as compared to what is deployed today, thus it was not necessarily obvious that SNMP or CLI management was ultimately the not the right choice for device management
+# Evolution of device management and programmability:
+Managing networks began 25+ years ago when networks first started being deployed. When networks were deployed, they were deployed manually and via the command line, just as they mostly are today. The difference is there were far fewer devices to deploy and manage, along with far fewer features, as compared to what is deployed today, thus it was not necessarily obvious that SNMP or CLI management was ultimately the not the right choice for device management
 
-    In fact, those mechanisms served most environments just fine. SNMP still dominates the market for monitoring basic up/down status, and CLI is still the primary means of management. However, CLI was built for humans—it was not meant for machines, which is one of the biggest drivers to adopt and implement more advanced APIs that are meant for true automation
+In fact, those mechanisms served most environments just fine. SNMP still dominates the market for monitoring basic up/down status, and CLI is still the primary means of management. However, CLI was built for humans—it was not meant for machines, which is one of the biggest drivers to adopt and implement more advanced APIs that are meant for true automation
 
-    SNMP has been around for 20 years. It has been the de facto way to monitor networks. It worked great when networks were small and polling a device every 15-30 minutes met operational requirements. However, SNMP often caused operational issues when polling devices too frequently. While it did work great for monitoring devices every few minutes, SNMP never caught on industry-wide for configuration management due to custom MIBs. MIBs are a type of data model defining a collection of information that is organized in a hierarchical format that is used along with SNMP
+SNMP has been around for 20 years. It has been the de facto way to monitor networks. It worked great when networks were small and polling a device every 15-30 minutes met operational requirements. However, SNMP often caused operational issues when polling devices too frequently. While it did work great for monitoring devices every few minutes, SNMP never caught on industry-wide for configuration management due to custom MIBs. MIBs are a type of data model defining a collection of information that is organized in a hierarchical format that is used along with SNMP
 
-SNMP:
-    SNMP uses a get-request to retrieve a MIB variable from the SNMP agent (a network device)
+# SNMP:
+SNMP uses a get-request to retrieve a MIB variable from the SNMP agent (a network device)
+SNMP uses a set-request to set variables that are stored in the MIB
+lack of writable MIBs and difficult to replay/rollback configs
+lacks libraries for various programming languages. There has been no network-friendly way to “program” the network using various languages such as Python, C, Java, Ruby, and so on. As you will see with true model driven APIs (application programmable interface), being able to generate and use different languages becomes simplified
 
-    SNMP uses a set-request to set variables that are stored in the MIB
-    lack of writable MIBs and difficult to replay/rollback configs
+# Cli:
+In addition to SNMP, there has always been the network command line interface. Access to the CLI happens via console, Telnet, or SSH, and has truly been the de facto way of managing configuration of network devices for the past 20+ years. CLI was meant for human to machine communication, not machine to machine communication. While the CLI will continue to play an integral in troubleshooting and operations, it must be eliminated for configuration management. It is error-prone and extremely inefficient
 
-    lacks libraries for various programming languages. There has been no network-friendly way to “program” the network using various languages such as Python, C, Java, Ruby, and so on. As you will see with true model driven APIs (application programmable interface), being able to generate and use different languages becomes simplified
+# Next generation configuration management:
+easy to use programmable management interface = provides the ability to use programming languages to manage devices
 
-Cli:
-    In addition to SNMP, there has always been the network command line interface. Access to the CLI happens via console, Telnet, or SSH, and has truly been the de facto way of managing configuration of network devices for the past 20+ years. CLI was meant for human to machine communication, not machine to machine communication. While the CLI will continue to play an integral in troubleshooting and operations, it must be eliminated for configuration management. It is error-prone and extremely inefficient
+supports client-side validation and error checking = using model driven api, api will validate the configuration sent based on how the device is modeled in YANG or other modeling language. this validation happens prior to passing configuration command to network device, reducing the possibility of partial configurations
 
-Next generation configuration management:
-    easy to use programmable management interface = provides the ability to use programming languages to manage devices
+separate configuration and operation data = api should offer separation between configurable data (such as interface ip) and operational data (such as interface CRC errors)
 
-    supports client-side validation and error checking = using model driven api, api will validate the configuration sent based on how the device is modeled in YANG or other modeling language. this validation happens prior to passing configuration command to network device, reducing the possibility of partial configurations
+contains built-in backup/restore = api should offer the ability to apply configuration as a transaction and roll it back if needed
 
-    separate configuration and operation data = api should offer separation between configurable data (such as interface ip) and operational data (such as interface CRC errors)
-
-    contains built-in backup/restore = api should offer the ability to apply configuration as a transaction and roll it back if needed
-
-    api should be both human and machine friendly = api should offer data encoding formats such as JSON and XML. both offer a human-friendly readable format, and in the meantime structure data in a way that makes processing done faster by machines
+api should be both human and machine friendly = api should offer data encoding formats such as JSON and XML. both offer a human-friendly readable format, and in the meantime structure data in a way that makes processing done faster by machines
 
 Note: starting here and going forward, get used to the term open api. open could mean: open source or exposing underlying device configurable data to 3rd party tools and engineers
 
-Next generation api:
-    supports transport protocols such as HTTP(S), SSH, TLS
-    supports data encoding such as XML and JSON
-    supports programming language libraries for machine to machine network management
-    must be open and extensible
-    example of next gen apis:
-        REST
-        NETCONF
-        RESTCONF
-        gRPC
+# Next generation api:
+supports transport protocols such as HTTP(S), SSH, TLS
+supports data encoding such as XML and JSON
+supports programming language libraries for machine to machine network management
+must be open and extensible
+example of next gen apis:
+REST
+NETCONF
+RESTCONF
+gRPC
 
-Model-Driven programmability stack:
-    this section summarizes what will be discussed over the next many sections. api management contains six layers of awesomeness:
-        layer 1 = app = is it the application that utilizes protocols such as RESTCONF and NETCONF to manage and configure network devices. this app could simply be a python script or a network engineering using google postman
+# Model-Driven programmability stack:
+this section summarizes what will be discussed over the next many sections. api management contains six layers of awesomeness:
+layer 1 = app = is it the application that utilizes protocols such as RESTCONF and NETCONF to manage and configure network devices. this app could simply be a python script or a network engineering using google postman
 
-        layer 2 = SDK = software development kit = every device is modeled. meaning that every configurable item in a device is represented using an object (e.g. object 1 is ip addr of interface g1/0/1). this modeling is done using some modeling language such as YANG. SDK generates programming language bindings based on modeled objects so that python or any other language will have objects(i.e.variables), classes, etc.. that map to modeled objects. plenty more of this to come - no worries :)
+layer 2 = SDK = software development kit = every device is modeled. meaning that every configurable item in a device is represented using an object (e.g. object 1 is ip addr of interface g1/0/1). this modeling is done using some modeling language such as YANG. SDK generates programming language bindings based on modeled objects so that python or any other language will have objects(i.e.variables), classes, etc.. that map to modeled objects. plenty more of this to come - no worries :)
 
-        layer 3 = protocols such as RESTCONF, NETCONF and gRPC
+layer 3 = protocols such as RESTCONF, NETCONF and gRPC
 
-        layer 4 = data encoding methods such as XML and JSON = a  way for formatting data sent and received from device, so that it's easy to read/construct by humans and faster to process by machines
+layer 4 = data encoding methods such as XML and JSON = a  way for formatting data sent and received from device, so that it's easy to read/construct by humans and faster to process by machines
 
-        layer 5 = transport protocols = underlying protocol used by RESTCONF and NETCONF to communicate with network devices
+layer 5 = transport protocols = underlying protocol used by RESTCONF and NETCONF to communicate with network devices
 
-        layer 6 = data models = e.g. YANG
+layer 6 = data models = e.g. YANG
 
-      These layers or components form the next gen api. without further due let's dig in
+These layers or components form the next gen api. without further due let's dig in
 
-JSON:
-    javascript object notation
+# JSON:
+javascript object notation
 
-    JSON is a data exchange format and open standard. It is easy for humans to read and write and is easy for machines to parse and generate. It is based on a subset of JavaScript and is a text format that is completely language independent
+JSON is a data exchange format and open standard. It is easy for humans to read and write and is easy for machines to parse and generate. It is based on a subset of JavaScript and is a text format that is completely language independent
 
-    JSON is best known for the curly brace syntax because JSON objects always begin and end with a curly brace. JSON builds objects using name-value pair similar to key-value pairs as covered with Python dictionaries. Values can be strings, lists, numbers, booleans, and nested JSON objects
+JSON is best known for the curly brace syntax because JSON objects always begin and end with a curly brace. JSON builds objects using name-value pair similar to key-value pairs as covered with Python dictionaries. Values can be strings, lists, numbers, booleans, and nested JSON objects
 
     e.g:
         {
@@ -83,8 +81,9 @@ JSON:
         }
 
 Note: apis return json string, that is json dictionary between quotes. you can't operate on json string using dict (let's refer to dictionary as dict) syntax. you will need to utilize two json methods/functions:
-    json.loads(jsonstingname) = convert json string into a dict
-    json.dumps(jsondict, indent = 4) = pretty print json dict
+
+json.loads(jsonstingname) = convert json string into a dict
+json.dumps(jsondict, indent = 4) = pretty print json dict
 
             >>> facts = '{"hostname": "nxosv", "os": "7.3", "location": "San_Jose"}'
             >>> print facts["hostname"]
@@ -99,16 +98,16 @@ Note: apis return json string, that is json dictionary between quotes. you can't
                 "location": "San_Jose"
             }
 
-    json is supported on many network devices. here is an example of a command output in json on nexus switch:
+json is supported on many network devices. here is an example of a command output in json on nexus switch:
             nxosv# show hostname | json
             {
               "hostname": "nxosv.cisco.com"
             }
 
-    json schema definition:
-        Although using JSON schemas have not been extremely popular for network APIs, it is important to understand that there are ways to model and define constraints of JSON objects using a JSON-schema document. you need to think about how you validate inputs into this type of object. The answer to that is to use a JSON schema definition
+json schema definition:
+Although using JSON schemas have not been extremely popular for network APIs, it is important to understand that there are ways to model and define constraints of JSON objects using a JSON-schema document. you need to think about how you validate inputs into this type of object. The answer to that is to use a JSON schema definition
 
-        Here you see a sample schema for a VLAN object. You can see the first property that is called id that is a number as it is used to store VLAN ID, and that it has constraints such that it has to be between 1 and 4096
+Here you see a sample schema for a VLAN object. You can see the first property that is called id that is a number as it is used to store VLAN ID, and that it has constraints such that it has to be between 1 and 4096
                 {
                     "$schema": "http://json-schema.org/draft-04/schema#",
                     "title": "VLAN Table",
@@ -137,12 +136,12 @@ Note: apis return json string, that is json dictionary between quotes. you can't
                     }
                 }
 
-        As you can see, schemas can also define enumerations for properties like state; it means that there are only two valid values—up and down. Finally, you can include required properties in the schema, too. Here as you can see, only id is required as that is the only property that is required to configure a VLAN
+As you can see, schemas can also define enumerations for properties like state; it means that there are only two valid values—up and down. Finally, you can include required properties in the schema, too. Here as you can see, only id is required as that is the only property that is required to configure a VLAN
 
-XML:
-    extensible markup language
-    language independent
-    like JSON, offers a way to provide structured data between computer systems. While it is not as easy for humans to understand visually, it is easy for machines to parse and generate
+# XML:
+extensible markup language
+language independent
+like JSON, offers a way to provide structured data between computer systems. While it is not as easy for humans to understand visually, it is easy for machines to parse and generate
             <?xml version="1.0"?>
             <ins_api>
               <type>cli_show</type>
@@ -160,10 +159,10 @@ XML:
               </outputs>
             </ins_api>
 
-    XML may look similar to HTML, but they are in fact different. While both use tags <tags> to define objects and elements, HTML is used to display data. Its web browser knows how to display websites—it consumes an HTML object and displays it. XML, on the other hand, is used to describe data such that your XML client (programming language, and so on) can consume an object that has meaning to it
+XML may look similar to HTML, but they are in fact different. While both use tags <tags> to define objects and elements, HTML is used to display data. Its web browser knows how to display websites—it consumes an HTML object and displays it. XML, on the other hand, is used to describe data such that your XML client (programming language, and so on) can consume an object that has meaning to it
 
-    xml namespaces:
-        provides means to mitigate element name conflicts. You can also have a default namespace using xmlns=url eliminating need to have attribute in each tag
+xml namespaces:
+provides means to mitigate element name conflicts. You can also have a default namespace using xmlns=url eliminating need to have attribute in each tag
                 <interface>
                    <name>Ethernet1</name>
                    <description>Connects to EDGE</description>
@@ -179,14 +178,14 @@ XML:
                    <cfg:admin_state>up</cfg:admin_state>
                 </cfg:interface>
 
-          XML namespaces are fairly common when using XML APIs on network devices, so it is important to understand them, and know why they are used. It is quite possible there would never be a conflict of XML tags when working with network devices, but you may want to create custom XML objects in an application you are writing. In doing that, you have the ability to create a namespace. It essentially becomes an identifier for each XML element. This way, you can read data in from more than source, create a larger object, and not overwrite an object, as they would still be accessible by their namespace
+XML namespaces are fairly common when using XML APIs on network devices, so it is important to understand them, and know why they are used. It is quite possible there would never be a conflict of XML tags when working with network devices, but you may want to create custom XML objects in an application you are writing. In doing that, you have the ability to create a namespace. It essentially becomes an identifier for each XML element. This way, you can read data from more than source, create a larger object, and not overwrite an object, as they would still be accessible by their namespace
 
-          using xml in python:
-              Just as you can work with JSON objects in Python, you can work with XML in Python. The main difference is that there is not a native Python data type for XML as there is for JSON, for example, JSON == dictionary, but XML != Python data type
+using xml in python:
+Just as you can work with JSON objects in Python, you can work with XML in Python. The main difference is that there is not a native Python data type for XML as there is for JSON, for example, JSON == dictionary, but XML != Python data type
 
-              One common library that used to work with XML in Python is lxml
+One common library that used to work with XML in Python is lxml
 
-              When working with XML in Python, keep in mind there is a distinct difference between XML strings and XML objects just like there is a difference between a JSON string and dictionary.This example shows how to take an XML string (verify it with type(xml_as_string) and convert it to an actual XML document. It is done using the etree.fromstring() method
+When working with XML in Python, keep in mind there is a distinct difference between XML strings and XML objects just like there is a difference between a JSON string and dictionary.This example shows how to take an XML string (verify it with type(xml_as_string) and convert it to an actual XML document. It is done using the etree.fromstring() method
 
                         #!/usr/bin/env python
 
@@ -214,10 +213,10 @@ XML:
                             xml_obj = etree.fromstring(xml_as_string)
                             print xml_obj
 
-    when you execute this previous script, you will notice that output will be:
-        <Element ins_api at 0x7f08d9f46170>. which tells you it is an actual Element (XML) object as compared to a string - not like json
+when you execute this previous script, you will notice that output will be:
+<Element ins_api at 0x7f08d9f46170>. which tells you it is an actual Element (XML) object as compared to a string - not like json
 
-        If you are working native XML objects, you will need a way to find and parse the object just like you can do with dictionaries. This picture introduces the find() method and allows you to search the full XML tree looking for a specific tag. It returns that element as an object, and once returned it has key attributes to access, one of them being text. As you can see in the picture, data.text prints the actual hostname of the device, for example, nxosv.cisco.com
+If you are working native XML objects, you will need a way to find and parse the object just like you can do with dictionaries. This picture introduces the find() method and allows you to search the full XML tree looking for a specific tag. It returns that element as an object, and once returned it has key attributes to access, one of them being text. As you can see in the picture, data.text prints the actual hostname of the device, for example, nxosv.cisco.com
                 xml_obj = etree.fromstring(xml_as_string)
                 print xml_obj
                 data = xml_obj.find('.//hostname')
@@ -230,8 +229,8 @@ XML:
 
 Note: You can also take an XML object and convert it to a string using etree.tostring(). This is helpful for troubleshooting and visualizing what an object is at a given point in time
 
-    xml on nexus:
-        Nexus devices also allow you to pipe output to xml just like you can for JSON. The major difference is that when you pipe output to JSON, it represents the output as you will get back from NX-API. While NX-API also supports XML, when you pipe output to XML, you see the XML object that represents the NETCONF response
+xml on nexus:
+Nexus devices also allow you to pipe output to xml just like you can for JSON. The major difference is that when you pipe output to JSON, it represents the output as you will get back from NX-API. While NX-API also supports XML, when you pipe output to XML, you see the XML object that represents the NETCONF response
                 nxosv# show hostname | xml
                 <?xml version="1.0" encoding="ISO-8859-1"?>
                 <nf:rpc-reply xmlns:nf="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns="http://www.cisco.com/nxos:1.0:vdc_mgr">
@@ -249,8 +248,8 @@ Note: You can also take an XML object and convert it to a string using etree.tos
                 </nf:rpc-reply>
                 ]]>]]>
 
-      xml schema defintion (XSD):
-          Just like JSON schema definitions, XML has a way to define the semantics and supported key/values for a given object and model. Here is a similar example like you saw earlier with JSON, but now you can see that a VLAN is represented as XML
+xml schema defintion (XSD):
+Just like JSON schema definitions, XML has a way to define the semantics and supported key/values for a given object and model. Here is a similar example like you saw earlier with JSON, but now you can see that a VLAN is represented as XML
 
                 <xs:sequence>
                  <xs:element name=“vlan_id" minOccurs="1" type="nxos:base_unsignedInt_key">
@@ -274,52 +273,50 @@ Note: You can also take an XML object and convert it to a string using etree.tos
 
 Note: current implementation of NETCONF uses XSD-based models
 
-Data models:
-    Data models describe a constrained set of data in the form of a schema language
-    Use well-defined parameters to standardize the representation of data from a network device so the output among various platforms is the same
-    Not used to actually send information to devices and instead rely on protocols such as NETCONF and RESTCONF
-    Device configuration can be validated against a data model in order to check if the changes are a valid for the device before committing the changes
+# Data models:
+Data models describe a constrained set of data in the form of a schema language
+Use well-defined parameters to standardize the representation of data from a network device so the output among various platforms is the same
+Not used to actually send information to devices and instead rely on protocols such as NETCONF and RESTCONF
+Device configuration can be validated against a data model in order to check if the changes are a valid for the device before committing the changes
 
-    Data models are used to describe syntax and semantics of working with specific data objects. They can define attributes and answers such as the following:
-        What is the range of a valid VLAN ID?
-        Can a VLAN name have spaces in it?
-        Should the values be enumerated and only support “up” or “down” for an admin state?
-        Should the value be a string or an integer?
+Data models are used to describe syntax and semantics of working with specific data objects. They can define attributes and answers such as the following:
+What is the range of a valid VLAN ID?
+Can a VLAN name have spaces in it?
+Should the values be enumerated and only support “up” or “down” for an admin state?
+Should the value be a string or an integer?
 
-    While there is a lot of focus on data models these days, they are not new. They are simply improving and becoming more focused on network devices and next-gen APIs
+While there is a lot of focus on data models these days, they are not new. They are simply improving and becoming more focused on network devices and next-gen APIs
 
-    As shown in the picture, the industry is migrating from a world of having no framework (no modeling) when using CLI commands and text output to world of a fully modeled device; in other words, a device that has a JSON and XML representation of its full configuration and that is fully driven from a robust model such as YANG. Also, models also define operational data and statistics on devices.
-        # standardization is the key here. it is awesome that data configured on all devices including IOSXE, IOSXR, etc., can all be the same - this is also referred to syntax abstraction
+The industry is migrating from a world of having no framework (no modeling) when using CLI commands and text output to world of a fully modeled device; in other words, a device that has a JSON and XML representation of its full configuration and that is fully driven from a robust model such as YANG. Also, models also define operational data and statistics on devices.
 
-Yang:
-    YANG is a formal contract language with rich syntax and semantics on which you can build applications. It provides these rich semantics that offer constraints, but also provides re-usable structures that can be used within and between YANG models.
+standardization is the key here. it is awesome that data configured on all devices including IOSXE, IOSXR, etc., can all be the same - this is also referred to syntax abstraction
 
-    YANG has been around since 2010 but has been tightly coupled with the NETCONF management protocol. It can be seen by the name of the RFC 6020 - YANG - A data modeling language for NETCONF.
+# Yang:
+YANG is a formal contract language with rich syntax and semantics on which you can build applications. It provides these rich semantics that offer constraints, but also provides re-usable structures that can be used within and between YANG models
 
-    More recently, YANG models are being used independently of NETCONF and for other protocols such as RESTCONF and gRPC
+YANG has been around since 2010 but has been tightly coupled with the NETCONF management protocol. It can be seen by the name of the RFC 6020 - YANG - A data modeling language for NETCONF.
 
-    yang is open
+More recently, YANG models are being used independently of NETCONF and for other protocols such as RESTCONF and gRPC
 
-    yang data structured in a tree
+yang is open
+yang data structured in a tree
 
-    yang types:
-        industry standards = These models come from various working groups. Two core groups are the IETF and the OpenConfig working group. It is their focus to create vendor and platform independent models—they are core features and operational stats relevant across a wide variety of devices
+yang types:
+industry standards = These models come from various working groups. Two core groups are the IETF and the OpenConfig working group. It is their focus to create vendor and platform independent models—they are core features and operational stats relevant across a wide variety of devices
+cisco common = Because many features are common across Cisco devices, there are also Cisco native models and native models per Cisco OS
+cisco platform-specific = Also, when there are platform or hardware-specific features, there are additional models that are used to ensure even features mapped to a given platform are still model driven meaning APIs can still be used for those features
 
-        cisco common = Because many features are common across Cisco devices, there are also Cisco native models and native models per Cisco OS
+# Other data models:
+While YANG is becoming the dominant way to model network configuration and state information, it is not the only method. There are three other Cisco platforms and solutions that are all notable and worth mentioning because they do not use YANG, but are fully driven by an object model
 
-        cisco platform-specific = Also, when there are platform or hardware-specific features, there are additional models that are used to ensure even features mapped to a given platform are still model driven meaning APIs can still be used for those features
+Each of these platforms were built using a custom object model that offers the same properties as if they were built using YANG models. For example, with ACI, everything is an object. Every object has associated properties and constraints. These constraints are defined in the ACI Management Information Model as opposed to a YANG model. The most important point to note is that YANG is not the only way to model network devices, and while YANG is not used, any associated YANG tooling would not be supported. In the case of ACI, they already have a robust toolset of libraries and an object model browser that is already on par or better with what is emerging from the YANG ecosystem
 
-Other data models:
-    While YANG is becoming the dominant way to model network configuration and state information, it is not the only method. There are three other Cisco platforms and solutions that are all notable and worth mentioning because they do not use YANG, but are fully driven by an object model
+# Model-driven device programmability:
+One of the major byproducts of leveraging models is model-driven programmability. What this means is that model-driven programmability fully de-couples transport, protocol, and encoding from the model being used. Over the past few years, YANG was predominantly used for NETCONF which encodes only in XML; however, since models were first written in YANG, it was easy to build new tooling that auto-generated URLs and bodies that took advantage of them using a REST API in both JSON and XML. The model then becomes the definition of what can be done on a device that is completely decoupled from the encoding method
 
-    Each of these platforms were built using a custom object model that offers the same properties as if they were built using YANG models. For example, withACI, everything is an object. Every object as associated properties and constraints. These constraints are defined in the ACI Management Information Model as opposed to a YANG model. The most important point to note is that YANG is not the only way to model network devices, and while YANG is not used, any associated YANG tooling would not be supported. In the case of ACI, they already have a robust toolset of libraries and an object model browser that is already on par or better with what is emerging from the YANG ecosystem
+the model used on the device, is the source of truth
 
-Model-driven device programmability:
-    One of the major byproducts of leveraging models is model-driven programmability. What this means is that model-driven programmability fully de-couples transport, protocol, and encoding from the model being used. Over the past few years, YANG was predominantly used for NETCONF which encodes only in XML; however, since models were first written in YANG, it was easy to build new tooling that auto- generated URLs and bodies that took advantage of them using a REST API in both JSON and XML. The model then becomes the definition of what can be done on a device that is completely decoupled from the encoding method
-
-    the model used on the device, is the source of truth
-
-    here is an example of a YANG module that is based on the OpenConfig BGP model and highlights that models can be built for configuration state (rw) and operational state (ro):
+here is an example of a YANG module that is based on the OpenConfig BGP model and highlights that models can be built for configuration state (rw) and operational state (ro):
           module: openconfig-bgp
           +--rw bgp!
           +--rw global
@@ -332,64 +329,63 @@ Model-driven device programmability:
           |  |  +--ro total-paths?
           |  |  +--ro total-prefixes?
 
-REST:
-    REST = REpresentational State Transfer
+# REST:
+REST = REpresentational State Transfer
+There is often a perception that REST is a complex topic to learn about, but in reality it is analogous to browsing a website with a web browser
 
-    There is often a perception that REST is a complex topic to learn about, but in reality it is analogous to browsing a website with a web browser.
+The process is very simple. First, there is a client (web browser) that performs HTTP operations (ex: GET) to a server (web server). The server understands the request that is based on a given URL and then returns HTML so that your client can properly display those HTML objects.
 
-    The process is very simple. First, there is a client (web browser) that performs HTTP operations (ex: GET) to a server (web server). The server understands the request that is based on a given URL and then returns HTML so that your client can properly display those HTML objects.
+When using REST APIs, you still have a client (different options including web browser plug-ins) that performs HTTP operations (ex: GET) to a network device running a web server. The network device understands the request that is based on URL (and body) and returns JSON or XML encoded objects so that your client can properly consume them
 
-    When using REST APIs, you still have a client (different options including web browser plug-ins) that performs HTTP operations (ex: GET) to a network device running a web server. The network device understands the request that is based on URL (and body) and returns JSON or XML encoded objects so that your client can properly consume them
+REST uses a stateless client-server model which means each request is treated independently from any other request. Therefore, the communication is a simple request and response
 
-    REST uses a stateless client-server model which means each request is treated independently from any other request. Therefore, the communication is a simple request and response
+Also, REST uses simple URIs which enable easy and familiar device programming using a web browser and graphical user interface
 
-    Also, REST uses simple URIs which enable easy and familiar device programming using a web browser and graphical user interface
+REST was developed using simple CRUD operations (Create, Retrieve, Update, and Delete) operations for use with HTTP. These operations are how you will work with Network APIs to create objects (for example, create loopback interfaces), retrieve objects (particular sections of config or operational data), update objects (perform a given change), or delete an object (remove a route, an IP address, and so on). These operations are used with the URL and payload. It is how the server (network device) knows what action to perform
 
-    REST was developed using simple CRUD operations (Create, Retrieve, Update, and Delete) operations for use with HTTP. These operations are how you will work with Network APIs to create objects (for example, create loopback interfaces), retrieve objects (particular sections of config or operational data), update objects (perform a given change), or delete an object (remove a route, an IP address, and so on). These operations are used with the URL and payload. It is how the server (network device) knows what action to perform
+The most common HTTP verbs that are used by REST are GET, POST, PUT, PATCH, and DELETE. HTTP verbs are the methods that are used to perform some sort of action on a specific resource. Because HTTP is a standardized and ubiquitous protocol, the semantics are very well known
 
-    The most common HTTP verbs that are used by REST are GET, POST, PUT, PATCH, and DELETE. HTTP verbs are the methods that are used to perform some sort of action on a specific resource. Because HTTP is a standardized and ubiquitous protocol, the semantics are very well known
+GET is used to read or retrieve information from a resource returning a representation of the data in JSON or XML. Because the GET method only reads data and does not change it, it is considered a “safe” method which means there is no risk of data corruption
 
-        GET is used to read or retrieve information from a resource returning a representation of the data in JSON or XML. Because the GET method only reads data and does not change it, it is considered a “safe” method which means there is no risk of data corruption
+POST, on the other hand, creates new resources which means it is not considered a “safe” method
 
-        POST, on the other hand, creates new resources which means it is not considered a “safe” method
+PUT is normally used to update or replace an already existing resource. It is called “PUT-ing” to a resource and involves sending a request with the updated representation of the original resource
 
-        PUT is normally used to update or replace an already existing resource. It is called “PUT-ing” to a resource and involves sending a request with the updated representation of the original resource
+PATCH is similar in some ways to PUT in that PATCH modifies the capabilities of a resource. The difference between PUT and PATCH is that PATCH sends a request containing only the changes to the resource and not a complete updated resource
 
-        PATCH is similar in some ways to PUT in that PATCH modifies the capabilities of a resource. The difference between PUT and PATCH is that PATCH sends a request containing only the changes to the resource and not a complete updated resource
+DELETE simply deletes a resource that is identified by a URI
 
-        DELETE simply deletes a resource that is identified by a URI
+in order to make a REST API call, you need the following:
+HTTP verb
+Full URL to use to manage a given resource
+[optional] Body if you are making certain changes
+Headers: Two common headers that native REST uses are Content-Type and Accept. It is how the server knows what to expect from your HTTP and what to send back—do you want XML or JSON?
+e.g: Content-Type: application/xml or application/json
+Accept: application/xml or application/json
+Authentication: Basic authentication (name:password) or Tokens are popular methods of authentication using REST APIs
 
-    in order to make a REST API call, you need the following:
-     HTTP verb
-     Full URL to use to manage a given resource
-     [optional] Body if you are making certain changes
-     Headers: Two common headers that native REST uses are Content-Type and Accept. It is how the server knows what to expect from your HTTP and what to send back—do you want XML or JSON?
-         e.g: Content-Type: application/xml or application/json
-         Accept: application/xml or application/json
-     Authentication: Basic authentication (name:password) or Tokens are popular methods of authentication using REST APIs
+common HTTP response codes (developed by ietf):
+200 = request succeeded
+201 = request fulfilled, new resource created
+202
+204 = request fulfilled, nothing to return
+server errors:
+500 = internal server (i.e. network device) error
+501 = not implemented
+client errors:
+400 = bad request / syntax
+401 = unauthorized
+403 = server understood request, but refuses to fulfill it
+404 = given URI not found
 
-     common HTTP response codes (developed by ietf):
-        200 = request succeeded
-        201 = request fulfilled, new resource created
-        202
-        204 = request fulfilled, nothing to return
-        server errors:
-            500 = internal server (i.e. network device) error
-            501 = not implemented
-        client errors:
-            400 = bad request / syntax
-            401 = unauthorized
-            403 = server understood request, but refuses to fulfill it
-            404 = given URI not found
+# REST tools:
+Several tools exist to consume REST APIs
 
-       REST tools:
-          Several tools exist to consume REST APIs
+cURL is a simple Linux command line tool within a shell script that provides an easy way to transfer data with URL syntax
 
-          cURL is a simple Linux command line tool within a shell script that provides an easy way to transfer data with URL syntax
+Postman is a Google Chrome application that provides you a very easy graphical user interface to consume REST APIs from within the Chrome web browser
 
-          Postman is a Google Chrome application that provides you a very easy graphical user interface to consume REST APIs from within the Chrome web browser
-
-          Python requests make use of embedded Python libraries and a small variety of methods to send HTTP requests to a resource’s API
+Python requests make use of embedded Python libraries and a small variety of methods to send HTTP requests to a resource’s API
 
                   #!/usr/bin/env python
 
@@ -406,45 +402,42 @@ REST:
                       print response.status_code
                       print response.text
 
-Netconf:
-    NETCONF is an IETF network management protocol designed specifically for configuration management. it is a next-generation network management protocol that is designed specifically for transactional-based network management and to improve upon the weaknesses of SNMP. NETCONF makes a distinction between configuration and state data in that you either make an API call to conf MAC entries
+# Netconf:
+NETCONF is an IETF network management protocol designed specifically for configuration management. it is a next-generation network management protocol that is designed specifically for transactional-based network management and to improve upon the weaknesses of SNMP. NETCONF makes a distinction between configuration and state data
 
-    Utilizes multiple configuration data stores (candidate, running, startup):
-        It is one of the most unique attributes of NETCONF, though a device does not have to implement this feature to “support” the protocol. NETCONF utilizes a candidate configuration which is simply a configuration with all proposed changes applied in an uncommitted state. It is the equivalent of entering CLI commands and having them NOT take effect right away. You would then “commit” all the changes as a single transaction. Once committed, you would see them in the running configuration
+Utilizes multiple configuration data stores (candidate, running, startup): It is one of the most unique attributes of NETCONF, though a device does not have to implement this feature to “support” the protocol. NETCONF utilizes a candidate configuration which is simply a configuration with all proposed changes applied in an uncommitted state. It is the equivalent of entering CLI commands and having them NOT take effect right away. You would then “commit” all the changes as a single transaction. Once committed, you would see them in the running configuration
 
-    NETCONF supports device transaction which means that when you make an API call configuring multiple objects and one fails, the entire transaction fails, and you do not end up with a partial configuration. They are also configurable and platform-dependent. You can still force a change to take so that it fails on error or rolls back on error, and so on
+NETCONF supports device transaction which means that when you make an API call configuring multiple objects and one fails, the entire transaction fails, and you do not end up with a partial configuration. They are also configurable and platform-dependent. You can still force a change to take so that it fails on error or rolls back on error, and so on
 
-    provides client-side config validation using YANG
+provides client-side config validation using YANG
 
-    NETCONF offers the ability to use filters that are based on XML documents or expressions, and to selectively request specific components of configuration or operational state data
+NETCONF offers the ability to use filters that are based on XML documents or expressions, and to selectively request specific components of configuration or operational state data
 
-    NETCONF is session-oriented and stateful (client/server model) — it is worth pointing out as other APIs such as native REST and RESTCONF are stateless.it leverages SSH as transport protocol
+NETCONF is session-oriented and stateful (client/server model) — it is worth pointing out as other APIs such as native REST and RESTCONF are stateless.it leverages SSH as transport protocol
 
-    Protocol stack:
-        protocol: SSHv2, SOAP, TLS. SSH is primarily used, but other protocols supported
+Netconf Protocol stack:
+protocol: SSHv2, SOAP, TLS. SSH is primarily used, but other protocols supported
 
-        messages: <rpc>, <rpc-reply>. NETCONF encodes everything in XML starting with the XML header and message. The first element in the XML document is always the rpc element that is denoted as <rpc>. It is simply telling the server that an RPC is going to be used on the device. These RPCs map directly back to specific operations on the device
+messages: <rpc>, <rpc-reply>. NETCONF encodes everything in XML starting with the XML header and message. The first element in the XML document is always the rpc element that is denoted as <rpc>. It is simply telling the server that an RPC is going to be used on the device. These RPCs map directly back to specific operations on the device
 
-        operations (varies per HW and OS):
-            <get> = retrieve run_cfg and device state info
-            <get-config> = retrieve all or part of a confg datastore
-            <edit-config> = load part or all of a config datastore
-            <delete-config> = delete a config datastore
-            <copy-config> = replace entire datastore with another
-            <lock>/<unlock> = lock/unlock config datastore
-            <close-session> = graceful termination of NETCONF session
-            <kill-session> = forced termination of NETCONF session
+operations (varies per HW and OS):
+<get> = retrieve run_cfg and device state info
+<get-config> = retrieve all or part of a confg datastore
+<edit-config> = load part or all of a config datastore
+<delete-config> = delete a config datastore
+<copy-config> = replace entire datastore with another
+<lock>/<unlock> = lock/unlock config datastore
+<close-session> = graceful termination of NETCONF session
+<kill-session> = forced termination of NETCONF session
 
-        content:
-            embedded as XML objects within the operations tag is XML documents specific the data you want to retrieve or configure. It is the content that is an XML representation of YANG models or XML Schema definitions
+content: embedded as XML objects within the operations tag is XML documents specific the data you want to retrieve or configure. It is the content that is an XML representation of YANG models or XML Schema definitions
 
-    Datastores:
-        NETCONF supports multiple data stores including a running, startup, and candidate configuration
-        datastore is a target of operation
-        not all datastores supported on all devices
-        only requirement is running datastore
-        not all device's datastores are writable. may have to copy from a writable one
-        Not all devices support a candidate configuration (this is like a staging area)
+Datastores: NETCONF supports multiple data stores including a running, startup, and candidate configuration
+datastore is a target of operation
+not all datastores supported on all devices
+only requirement is running datastore
+not all device's datastores are writable. may have to copy from a writable one
+not all devices support a candidate configuration (this is like a staging area)
 
 Sample NETCONF construct:
         <copy-config>
@@ -457,15 +450,15 @@ Sample NETCONF construct:
         </copy-config>
 
 Netconf workflow:
-      Client connects to NETCONF SSH sub-system
-            ssh -p 830 cisco@csr1kv -s netconf
-      Server responds with Hello that includes NETCONF supported capabilities
-      Client responds with supported capabilities
-      Client issues NETCONF request (rpc/operation/content)
-      Server issues response / performs operation
+Client connects to NETCONF SSH sub-system
+ssh -p 830 cisco@csr1kv -s netconf
+Server responds with Hello that includes NETCONF supported capabilities
+Client responds with supported capabilities
+Client issues NETCONF request (rpc/operation/content)
+Server issues response / performs operation
 
 Note: All messages to/from NETCONF server/client must end with ]]>]]> - this is how the client and server know the other side is done sending the message
-      When the server sends its hello, the client needs to send a hello with its supported capabilities. You can respond back with everything the server supports (assuming the client does too), or just with the bare minimum to do edits and gets. The bare minimum is exactly what is shown in the graphic just supporting NETCONF base
+When the server sends its hello, the client needs to send a hello with its supported capabilities. You can respond back with everything the server supports (assuming the client does too), or just with the bare minimum to do edits and gets. The bare minimum is exactly what is shown in the graphic just supporting NETCONF base
           NETCONF base response:
                   <?xml version="1.0"?>
                   <hello xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
@@ -474,7 +467,7 @@ Note: All messages to/from NETCONF server/client must end with ]]>]]> - this is 
                   </capabilities>
                   </hello>]]>]]>
 
-     Once the client sends its capabilities, it can then send NETCONF requests. In this example, the request being sent is performing the NETCONF get operation (denoted by <get>). It is then asking for a given section of configuration using a filter. Based on the devices/servers being used, you often have to be aware of which model is being used (denoted by the xml namespace). This filter is selectively asking for configuration information of GigabitEthernet1
+Once the client sends its capabilities, it can then send NETCONF requests. In this example, the request being sent is performing the NETCONF get operation (denoted by <get>). It is then asking for a given section of configuration using a filter. Based on the devices/servers being used, you often have to be aware of which model is being used (denoted by the xml namespace). This filter is selectively asking for configuration information of GigabitEthernet1
 
              <?xml version="1.0"?>
              <rpc message-id="101" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
@@ -492,15 +485,15 @@ Note: All messages to/from NETCONF server/client must end with ]]>]]> - this is 
              </rpc>
              ]]>]]>
 
-    server then responds with following:
+server then responds with following:
         <?xml version="1.0" encoding="UTF-8"?>
         <rpc-reply xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="101"><data><native xmlns="http://cisco.com/ns/yang/ned/ios"><interface><GigabitEthernet><name>1</name><negotiation><auto>true</auto></negotiation><ip><address><primary><address>192.168.1.11</address><mask>255.255.255.0</mask></primary></address></ip></GigabitEthernet></interface></native></data></rpc-reply>]]>]]>
 
 NETCONF clients:
-    SSH directly into the netconf subsystem running on the network device. this is primarily used for testing xml constructs
+SSH directly into the netconf subsystem running on the network device. this is primarily used for testing xml constructs
 
-    ncclient—Python NETCONF client
-        Python ncclient is the de facto way of interacting with NETCONF network devices
+ncclient—Python NETCONF client
+Python ncclient is the de facto way of interacting with NETCONF network devices
                 from ncclient import manager
                 with manager.connect(host='csr1kv', port=830, username='cisco', password='cisco',
                                  hostkey_verify=False, device_params={'name': 'csr'},
@@ -515,24 +508,23 @@ NETCONF clients:
                 nc_get_reply = device.get(('subtree', get_filter))
                 print etree.tostring(nc_get_reply.data_ele, pretty_print=True)
 
-        Note: The device methods map directly back to the NETCONF operations. Throughout the course, you will see device.get, device.edit_config, device.get_config, and so on. Also, note that the filters that are used in Python are the same filters that are used while testing with the NETCONF server directly
+Note: The device methods map directly back to the NETCONF operations. Throughout the course, you will see device.get, device.edit_config, device.get_config, and so on. Also, note that the filters that are used in Python are the same filters that are used while testing with the NETCONF server directly
 
-        Note: as mentioned earlier, first step in netconf workflow is exchanging capabilities in hello messages. server responds first. once it does, you can copy its response and resend it as yours, but you must delete the line "<session-id>21992</session-id>"
+Note: as mentioned earlier, first step in netconf workflow is exchanging capabilities in hello messages. server responds first. once it does, you can copy its response and resend it as yours, but you must delete the line "<session-id>21992</session-id>"
 
-RESTCONF
-    Functional sub-set of NETCONF
-    Exposes YANG models via a REST API (URL)
-    Uses HTTP(S) as transport
-    Uses XML or JSON for encoding
-    Developed to use HTTP tools and programming libraries
-    Uses common HTTP verbs in REST APIs
+# RESTCONF
+Functional sub-set of NETCONF
+Exposes YANG models via a REST API (URL)
+Uses HTTP(S) as transport
+Uses XML or JSON for encoding
+Developed to use HTTP tools and programming libraries
+Uses common HTTP verbs in REST APIs
+netconf/yang + rest = restconf
 
-    netconf/yang + rest = restconf
+Note: RESTCONF is a sub-set of NETCONF so not all operations are supported
 
-    Note: RESTCONF is a sub-set of NETCONF so not all operations are supported
-
-    Protocol operations:
-        Remember that since REST principles are being used, it is a stateless connection. As such, everything today using RESTCONF writes directly to the running-configuration—it means that there is no support for a candidate configuration
+Protocol operations:
+Remember that since REST principles are being used, it is a stateless connection. As such, everything today using RESTCONF writes directly to the running-configuration—it means that there is no support for a candidate configuration
 
         GET = <get-config>, <get>. retrieves data from a resource (config/opertional)
         POST = <edit-config> (operation="create" a configuration datastore)
@@ -540,9 +532,9 @@ RESTCONF
         PATCH = <edit-config> (operation="merge" config data with another datastore)
         DELETE = <edit-config> (operation="delete" a datastore)
 
-        Note: the use of the PUT operation. The PUT operation has the ability to replace entire sections of configuration that is based on what you send. It is analogous to declarative network configuration. For example, if you PATCH one static route, it will add the route. If you PUT the route, you will end up with just one route configured
+Note: the use of the PUT operation. The PUT operation has the ability to replace entire sections of configuration that is based on what you send. It is analogous to declarative network configuration. For example, if you PATCH one static route, it will add the route. If you PUT the route, you will end up with just one route configured
 
-        There are more granular operations that can you can perform when doing a change within NETCONF such as specifying if you want to replace an object, update it, or delete it. This picture shows how RESTCONF operations map directly back to their counterparts in NETCONF
+There are more granular operations that can you can perform when doing a change within NETCONF such as specifying if you want to replace an object, update it, or delete it. This picture shows how RESTCONF operations map directly back to their counterparts in NETCONF
 
         e.g:
         GET http://csr1kv/restconf/api/config/native
@@ -553,24 +545,25 @@ RESTCONF
            Retrieve interface specific attributes for GigabitEthernet1
 
 RESTCONF tools and utilities:
-    Same tools that are used for native REST interfaces are used for RESTCONF
-    python requests module, but any http library should also work
-    postman
-    firfox rest client
+Same tools that are used for native REST interfaces are used for RESTCONF
+python requests module, but any http library should also work
+postman
+firfox rest client
+
 Note: There are no API docs so YANG tools will be used to generate URL and request body
 
-gRPC:
-    gRPC is a new and modern API originally developed and open-sourced by Google. Cisco has already implemented gRPC on IOS-XR devices and can be tested using XR 6.1+
+# gRPC:
+gRPC is a new and modern API originally developed and open-sourced by Google. Cisco has already implemented gRPC on IOS-XR devices and can be tested using XR 6.1+
 
-    Like RESTCONF, it is a functional sub-set of NETCONF and uses HTTP/2. Major differences here include improved security and support for bi-directional streaming
+Like RESTCONF, it is a functional sub-set of NETCONF and uses HTTP/2. Major differences here include improved security and support for bi-directional streaming
 
-    high performance. simple client development. runs over https
+high performance. simple client development. runs over https
 
-    protocol operations:
-            GetConfig	= Retrieve configuration data
-            MergeConfig = Merge configuration data
-            DeleteConfig = Delete configuration data
-            ReplaceConfig = Replace configuration data
-            GetOper = Retrieve operational data
-            CliConfig	= Merge configuration data in CLI format
-            ShowCmdTextOutput	= Retrieves CLI show-command output data
+protocol operations:
+GetConfig	= Retrieve configuration data
+MergeConfig = Merge configuration data
+DeleteConfig = Delete configuration data
+ReplaceConfig = Replace configuration data
+GetOper = Retrieve operational data
+CliConfig	= Merge configuration data in CLI format
+ShowCmdTextOutput	= Retrieves CLI show-command output data
